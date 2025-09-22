@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trip Planner</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="container">
@@ -58,26 +58,37 @@
             <span class="close-btn">&times;</span>
             <h3 id="modalDayTitle"></h3>
             
-            <button class="btn btn-secondary" id="travelTypeToggle">Switch to Travel Day</button>
-            
-            <div id="cityInputs" class="city-inputs-group">
-                <div class="modal-input-group">
-                    <label for="cityInput">City:</label>
-                    <input type="text" id="cityInput" placeholder="e.g., Paris" autocomplete="off">
-                    <ul id="cityAutocompleteList" class="autocomplete-list"></ul>
+            <div class="day-type-control">
+                <div class="toggle-container">
+                    <span class="toggle-label">Stay</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dayTypeToggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-label">Travel</span>
                 </div>
             </div>
 
-            <div id="travelInputs" class="travel-inputs-group">
-                <div class="modal-input-group">
-                    <label for="fromCityInput">From City:</label>
-                    <input type="text" id="fromCityInput" placeholder="e.g., London" autocomplete="off">
-                    <ul id="fromCityAutocompleteList" class="autocomplete-list"></ul>
+            <div class="inputs-container">
+                <div id="cityInputs" class="city-inputs-group">
+                    <div class="modal-input-group">
+                        <label for="cityInput">City:</label>
+                        <input type="text" id="cityInput" placeholder="e.g., Paris" autocomplete="off">
+                        <ul id="cityAutocompleteList" class="autocomplete-list"></ul>
+                    </div>
                 </div>
-                <div class="modal-input-group">
-                    <label for="toCityInput">To City:</label>
-                    <input type="text" id="toCityInput" placeholder="e.g., Paris" autocomplete="off">
-                    <ul id="toCityAutocompleteList" class="autocomplete-list"></ul>
+
+                <div id="travelInputs" class="travel-inputs-group">
+                    <div class="modal-input-group">
+                        <label for="fromCityInput">From City:</label>
+                        <input type="text" id="fromCityInput" placeholder="e.g., London" autocomplete="off">
+                        <ul id="fromCityAutocompleteList" class="autocomplete-list"></ul>
+                    </div>
+                    <div class="modal-input-group">
+                        <label for="toCityInput">To City:</label>
+                        <input type="text" id="toCityInput" placeholder="e.g., Paris" autocomplete="off">
+                        <ul id="toCityAutocompleteList" class="autocomplete-list"></ul>
+                    </div>
                 </div>
             </div>
 

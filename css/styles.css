@@ -293,18 +293,105 @@ h1, h2 {
     border-radius: 5px;
 }
 
-#travelTypeToggle {
-    margin-bottom: 10px;
+.day-type-control {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
 }
 
-.travel-inputs-group {
-    display: none;
-    flex-direction: column;
+.toggle-container {
+    display: flex;
+    align-items: center;
     gap: 10px;
 }
 
+.toggle-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--primary-color);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.modal-content .inputs-container {
+    height: 180px; /* Fixed height to prevent modal jump */
+    position: relative;
+    overflow: hidden;
+}
+
+.city-inputs-group,
+.travel-inputs-group {
+    position: absolute;
+    width: 100%;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.travel-inputs-group {
+    opacity: 0;
+    visibility: hidden;
+}
+
 .city-inputs-group {
-    display: block;
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content.travel-mode .travel-inputs-group {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content.travel-mode .city-inputs-group {
+    opacity: 0;
+    visibility: hidden;
 }
 
 .autocomplete-list {
