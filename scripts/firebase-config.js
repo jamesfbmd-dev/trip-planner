@@ -1,3 +1,4 @@
+// This file contains the Firebase configuration for the project.
 // TODO: Replace with your project's Firebase credentials.
 // This object will be used to initialize Firebase in script.js.
 // To get this configuration, go to your Firebase project console,
