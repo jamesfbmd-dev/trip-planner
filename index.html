@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Calendar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha2d1-ZJ6E7lU8x4n4L/W4y1vL+C5n3x5oZtQ=" crossorigin="" /> -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"  />
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Initial Loading Overlay -->
+    <div id="initialLoader" class="initial-loader-overlay">
+        <div class="bg-white p-8 rounded-xl flex flex-col items-center">
+            <div class="spinner"></div>
+            <p class="text-gray-800 mt-4 text-lg font-medium">Loading calendar...</p>
+        </div>
+    </div>
+    
+    <div id="app">
+        <div class="calendar-container">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 space-y-4 sm:space-y-0">
+                <!-- Updated month picker for fixed width -->
+                <div class="flex items-center space-x-4">
+                    <button id="prevBtn" class="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <div class="w-48 text-center">
+                        <h2 id="monthYear" class="text-3xl font-bold text-gray-800 tracking-tight"></h2>
+                    </div>
+                    <button id="nextBtn" class="bg-gray-200 text-gray-700 p-2 rounded-full hover:bg-gray-300 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+                <button id="generateMapBtn" class="bg-blue-500 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-200">Generate Map</button>
+            </div>
+    
+            <div class="calendar-grid bg-gray-300 text-center font-medium text-gray-500 mb-4">
+                <div class="p-4">Sun</div>
+                <div class="p-4">Mon</div>
+                <div class="p-4">Tue</div>
+                <div class="p-4">Wed</div>
+                <div class="p-4">Thu</div>
+                <div class="p-4">Fri</div>
+                <div class="p-4">Sat</div>
+            </div>
+    
+            <div id="calendar-days" class="calendar-grid bg-gray-300" tabindex="0">
+                <!-- Calendar days will be rendered here by JavaScript -->
+            </div>
+        </div>
+
+        <!-- City Selection Modal -->
+        <div id="cityModal" class="modal-overlay hidden">
+            <div class="bg-white p-8 rounded-xl shadow-2xl max-w-xl w-full relative transform transition-all duration-300 scale-95 opacity-0" id="city-modal-content">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Select a destination for <br/><span id="modalDate" class="text-blue-600"></span></h3>
+
+                <!-- Mode Selector -->
+                <div class="flex justify-center bg-gray-200 rounded-full p-1 mb-6">
+                    <button id="singleModeBtn" class="flex-1 text-center py-2 px-4 rounded-full text-gray-700 font-medium bg-white shadow-md transition-colors duration-200">Single City</button>
+                    <button id="travelModeBtn" class="flex-1 text-center py-2 px-4 rounded-full text-gray-700 font-medium transition-colors duration-200">Travel</button>
+                </div>
+                
+                <!-- Single City Mode Content -->
+                <div id="singleModeContent">
+                    <div class="relative">
+                        <input type="text" id="cityInput" list="cities" placeholder="Enter a city..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" autocomplete="off" />
+                        <datalist id="cities">
+                            <option value="London">
+                            <option value="Paris">
+                            <option value="Berlin">
+                            <option value="Rome">
+                            <option value="Madrid">
+                            <option value="Vienna">
+                            <option value="Prague">
+                            <option value="Amsterdam">
+                            <option value="Lisbon">
+                            <option value="Athens">
+                            <option value="Dublin">
+                            <option value="Brussels">
+                            <option value="Copenhagen">
+                            <option value="Helsinki">
+                            <option value="Budapest">
+                            <option value="Warsaw">
+                            <option value="Oslo">
+                            <option value="Stockholm">
+                            <option value="Zurich">
+                            <option value="Reykjavik">
+                            <option value="Moscow">
+                            <option value="Kyiv">
+                            <option value="Istanbul">
+                            <option value="Geneva">
+                            <option value="Edinburgh">
+                        </datalist>
+                    </div>
+                </div>
+                
+                <!-- Travel Mode Content -->
+                <div id="travelModeContent" class="hidden">
+                    <div class="flex space-x-2">
+                        <div class="flex-1">
+                            <label for="fromCityInput" class="block text-sm font-medium text-gray-700 mb-1">From</label>
+                            <input type="text" id="fromCityInput" list="cities" placeholder="Origin city..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" autocomplete="off" />
+                        </div>
+                        <div class="flex-1">
+                            <label for="toCityInput" class="block text-sm font-medium text-gray-700 mb-1">To</label>
+                            <input type="text" id="toCityInput" list="cities" placeholder="Destination city..." class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-between mt-6">
+                    <button id="clearBtn" class="bg-red-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200">Clear</button>
+                    <div class="flex space-x-3">
+                        <button id="closeCityModalBtn" class="bg-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200">Cancel</button>
+                        <!-- Updated save button with spinner functionality -->
+                        <button id="saveCityBtn" class="bg-blue-500 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center">
+                            <span id="saveText">Save</span>
+                            <div id="saveSpinner" class="hidden button-spinner rounded-full animate-spin ml-2"></div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Modal -->
+        <div id="mapModal" class="modal-overlay hidden">
+            <div class="bg-white p-8 rounded-xl shadow-2xl max-w-5xl w-full relative transform transition-all duration-300 scale-95 opacity-0" id="map-modal-content">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Your Travel Map</h3>
+                <!-- Map Modal Loading Spinner -->
+                <div id="mapModalLoader" class="flex flex-col items-center justify-center p-8 bg-gray-100 rounded-lg text-gray-500">
+                    <div class="spinner !border-blue-500 !border-t-transparent !w-8 !h-8"></div>
+                    <span class="mt-2 text-sm">Generating map...</span>
+                </div>
+                <div id="map" class="rounded-xl hidden"></div>
+                <div class="flex justify-end mt-4">
+                    <button id="closeMapModalBtn" class="bg-gray-200 text-gray-700 font-medium px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200">Close Map</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script type="module" src="./scripts/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    background-color: #f3f4f6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+.calendar-container {
+    max-width: 6xl;
+    width: 100%;
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    padding: 2rem 3rem;
+    overflow: auto;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px
+}
+.day-box {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    cursor: pointer;
+    text-align: left;
+    background-color: white;
+    padding: 0.25rem;
+}
+.day-box:hover:not(.empty) {
+    background-color: #f9fafb;
+}
+.selected-day-box {
+    box-shadow: inset 0 0 0 2px #3b82f6;
+    border-radius: 0.5rem;
+}
+.day-box:focus {
+    outline: none;
+    box-shadow: inset 0 0 0 2px #3b82f6;
+    border-radius: 0.5rem;
+}
+/* --- Styles for Modals and Overlays --- */
+/* This is the general overlay for interactive modals (city/map) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+/* This is for the initial loading spinner only */
+.initial-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 1); /* Opaque white */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+/* --- End of Overlay Styles --- */
+.travel-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke: white; /* Make the arrow white */
+}
+.travel-label {
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    break-words: break-all;
+    display: inline-flex;
+}
+#map {
+    height: 500px;
+    width: 100%;
+    border-radius: 0.75rem;
+}
+.numbered-marker {
+    background-color: #3b82f6; /* Blue-500 */
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 24px;
+    border: 4px solid white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translate(-50%, -50%);
+}
+/* Custom spinner animation */
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.button-spinner {
+    border: 2px solid white;
+    border-top-color: transparent;
+    width: 1em;
+    height: 1em;
+}
