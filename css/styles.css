@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 :root {
     --primary-color: #007BFF;
     --primary-faded: rgba(0, 123, 255, 0.4);
