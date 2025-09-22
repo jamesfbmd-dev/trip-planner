@@ -278,6 +278,7 @@ h1, h2 {
 
 .modal-input-group {
     margin-bottom: 15px;
+    position: relative;
 }
 
 .modal-input-group label {
@@ -362,9 +363,8 @@ input:checked + .slider:before {
 }
 
 .modal-content .inputs-container {
-    height: 180px; /* Fixed height to prevent modal jump */
+    min-height: 180px; /* Set min-height to prevent modal jump */
     position: relative;
-    overflow: hidden;
 }
 
 .city-inputs-group,
@@ -404,8 +404,9 @@ input:checked + .slider:before {
     max-height: 200px;
     overflow-y: auto;
     position: absolute;
-    width: calc(100% - 2px);
+    width: 100%;
     z-index: 1001;
+    box-sizing: border-box;
 }
 
 .autocomplete-list li {
