@@ -41,6 +41,22 @@ const formatDate = (date) => {
     return `${year}-${month}-${day}`;
 };
 
+const formatDateAsText = (dateString) => {
+    const date = new Date(dateString);
+
+    const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
+    const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+    const suffix = (d => {
+        if (d > 3 && d < 21) return "th";
+        return ["th","st","nd","rd"][Math.min(d % 10, 4)];
+    })(day);
+
+    return `${weekday} ${day}${suffix} ${month} ${year}`;
+};
+
 // --- UI & PAGE NAVIGATION ---
 const dashboardEl = document.getElementById('dashboard');
 const tripCalendarEl = document.getElementById('trip-calendar');
@@ -240,7 +256,8 @@ const travelInputsGroup = document.getElementById('travelInputs');
 
 const openDayModal = (dateString) => {
     selectedDate = dateString;
-    modalDayTitle.textContent = `Planning for ${selectedDate}`;
+    let formattedDateString = formatDateAsText(dateString);
+    modalDayTitle.innerHTML = `Planning for<br/><span style="color:blue;">${formattedDateString}</span>`;
     dayModal.style.display = 'flex';
     
     // Pre-fill logic based on the previous day
