@@ -30,7 +30,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 900px;
+    max-width: 100%;
     background: var(--card-background);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -275,7 +275,7 @@ h1, h2 {
     padding: 30px;
     border-radius: 8px;
     width: 90%;
-    max-width: 500px;
+    max-width: 800px;
     position: relative;
 }
 
@@ -429,4 +429,27 @@ input:checked + .slider:before {
 
 .autocomplete-list li:hover, .autocomplete-list li.active-item {
     background-color: var(--background-color);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
 }

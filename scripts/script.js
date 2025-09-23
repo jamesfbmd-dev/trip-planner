@@ -174,6 +174,16 @@ const saveDayData = (dateString, data) => {
     renderCalendar();
 };
 
+const clearDayData = (dateString) => {
+    const trips = getTrips();
+    if (trips[currentTripId] && trips[currentTripId].days[dateString]) {
+        delete trips[currentTripId].days[dateString];
+        saveTrips(trips);
+        currentTrip = trips[currentTripId]; // Update the currentTrip state
+        renderCalendar();
+    }
+};
+
 // --- MAP GENERATION ---
 let map;
 const generateMap = () => {
@@ -254,6 +264,8 @@ const toCityAutocompleteList = document.getElementById('toCityAutocompleteList')
 const dayTypeToggle = document.getElementById('dayTypeToggle');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
+const cancelDayBtn = document.getElementById('cancelDayBtn');
+const clearDayBtn = document.getElementById('clearDayBtn');
 
 const openDayModal = (dateString) => {
     selectedDate = dateString;
@@ -406,6 +418,15 @@ dayTypeToggle.addEventListener('change', () => {
 });
 
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);
+
+cancelDayBtn.addEventListener('click', closeDayModal);
+
+clearDayBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear all data for this day?')) {
+        clearDayData(selectedDate);
+        closeDayModal();
+    }
+});
 
 window.addEventListener('click', (event) => {
     if (event.target === dayModal) {
