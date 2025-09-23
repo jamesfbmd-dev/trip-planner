@@ -245,6 +245,7 @@ const closeMapSidebarBtnEl = document.getElementById('closeMapSidebarBtn');
 let map;
 let markers = [];
 let polylines = [];
+let animatedPolylines = [];
 
 const generateMap = () => {
     mapTripNameEl.textContent = currentTrip.name;
@@ -305,54 +306,39 @@ const generateMap = () => {
         marker.on('mouseover', () => {
             const markerIndex = markers.indexOf(marker);
 
+            // Clear any existing animated polylines
+            animatedPolylines.forEach(p => p.remove());
+            animatedPolylines = [];
+
             // Incoming line
             if (markerIndex > 0) {
                 const incomingLine = polylines[markerIndex - 1];
-                incomingLine.setStyle({ color: 'red' });
-                incomingLine.arrowheads({
-                    fill: true,
+                const antPath = L.polyline.antPath(incomingLine.getLatLngs(), {
                     color: 'red',
-                    size: '10px',
-                    frequency: '200px',
-                    className: 'arrow-incoming'
-                });
+                    pulseColor: 'white',
+                    weight: 5,
+                    dashArray: [10, 20],
+                    reversed: true, // Arrows move towards the marker
+                }).addTo(map);
+                animatedPolylines.push(antPath);
             }
 
             // Outgoing line
             if (markerIndex < polylines.length) {
                 const outgoingLine = polylines[markerIndex];
-                outgoingLine.setStyle({ color: 'green' });
-                outgoingLine.arrowheads({
-                    fill: true,
+                const antPath = L.polyline.antPath(outgoingLine.getLatLngs(), {
                     color: 'green',
-                    size: '10px',
-                    frequency: '200px',
-                    className: 'arrow-outgoing'
-                });
+                    pulseColor: 'white',
+                    weight: 5,
+                    dashArray: [10, 20],
+                    reversed: false, // Arrows move away from the marker
+                }).addTo(map);
+                animatedPolylines.push(antPath);
             }
         });
 
-        marker.on('mouseout', () => {
-            const markerIndex = markers.indexOf(marker);
-
-            // Incoming line
-            if (markerIndex > 0) {
-                const incomingLine = polylines[markerIndex - 1];
-                incomingLine.setStyle({ color: 'blue' });
-                if (incomingLine.deleteArrowheads) {
-                    incomingLine.deleteArrowheads();
-                }
-            }
-
-            // Outgoing line
-            if (markerIndex < polylines.length) {
-                const outgoingLine = polylines[markerIndex];
-                outgoingLine.setStyle({ color: 'blue' });
-                if (outgoingLine.deleteArrowheads) {
-                    outgoingLine.deleteArrowheads();
-                }
-            }
-        });
+        // Intentionally left blank. The mouseout event on the map container will handle this.
+        marker.on('mouseout', () => {});
 
         markers.push(marker);
 
@@ -388,6 +374,13 @@ sidebarCollapseBtnEl.addEventListener('click', () => {
 
 closeMapBtnEl.addEventListener('click', closeMapModal);
 closeMapSidebarBtnEl.addEventListener('click', closeMapModal);
+
+mapModalEl.addEventListener('mouseout', (e) => {
+    if (e.target === mapModalEl) {
+        animatedPolylines.forEach(p => p.remove());
+        animatedPolylines = [];
+    }
+});
 
 
 // --- DAY MODAL & AUTOCOMPLETE ---

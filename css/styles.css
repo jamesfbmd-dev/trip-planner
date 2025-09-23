@@ -659,37 +659,3 @@ input:checked + .slider:before {
     display: flex;
     gap: 10px;
 }
-
-/* --- Arrow Animations --- */
-.arrow-incoming path, .arrow-outgoing path {
-    stroke-dasharray: 10;
-    animation-duration: 2s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-}
-
-.arrow-incoming path {
-    animation-name: animate-arrow-incoming;
-}
-
-.arrow-outgoing path {
-    animation-name: animate-arrow-outgoing;
-}
-
-@keyframes animate-arrow-incoming {
-    from {
-        stroke-dashoffset: 20;
-    }
-    to {
-        stroke-dashoffset: 0;
-    }
-}
-
-@keyframes animate-arrow-outgoing {
-    from {
-        stroke-dashoffset: 0;
-    }
-    to {
-        stroke-dashoffset: 20;
-    }
-}
