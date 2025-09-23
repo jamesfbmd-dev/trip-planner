@@ -448,7 +448,7 @@ const generateMap = () => {
                 { lat: loc.lat, lng: loc.lng }
             );
 
-            const polyline = L.polyline(curvedPoints, { color: 'blue', weight: 3 }).addTo(map);
+            const polyline = L.polyline(curvedPoints, { color: '#fe7700', weight: 3 }).addTo(map);
             polylines.push(polyline);
         }
     });
