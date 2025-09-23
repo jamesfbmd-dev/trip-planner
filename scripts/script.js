@@ -84,6 +84,20 @@ const saveTrips = (trips) => {
     localStorage.setItem('trips', JSON.stringify(trips));
 };
 
+const deleteTrip = (tripId) => {
+    const trips = getTrips();
+    delete trips[tripId];
+    saveTrips(trips);
+};
+
+const renameTrip = (tripId, newName) => {
+    const trips = getTrips();
+    if (trips[tripId]) {
+        trips[tripId].name = newName;
+        saveTrips(trips);
+    }
+};
+
 // Helper function to format date as YYYY-MM-DD
 const formatDate = (date) => {
     const year = date.getFullYear();
@@ -133,11 +147,32 @@ const renderDashboard = () => {
         const li = document.createElement('li');
         li.className = 'trip-item';
         li.innerHTML = `
-            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"></img>
-            <span>${trip.name}</span>
-            <button class="btn btn-secondary" onclick="openTrip('${id}')">Open</button>
+            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D%3D%3D"></img>
+            <div class="trip-info">
+                <span class="trip-name">${trip.name}</span>
+            </div>
+            <div class="trip-actions">
+                <button class="btn btn-primary" onclick="openTrip('${id}')">Open</button>
+                <button class="btn btn-secondary" onclick="handleRenameTrip('${id}', '${trip.name}')">Rename</button>
+                <button class="btn btn-danger" onclick="handleDeleteTrip('${id}')">Delete</button>
+            </div>
         `;
         tripListEl.appendChild(li);
+    }
+};
+
+const handleDeleteTrip = (tripId) => {
+    if (confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
+        deleteTrip(tripId);
+        renderDashboard();
+    }
+};
+
+const handleRenameTrip = (tripId, currentName) => {
+    const newName = prompt('Enter a new name for your trip:', currentName);
+    if (newName && newName.trim() !== '') {
+        renameTrip(tripId, newName.trim());
+        renderDashboard();
     }
 };
 
@@ -340,11 +375,9 @@ const generateMap = () => {
         marker.on('mouseover', () => {
             const markerIndex = markers.indexOf(marker);
 
-            // Clear any existing animated polylines
             animatedPolylines.forEach(p => p.remove());
             animatedPolylines = [];
 
-            // Incoming line
             if (markerIndex > 0) {
                 const incomingLine = polylines[markerIndex - 1];
                 const antPath = L.polyline.antPath(incomingLine.getLatLngs(), {
@@ -352,12 +385,11 @@ const generateMap = () => {
                     pulseColor: 'white',
                     weight: 5,
                     dashArray: [10, 20],
-                    reversed: true, // Arrows move towards the marker
+                    reversed: true,
                 }).addTo(map);
                 animatedPolylines.push(antPath);
             }
 
-            // Outgoing line
             if (markerIndex < polylines.length) {
                 const outgoingLine = polylines[markerIndex];
                 const antPath = L.polyline.antPath(outgoingLine.getLatLngs(), {
@@ -365,7 +397,7 @@ const generateMap = () => {
                     pulseColor: 'white',
                     weight: 5,
                     dashArray: [10, 20],
-                    reversed: false, // Arrows move away from the marker
+                    reversed: false,
                 }).addTo(map);
                 animatedPolylines.push(antPath);
             }
@@ -396,7 +428,6 @@ const generateMap = () => {
         map.fitBounds(bounds);
     }
 
-    // Invalidate map size after a short delay
     setTimeout(() => {
         map.invalidateSize();
     }, 100);

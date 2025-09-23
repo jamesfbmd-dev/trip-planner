@@ -199,7 +199,22 @@ h1, h2 {
 }
 
 .trip-item img {
-    max-height: 150px;
+    max-height: 100px;
+    margin-right: 20px;
+}
+
+.trip-info {
+    flex-grow: 1;
+}
+
+.trip-name {
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.trip-actions {
+    display: flex;
+    gap: 10px;
 }
 
 .new-trip-form {
