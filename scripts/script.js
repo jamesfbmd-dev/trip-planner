@@ -401,6 +401,7 @@ const generateMap = () => {
             .bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
 
         marker.on('mouseover', () => {
+            if (marker._icon) marker._icon.classList.add('marker-hover');
             const markerIndex = markers.indexOf(marker);
 
             animatedPolylines.forEach(p => p.remove());
@@ -432,6 +433,7 @@ const generateMap = () => {
         });
 
         marker.on('mouseout', () => {
+            if (marker._icon) marker._icon.classList.remove('marker-hover');
             animatedPolylines.forEach(p => p.remove());
             animatedPolylines = [];
         });
