@@ -247,6 +247,34 @@ let markers = [];
 let polylines = [];
 let animatedPolylines = [];
 
+function getCurvedPoints(latlng1, latlng2) {
+    const p1 = { x: latlng1.lat, y: latlng1.lng };
+    const p2 = { x: latlng2.lat, y: latlng2.lng };
+
+    const offsetX = p2.x - p1.x;
+    const offsetY = p2.y - p1.y;
+
+    const angle = Math.atan2(offsetY, offsetX);
+    const distance = Math.sqrt(Math.pow(offsetX, 2) + Math.pow(offsetY, 2));
+    const curveAmount = 0.15;
+
+    const mid = { x: p1.x + offsetX / 2, y: p1.y + offsetY / 2 };
+    const controlPoint = {
+        x: mid.x + (distance * curveAmount) * Math.cos(angle - Math.PI / 2),
+        y: mid.y + (distance * curveAmount) * Math.sin(angle - Math.PI / 2)
+    };
+
+    const points = [];
+    const numPoints = 30; // Number of points to define the curve
+    for (let i = 0; i <= numPoints; i++) {
+        const t = i / numPoints;
+        const lat = (1 - t) * (1 - t) * p1.x + 2 * (1 - t) * t * controlPoint.x + t * t * p2.x;
+        const lng = (1 - t) * (1 - t) * p1.y + 2 * (1 - t) * t * controlPoint.y + t * t * p2.y;
+        points.push([lat, lng]);
+    }
+    return points;
+}
+
 const generateMap = () => {
     mapTripNameEl.textContent = currentTrip.name;
 
@@ -352,7 +380,13 @@ const generateMap = () => {
 
         if (index > 0) {
             const prevLoc = locations[index - 1];
-            const polyline = L.polyline([[prevLoc.lat, prevLoc.lng], [loc.lat, loc.lng]], { color: 'blue', weight: 3 }).addTo(map);
+
+            const curvedPoints = getCurvedPoints(
+                { lat: prevLoc.lat, lng: prevLoc.lng },
+                { lat: loc.lat, lng: loc.lng }
+            );
+
+            const polyline = L.polyline(curvedPoints, { color: 'blue', weight: 3 }).addTo(map);
             polylines.push(polyline);
         }
     });
