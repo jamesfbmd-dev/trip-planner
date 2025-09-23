@@ -174,6 +174,16 @@ const saveDayData = (dateString, data) => {
     renderCalendar();
 };
 
+const clearDayData = (dateString) => {
+    const trips = getTrips();
+    if (trips[currentTripId] && trips[currentTripId].days[dateString]) {
+        delete trips[currentTripId].days[dateString];
+        saveTrips(trips);
+        currentTrip = trips[currentTripId]; // Update the currentTrip state
+        renderCalendar();
+    }
+};
+
 // --- MAP GENERATION ---
 let map;
 const generateMap = () => {
@@ -243,6 +253,7 @@ const generateMap = () => {
 
 // --- MODAL & AUTOCOMPLETE ---
 const dayModal = document.getElementById('dayModal');
+const modalContent = dayModal.querySelector('.modal-content');
 const modalDayTitle = document.getElementById('modalDayTitle');
 const cityInput = document.getElementById('cityInput');
 const fromCityInput = document.getElementById('fromCityInput');
@@ -250,9 +261,11 @@ const toCityInput = document.getElementById('toCityInput');
 const cityAutocompleteList = document.getElementById('cityAutocompleteList');
 const fromCityAutocompleteList = document.getElementById('fromCityAutocompleteList');
 const toCityAutocompleteList = document.getElementById('toCityAutocompleteList');
-const travelTypeToggleBtn = document.getElementById('travelTypeToggle');
+const dayTypeToggle = document.getElementById('dayTypeToggle');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
+const cancelDayBtn = document.getElementById('cancelDayBtn');
+const clearDayBtn = document.getElementById('clearDayBtn');
 
 const openDayModal = (dateString) => {
     selectedDate = dateString;
@@ -260,7 +273,6 @@ const openDayModal = (dateString) => {
     modalDayTitle.innerHTML = `Planning for<br/><span style="color:blue;">${formattedDateString}</span>`;
     dayModal.style.display = 'flex';
     
-    // Pre-fill logic based on the previous day
     const prevDay = new Date(selectedDate);
     prevDay.setDate(prevDay.getDate() - 1);
     const prevDayString = formatDate(prevDay);
@@ -268,11 +280,7 @@ const openDayModal = (dateString) => {
 
     let lastCity = '';
     if (prevDayData) {
-        if (prevDayData.type === 'travel') {
-            lastCity = prevDayData.to.name;
-        } else {
-            lastCity = prevDayData.city.name;
-        }
+        lastCity = prevDayData.type === 'travel' ? prevDayData.to.name : prevDayData.city.name;
     }
     
     cityInput.value = lastCity;
@@ -280,27 +288,18 @@ const openDayModal = (dateString) => {
     toCityInput.value = '';
 
     const dayData = currentTrip.days[dateString];
-    if (dayData) {
-        if (dayData.type === 'travel') {
-            travelTypeToggleBtn.textContent = 'Switch to Stay Day';
-            cityInputsGroup.style.display = 'none';
-            travelInputsGroup.style.display = 'flex';
-            fromCityInput.value = dayData.from.name;
-            toCityInput.value = dayData.to.name;
-            // Focus the 'from' city input
-            setTimeout(() => fromCityInput.focus(), 100);
-        } else {
-            travelTypeToggleBtn.textContent = 'Switch to Travel Day';
-            cityInputsGroup.style.display = 'block';
-            travelInputsGroup.style.display = 'none';
-            cityInput.value = dayData.city.name;
-            // Focus the 'city' input
-            setTimeout(() => cityInput.focus(), 100);
-        }
+    if (dayData && dayData.type === 'travel') {
+        dayTypeToggle.checked = true;
+        modalContent.classList.add('travel-mode');
+        fromCityInput.value = dayData.from.name;
+        toCityInput.value = dayData.to.name;
+        setTimeout(() => fromCityInput.focus(), 100);
     } else {
-        travelTypeToggleBtn.textContent = 'Switch to Travel Day';
-        cityInputsGroup.style.display = 'block';
-        travelInputsGroup.style.display = 'none';
+        dayTypeToggle.checked = false;
+        modalContent.classList.remove('travel-mode');
+        if (dayData) {
+            cityInput.value = dayData.city.name;
+        }
         setTimeout(() => cityInput.focus(), 100);
     }
 };
@@ -384,7 +383,7 @@ document.getElementById('nextMonthBtn').addEventListener('click', () => {
 });
 
 document.getElementById('saveDayBtn').addEventListener('click', () => {
-    const isTravelDay = travelInputsGroup.style.display === 'flex';
+    const isTravelDay = dayTypeToggle.checked;
     let data = {};
 
     if (isTravelDay) {
@@ -414,20 +413,20 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
     closeDayModal();
 });
 
-travelTypeToggleBtn.addEventListener('click', () => {
-    const isCityDay = cityInputsGroup.style.display === 'block';
-    if (isCityDay) {
-        cityInputsGroup.style.display = 'none';
-        travelInputsGroup.style.display = 'flex';
-        travelTypeToggleBtn.textContent = 'Switch to Stay Day';
-    } else {
-        cityInputsGroup.style.display = 'block';
-        travelInputsGroup.style.display = 'none';
-        travelTypeToggleBtn.textContent = 'Switch to Travel Day';
-    }
+dayTypeToggle.addEventListener('change', () => {
+    modalContent.classList.toggle('travel-mode');
 });
 
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);
+
+cancelDayBtn.addEventListener('click', closeDayModal);
+
+clearDayBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear all data for this day?')) {
+        clearDayData(selectedDate);
+        closeDayModal();
+    }
+});
 
 window.addEventListener('click', (event) => {
     if (event.target === dayModal) {
