@@ -294,16 +294,16 @@ const generateMap = () => {
 
     locations.forEach((loc, index) => {
         const iconHtml = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="var(--primary-color)"/>
-                <text x="12" y="10" font-size="10" font-weight="bold" text-anchor="middle" fill="white">${index + 1}</text>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" width="42" height="54">
+                <path d="M14,0 C21.732,0 28,5.641 28,12.6 C28,23.963 14,36 14,36 C14,36 0,24.064 0,12.6 C0,5.641 6.268,0 14,0 Z" fill="var(--primary-color)"/>
+                <text x="14" y="15" font-size="12" font-weight="bold" text-anchor="middle" fill="white">${index + 1}</text>
             </svg>`;
 
         const customIcon = L.divIcon({
             className: 'day-marker',
             html: iconHtml,
-            iconSize: [36, 36],
-            iconAnchor: [18, 36]
+            iconSize: [42, 54],
+            iconAnchor: [21, 54]
         });
         const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
             .addTo(map)
