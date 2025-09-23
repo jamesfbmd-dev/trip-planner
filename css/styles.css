@@ -407,6 +407,14 @@ input:checked + .slider:before {
     visibility: hidden;
 }
 
+.input-width-limiter {
+    max-width: 350px;
+}
+
+.autocomplete-list:empty {
+    display: none;
+}
+
 .autocomplete-list {
     list-style: none;
     padding: 0;
