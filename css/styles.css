@@ -367,6 +367,13 @@ h1, h2 {
     border-bottom: 1px solid #eee;
 }
 
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+}
+
 .sidebar-handle {
     position: absolute;
     top: 50%;
@@ -385,7 +392,7 @@ h1, h2 {
 }
 
 .map-sidebar.collapsed + .sidebar-handle {
-    left: 0;
+    left: 0px;
 }
 
 .arrow {

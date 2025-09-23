@@ -72,6 +72,7 @@ const mapTripNameEl = document.getElementById('mapTripName');
 const mapLocationListEl = document.getElementById('mapLocationList');
 const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
 const closeMapBtnEl = document.querySelector('.close-map-btn');
+const closeMapSidebarBtnEl = document.getElementById('closeMapSidebarBtn');
 
 const showPage = (pageId) => {
     dashboardEl.classList.remove('active');
@@ -264,13 +265,6 @@ const closeMapModal = () => {
 
 sidebarCollapseBtnEl.addEventListener('click', () => {
     mapSidebarEl.classList.toggle('collapsed');
-    // Adjust the handle's position
-    const handle = document.querySelector('.sidebar-handle');
-    if (mapSidebarEl.classList.contains('collapsed')) {
-        handle.style.left = '0px';
-    } else {
-        handle.style.left = '350px';
-    }
     // Trigger map resize after sidebar animation
     setTimeout(() => {
         if (map) {
@@ -280,6 +274,7 @@ sidebarCollapseBtnEl.addEventListener('click', () => {
 });
 
 closeMapBtnEl.addEventListener('click', closeMapModal);
+closeMapSidebarBtnEl.addEventListener('click', closeMapModal);
 
 // --- DAY MODAL & AUTOCOMPLETE ---
 const dayModal = document.getElementById('dayModal');
