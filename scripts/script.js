@@ -265,12 +265,6 @@ const closeMapModal = () => {
 
 sidebarCollapseBtnEl.addEventListener('click', () => {
     mapSidebarEl.classList.toggle('collapsed');
-    // Trigger map resize after sidebar animation
-    setTimeout(() => {
-        if (map) {
-            map.invalidateSize();
-        }
-    }, 300);
 });
 
 closeMapBtnEl.addEventListener('click', closeMapModal);

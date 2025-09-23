@@ -322,23 +322,23 @@ h1, h2 {
 }
 
 .map-sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
     width: 350px;
-    min-width: 350px;
     background-color: var(--card-background);
     padding: 20px;
     border-right: 1px solid var(--border-color);
-    transition: min-width 0.3s ease, width 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    transition: left 0.3s ease;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    opacity: 1;
+    z-index: 1005;
 }
 
 .map-sidebar.collapsed {
-    min-width: 0;
-    width: 0;
-    padding: 20px 0;
-    opacity: 0;
+    left: -350px;
 }
 
 .sidebar-header {
@@ -391,21 +391,22 @@ h1, h2 {
     z-index: 1010;
 }
 
-.map-sidebar.collapsed + .sidebar-handle {
-    left: 0px;
-}
-
-.arrow {
+.sidebar-handle::after {
+    content: '';
     border: solid white;
     border-width: 0 3px 3px 0;
     display: inline-block;
     padding: 4px;
-    transform: rotate(135deg);
+    transform: rotate(135deg); /* Pointing left */
     transition: transform 0.3s ease;
 }
 
-.map-sidebar.collapsed .arrow {
-    transform: rotate(-45deg);
+.map-sidebar.collapsed + .sidebar-handle {
+    left: 0px;
+}
+
+.map-sidebar.collapsed + .sidebar-handle::after {
+    transform: rotate(-45deg); /* Pointing right */
 }
 
 .map-container {
