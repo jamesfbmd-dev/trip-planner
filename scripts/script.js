@@ -147,7 +147,7 @@ const renderDashboard = () => {
         const li = document.createElement('li');
         li.className = 'trip-item';
         li.innerHTML = `
-            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D%3D%3D"></img>
+            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D3D%3D"></img>
             <div class="trip-info">
                 <span class="trip-name">${trip.name}</span>
             </div>
@@ -459,7 +459,8 @@ const toCityInput = document.getElementById('toCityInput');
 const cityAutocompleteList = document.getElementById('cityAutocompleteList');
 const fromCityAutocompleteList = document.getElementById('fromCityAutocompleteList');
 const toCityAutocompleteList = document.getElementById('toCityAutocompleteList');
-const dayTypeToggle = document.getElementById('dayTypeToggle');
+const stayBtn = document.getElementById('stayBtn');
+const travelBtn = document.getElementById('travelBtn');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
@@ -487,13 +488,15 @@ const openDayModal = (dateString) => {
 
     const dayData = currentTrip.days[dateString];
     if (dayData && dayData.type === 'travel') {
-        dayTypeToggle.checked = true;
+        travelBtn.classList.add('active');
+        stayBtn.classList.remove('active');
         modalContent.classList.add('travel-mode');
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
-        dayTypeToggle.checked = false;
+        stayBtn.classList.add('active');
+        travelBtn.classList.remove('active');
         modalContent.classList.remove('travel-mode');
         if (dayData) {
             cityInput.value = dayData.city.name;
@@ -581,7 +584,7 @@ document.getElementById('nextMonthBtn').addEventListener('click', () => {
 });
 
 document.getElementById('saveDayBtn').addEventListener('click', () => {
-    const isTravelDay = dayTypeToggle.checked;
+    const isTravelDay = travelBtn.classList.contains('active');
     let data = {};
 
     if (isTravelDay) {
@@ -611,8 +614,16 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
     closeDayModal();
 });
 
-dayTypeToggle.addEventListener('change', () => {
-    modalContent.classList.toggle('travel-mode');
+stayBtn.addEventListener('click', () => {
+    stayBtn.classList.add('active');
+    travelBtn.classList.remove('active');
+    modalContent.classList.remove('travel-mode');
+});
+
+travelBtn.addEventListener('click', () => {
+    travelBtn.classList.add('active');
+    stayBtn.classList.remove('active');
+    modalContent.classList.add('travel-mode');
 });
 
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);

@@ -77,13 +77,9 @@
             <h3 id="modalDayTitle"></h3>
             
             <div class="day-type-control">
-                <div class="toggle-container">
-                    <span class="toggle-label">Stay</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="dayTypeToggle">
-                        <span class="slider round"></span>
-                    </label>
-                    <span class="toggle-label">Travel</span>
+                <div class="pill-selector">
+                    <button id="stayBtn" class="pill-btn active">Stay</button>
+                    <button id="travelBtn" class="pill-btn">Travel</button>
                 </div>
             </div>
 
@@ -117,10 +113,10 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-danger" id="clearDayBtn">Clear</button>
+                <button class="btn btn-link" id="clearDayBtn">Clear</button>
                 <div class="footer-actions">
-                    <button class="btn btn-secondary" id="cancelDayBtn">Cancel</button>
-                    <button class="btn btn-primary" id="saveDayBtn">Save</button>
+                    <button class="btn btn-secondary btn-sm" id="cancelDayBtn">Cancel</button>
+                    <button class="btn btn-primary btn-sm" id="saveDayBtn">Save</button>
                 </div>
             </div>
         </div>
