@@ -400,6 +400,42 @@ h1, h2 {
 
 .sidebar-content h4 {
     margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.expandable-section {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.expandable-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.expandable-header:hover {
+    color: var(--primary-color);
+}
+
+.expandable-title {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.arrow {
+    font-size: 1.2em;
+    transition: transform 0.3s ease;
+}
+
+.arrow.expanded {
+    transform: rotate(180deg);
+}
+
+.expandable-content {
+    padding-top: 10px;
 }
 
 .sidebar-content ul {
@@ -411,6 +447,28 @@ h1, h2 {
 .sidebar-content li {
     padding: 8px 0;
     border-bottom: 1px solid #eee;
+}
+
+#timelineList li {
+    cursor: pointer;
+    padding: 10px 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+#timelineList li:hover {
+    background-color: var(--background-color);
+}
+
+#timelineList .timeline-date {
+    font-weight: bold;
+    font-size: 0.9em;
+    color: var(--primary-color);
+}
+
+#timelineList .timeline-location {
+    font-size: 0.9em;
+    padding-left: 10px;
 }
 
 .sidebar-footer {

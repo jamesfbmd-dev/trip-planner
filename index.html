@@ -58,8 +58,24 @@
                     <h3 id="mapTripName"></h3>
                 </div>
                 <div class="sidebar-content">
-                    <h4>Trip Summary</h4>
-                    <ul id="mapLocationList"></ul>
+                    <div class="expandable-section">
+                        <div class="expandable-header">
+                            <h4 class="expandable-title">Destinations</h4>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="expandable-content" style="display: none;">
+                            <ul id="mapLocationList"></ul>
+                        </div>
+                    </div>
+                    <div class="expandable-section">
+                        <div class="expandable-header">
+                            <h4 class="expandable-title">Timeline</h4>
+                            <span class="arrow">▼</span>
+                        </div>
+                        <div class="expandable-content" style="display: none;">
+                            <ul id="timelineList"></ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="sidebar-footer">
                     <button id="closeMapSidebarBtn" class="btn btn-secondary">Close Map</button>

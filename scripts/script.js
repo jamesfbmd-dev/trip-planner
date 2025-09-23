@@ -274,6 +274,7 @@ const mapModalEl = document.getElementById('mapModal');
 const mapSidebarEl = document.getElementById('mapSidebar');
 const mapTripNameEl = document.getElementById('mapTripName');
 const mapLocationListEl = document.getElementById('mapLocationList');
+const timelineListEl = document.getElementById('timelineList');
 const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
 const closeMapBtnEl = document.querySelector('.close-map-btn');
 const closeMapSidebarBtnEl = document.getElementById('closeMapSidebarBtn');
@@ -319,17 +320,24 @@ const generateMap = () => {
         return;
     }
 
-    const itinerary = dates.map(date => currentTrip.days[date]);
+    const itinerary = dates.map(date => ({ date, ...currentTrip.days[date] }));
     const locations = [];
+    const locationSet = new Set();
+
     itinerary.forEach(day => {
         if (day.type === 'travel') {
-            if (locations.length === 0 || locations[locations.length - 1].name !== day.from.name) {
+            if (!locationSet.has(day.from.name)) {
                 locations.push(day.from);
+                locationSet.add(day.from.name);
             }
-            locations.push(day.to);
+            if (!locationSet.has(day.to.name)) {
+                locations.push(day.to);
+                locationSet.add(day.to.name);
+            }
         } else {
-            if (locations.length === 0 || locations[locations.length - 1].name !== day.city.name) {
+            if (!locationSet.has(day.city.name)) {
                 locations.push(day.city);
+                locationSet.add(day.city.name);
             }
         }
     });
@@ -337,6 +345,26 @@ const generateMap = () => {
     // Populate sidebar
     mapLocationListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
     
+    timelineListEl.innerHTML = itinerary.map(day => {
+        const date = new Date(day.date);
+        const dateText = `${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}`;
+        let locationText = '';
+        let markerIndex = -1;
+
+        if (day.type === 'travel') {
+            locationText = `${day.from.name} → ${day.to.name}`;
+            markerIndex = locations.findIndex(l => l.name === day.to.name);
+        } else {
+            locationText = day.city.name;
+            markerIndex = locations.findIndex(l => l.name === day.city.name);
+        }
+
+        return `<li data-marker-index="${markerIndex}">
+                    <div class="timeline-date">${dateText}</div>
+                    <div class="timeline-location">${locationText}</div>
+                </li>`;
+    }).join('');
+
     // Show modal
     mapModalEl.style.display = 'flex';
 
@@ -431,6 +459,22 @@ const generateMap = () => {
     setTimeout(() => {
         map.invalidateSize();
     }, 100);
+
+    // Add event listeners for timeline hover
+    document.querySelectorAll('#timelineList li').forEach(item => {
+        item.addEventListener('mouseover', () => {
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                markers[markerIndex].fire('mouseover');
+            }
+        });
+        item.addEventListener('mouseout', () => {
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                markers[markerIndex].fire('mouseout');
+            }
+        });
+    });
 };
 
 const closeMapModal = () => {
@@ -650,6 +694,18 @@ toCityInput.addEventListener('input', () => handleAutocomplete(toCityInput, toCi
 setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
+
+// --- Sidebar Expand/Collapse ---
+document.querySelectorAll('.expandable-header').forEach(header => {
+    header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        const arrow = header.querySelector('.arrow');
+
+        const isVisible = content.style.display === 'block';
+        content.style.display = isVisible ? 'none' : 'block';
+        arrow.classList.toggle('expanded', !isVisible);
+    });
+});
 
 // Initial render
 renderDashboard();
