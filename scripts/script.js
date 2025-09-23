@@ -152,9 +152,9 @@ const renderDashboard = () => {
                 <span class="trip-name">${trip.name}</span>
             </div>
             <div class="trip-actions">
-                <button class="btn btn-primary" onclick="openTrip('${id}')">Open</button>
-                <button class="btn btn-secondary" onclick="handleRenameTrip('${id}', '${trip.name}')">Rename</button>
-                <button class="btn btn-danger" onclick="handleDeleteTrip('${id}')">Delete</button>
+                <button class="btn btn-sm btn-primary" onclick="openTrip('${id}')">Open</button>
+                <button class="btn btn-sm btn-secondary" onclick="handleRenameTrip('${id}', '${trip.name}')">Rename</button>
+                <button class="btn btn-sm btn-danger" onclick="handleDeleteTrip('${id}')">Delete</button>
             </div>
         `;
         tripListEl.appendChild(li);
