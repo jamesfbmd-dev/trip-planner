@@ -84,6 +84,20 @@ const saveTrips = (trips) => {
     localStorage.setItem('trips', JSON.stringify(trips));
 };
 
+const deleteTrip = (tripId) => {
+    const trips = getTrips();
+    delete trips[tripId];
+    saveTrips(trips);
+};
+
+const renameTrip = (tripId, newName) => {
+    const trips = getTrips();
+    if (trips[tripId]) {
+        trips[tripId].name = newName;
+        saveTrips(trips);
+    }
+};
+
 // Helper function to format date as YYYY-MM-DD
 const formatDate = (date) => {
     const year = date.getFullYear();
@@ -133,11 +147,32 @@ const renderDashboard = () => {
         const li = document.createElement('li');
         li.className = 'trip-item';
         li.innerHTML = `
-            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"></img>
-            <span>${trip.name}</span>
-            <button class="btn btn-secondary" onclick="openTrip('${id}')">Open</button>
+            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D3D%3D"></img>
+            <div class="trip-info">
+                <span class="trip-name">${trip.name}</span>
+            </div>
+            <div class="trip-actions">
+                <button class="btn btn-primary" onclick="openTrip('${id}')">Open</button>
+                <button class="btn btn-secondary" onclick="handleRenameTrip('${id}', '${trip.name}')">Rename</button>
+                <button class="btn btn-danger" onclick="handleDeleteTrip('${id}')">Delete</button>
+            </div>
         `;
         tripListEl.appendChild(li);
+    }
+};
+
+const handleDeleteTrip = (tripId) => {
+    if (confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
+        deleteTrip(tripId);
+        renderDashboard();
+    }
+};
+
+const handleRenameTrip = (tripId, currentName) => {
+    const newName = prompt('Enter a new name for your trip:', currentName);
+    if (newName && newName.trim() !== '') {
+        renameTrip(tripId, newName.trim());
+        renderDashboard();
     }
 };
 
@@ -243,6 +278,37 @@ const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
 const closeMapBtnEl = document.querySelector('.close-map-btn');
 const closeMapSidebarBtnEl = document.getElementById('closeMapSidebarBtn');
 let map;
+let markers = [];
+let polylines = [];
+let animatedPolylines = [];
+
+function getCurvedPoints(latlng1, latlng2) {
+    const p1 = { x: latlng1.lat, y: latlng1.lng };
+    const p2 = { x: latlng2.lat, y: latlng2.lng };
+
+    const offsetX = p2.x - p1.x;
+    const offsetY = p2.y - p1.y;
+
+    const angle = Math.atan2(offsetY, offsetX);
+    const distance = Math.sqrt(Math.pow(offsetX, 2) + Math.pow(offsetY, 2));
+    const curveAmount = 0.15;
+
+    const mid = { x: p1.x + offsetX / 2, y: p1.y + offsetY / 2 };
+    const controlPoint = {
+        x: mid.x + (distance * curveAmount) * Math.cos(angle - Math.PI / 2),
+        y: mid.y + (distance * curveAmount) * Math.sin(angle - Math.PI / 2)
+    };
+
+    const points = [];
+    const numPoints = 30; // Number of points to define the curve
+    for (let i = 0; i <= numPoints; i++) {
+        const t = i / numPoints;
+        const lat = (1 - t) * (1 - t) * p1.x + 2 * (1 - t) * t * controlPoint.x + t * t * p2.x;
+        const lng = (1 - t) * (1 - t) * p1.y + 2 * (1 - t) * t * controlPoint.y + t * t * p2.y;
+        points.push([lat, lng]);
+    }
+    return points;
+}
 
 const generateMap = () => {
     mapTripNameEl.textContent = currentTrip.name;
@@ -283,24 +349,85 @@ const generateMap = () => {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    const routePoints = locations.map(loc => [loc.lat, loc.lng]);
+    // Clear previous markers and polylines
+    markers.forEach(marker => marker.remove());
+    polylines.forEach(polyline => polyline.remove());
+    markers = [];
+    polylines = [];
 
     locations.forEach((loc, index) => {
+        const iconHtml = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" width="36" height="46">
+                <path d="M14,0 C21.732,0 28,5.641 28,12.6 C28,23.963 14,36 14,36 C14,36 0,24.064 0,12.6 C0,5.641 6.268,0 14,0 Z" fill="var(--primary-color)"/>
+                <text x="14" y="14" dominant-baseline="middle" font-size="11" font-weight="bold" text-anchor="middle" fill="white">${index + 1}</text>
+            </svg>`;
+
         const customIcon = L.divIcon({
             className: 'day-marker',
-            html: `<div>${index + 1}</div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 30]
+            html: iconHtml,
+            iconSize: [36, 46],
+            iconAnchor: [18, 46]
         });
-        L.marker([loc.lat, loc.lng], { icon: customIcon })
+        const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
             .addTo(map)
             .bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
+
+        marker.on('mouseover', () => {
+            const markerIndex = markers.indexOf(marker);
+
+            animatedPolylines.forEach(p => p.remove());
+            animatedPolylines = [];
+
+            if (markerIndex > 0) {
+                const incomingLine = polylines[markerIndex - 1];
+                const antPath = L.polyline.antPath(incomingLine.getLatLngs(), {
+                    color: 'red',
+                    pulseColor: 'white',
+                    weight: 5,
+                    dashArray: [10, 20],
+                    reversed: true,
+                }).addTo(map);
+                animatedPolylines.push(antPath);
+            }
+
+            if (markerIndex < polylines.length) {
+                const outgoingLine = polylines[markerIndex];
+                const antPath = L.polyline.antPath(outgoingLine.getLatLngs(), {
+                    color: 'green',
+                    pulseColor: 'white',
+                    weight: 5,
+                    dashArray: [10, 20],
+                    reversed: false,
+                }).addTo(map);
+                animatedPolylines.push(antPath);
+            }
+        });
+
+        marker.on('mouseout', () => {
+            animatedPolylines.forEach(p => p.remove());
+            animatedPolylines = [];
+        });
+
+        markers.push(marker);
+
+        if (index > 0) {
+            const prevLoc = locations[index - 1];
+
+            const curvedPoints = getCurvedPoints(
+                { lat: prevLoc.lat, lng: prevLoc.lng },
+                { lat: loc.lat, lng: loc.lng }
+            );
+
+            const polyline = L.polyline(curvedPoints, { color: 'blue', weight: 3 }).addTo(map);
+            polylines.push(polyline);
+        }
     });
 
-    const polyline = L.polyline(routePoints, { color: 'blue', weight: 3 }).addTo(map);
-    map.fitBounds(polyline.getBounds());
+    if (polylines.length > 0) {
+        const bounds = L.featureGroup(markers).getBounds();
+        map.fitBounds(bounds);
+    }
 
-    // Invalidate map size after a short delay
     setTimeout(() => {
         map.invalidateSize();
     }, 100);
@@ -332,7 +459,8 @@ const toCityInput = document.getElementById('toCityInput');
 const cityAutocompleteList = document.getElementById('cityAutocompleteList');
 const fromCityAutocompleteList = document.getElementById('fromCityAutocompleteList');
 const toCityAutocompleteList = document.getElementById('toCityAutocompleteList');
-const dayTypeToggle = document.getElementById('dayTypeToggle');
+const stayBtn = document.getElementById('stayBtn');
+const travelBtn = document.getElementById('travelBtn');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
@@ -360,13 +488,15 @@ const openDayModal = (dateString) => {
 
     const dayData = currentTrip.days[dateString];
     if (dayData && dayData.type === 'travel') {
-        dayTypeToggle.checked = true;
+        travelBtn.classList.add('active');
+        stayBtn.classList.remove('active');
         modalContent.classList.add('travel-mode');
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
-        dayTypeToggle.checked = false;
+        stayBtn.classList.add('active');
+        travelBtn.classList.remove('active');
         modalContent.classList.remove('travel-mode');
         if (dayData) {
             cityInput.value = dayData.city.name;
@@ -454,7 +584,7 @@ document.getElementById('nextMonthBtn').addEventListener('click', () => {
 });
 
 document.getElementById('saveDayBtn').addEventListener('click', () => {
-    const isTravelDay = dayTypeToggle.checked;
+    const isTravelDay = travelBtn.classList.contains('active');
     let data = {};
 
     if (isTravelDay) {
@@ -484,8 +614,16 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
     closeDayModal();
 });
 
-dayTypeToggle.addEventListener('change', () => {
-    modalContent.classList.toggle('travel-mode');
+stayBtn.addEventListener('click', () => {
+    stayBtn.classList.add('active');
+    travelBtn.classList.remove('active');
+    modalContent.classList.remove('travel-mode');
+});
+
+travelBtn.addEventListener('click', () => {
+    travelBtn.classList.add('active');
+    stayBtn.classList.remove('active');
+    modalContent.classList.add('travel-mode');
 });
 
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);
