@@ -243,6 +243,8 @@ const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
 const closeMapBtnEl = document.querySelector('.close-map-btn');
 const closeMapSidebarBtnEl = document.getElementById('closeMapSidebarBtn');
 let map;
+let markers = [];
+let polylines = [];
 
 const generateMap = () => {
     mapTripNameEl.textContent = currentTrip.name;
@@ -283,7 +285,11 @@ const generateMap = () => {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    const routePoints = locations.map(loc => [loc.lat, loc.lng]);
+    // Clear previous markers and polylines
+    markers.forEach(marker => marker.remove());
+    polylines.forEach(polyline => polyline.remove());
+    markers = [];
+    polylines = [];
 
     locations.forEach((loc, index) => {
         const customIcon = L.divIcon({
@@ -292,13 +298,75 @@ const generateMap = () => {
             iconSize: [30, 30],
             iconAnchor: [15, 30]
         });
-        L.marker([loc.lat, loc.lng], { icon: customIcon })
+        const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
             .addTo(map)
             .bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
+
+        marker.on('mouseover', () => {
+            const markerIndex = markers.indexOf(marker);
+
+            // Incoming line
+            if (markerIndex > 0) {
+                const incomingLine = polylines[markerIndex - 1];
+                incomingLine.setStyle({ color: 'red' });
+                incomingLine.arrowheads({
+                    fill: true,
+                    color: 'red',
+                    size: '10px',
+                    frequency: '200px',
+                    className: 'arrow-incoming'
+                });
+            }
+
+            // Outgoing line
+            if (markerIndex < polylines.length) {
+                const outgoingLine = polylines[markerIndex];
+                outgoingLine.setStyle({ color: 'green' });
+                outgoingLine.arrowheads({
+                    fill: true,
+                    color: 'green',
+                    size: '10px',
+                    frequency: '200px',
+                    className: 'arrow-outgoing'
+                });
+            }
+        });
+
+        marker.on('mouseout', () => {
+            const markerIndex = markers.indexOf(marker);
+
+            // Incoming line
+            if (markerIndex > 0) {
+                const incomingLine = polylines[markerIndex - 1];
+                incomingLine.setStyle({ color: 'blue' });
+                if (incomingLine.deleteArrowheads) {
+                    incomingLine.deleteArrowheads();
+                }
+            }
+
+            // Outgoing line
+            if (markerIndex < polylines.length) {
+                const outgoingLine = polylines[markerIndex];
+                outgoingLine.setStyle({ color: 'blue' });
+                if (outgoingLine.deleteArrowheads) {
+                    outgoingLine.deleteArrowheads();
+                }
+            }
+        });
+
+        markers.push(marker);
+
+        if (index > 0) {
+            const prevLoc = locations[index - 1];
+            const polyline = L.polyline([[prevLoc.lat, prevLoc.lng], [loc.lat, loc.lng]], { color: 'blue', weight: 3 }).addTo(map);
+            polylines.push(polyline);
+        }
     });
 
-    const polyline = L.polyline(routePoints, { color: 'blue', weight: 3 }).addTo(map);
-    map.fitBounds(polyline.getBounds());
+    if (polylines.length > 0) {
+        const bounds = L.featureGroup(markers).getBounds();
+        map.fitBounds(bounds);
+    }
 
     // Invalidate map size after a short delay
     setTimeout(() => {
