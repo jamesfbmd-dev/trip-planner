@@ -45,10 +45,26 @@
             </div>
             <div id="calendarGrid" class="calendar-grid"></div>
 
-            <div id="mapSection" class="map-section">
-                <h3>Trip Route Map</h3>
-                <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Full-screen Map Modal -->
+    <div id="mapModal" class="modal">
+        <div class="map-modal-content">
+            <span class="close-map-btn">&times;</span>
+            <div id="mapSidebar" class="map-sidebar">
+                <div class="sidebar-header">
+                    <h3 id="mapTripName"></h3>
+                </div>
+                <div class="sidebar-content">
+                    <h4>Trip Summary</h4>
+                    <ul id="mapLocationList"></ul>
+                </div>
+                <div class="sidebar-handle">
+                    <div id="sidebarCollapseBtn" class="arrow"></div>
+                </div>
             </div>
+            <div id="fullScreenMap" class="map-container"></div>
         </div>
     </div>
 
