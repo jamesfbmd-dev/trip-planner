@@ -381,7 +381,7 @@ h1, h2 {
     justify-content: center;
     border-radius: 0 5px 5px 0;
     transition: left 0.3s ease;
-    z-index: 10;
+    z-index: 1010;
 }
 
 .map-sidebar.collapsed + .sidebar-handle {
@@ -420,7 +420,7 @@ h1, h2 {
     line-height: 38px;
     text-align: center;
     cursor: pointer;
-    z-index: 10;
+    z-index: 1010;
 }
 
 /* Custom Marker CSS */
