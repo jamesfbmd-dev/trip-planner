@@ -59,12 +59,15 @@ body {
     line-height: 1.6;
     color: var(--text-color);
     background-color: var(--background-color);
-    padding: 20px;
     margin: 0;
+}
+
+.app-wrapper {
+    padding: 20px;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
+    height: 100vh;
+    box-sizing: border-box;
 }
 
 .container {
@@ -74,6 +77,8 @@ body {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 30px;
+    display: flex;
+    flex-direction: column;
 }
 
 h1, h2 {
