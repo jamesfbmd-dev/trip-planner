@@ -66,13 +66,6 @@ const tripTitleEl = document.getElementById('tripTitle');
 const monthYearDisplay = document.getElementById('monthYearDisplay');
 const calendarGridEl = document.getElementById('calendarGrid');
 const mapSectionEl = document.getElementById('mapSection');
-const mapModalEl = document.getElementById('mapModal');
-const mapSidebarEl = document.getElementById('mapSidebar');
-const mapTripNameEl = document.getElementById('mapTripName');
-const mapLocationListEl = document.getElementById('mapLocationList');
-const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
-const closeMapBtnEl = document.querySelector('.close-map-btn');
-const closeMapSidebarBtnEl = document.getElementById('closeMapSidebarBtn');
 
 const showPage = (pageId) => {
     dashboardEl.classList.remove('active');
@@ -119,6 +112,7 @@ const openTrip = (id) => {
     currentDate = new Date(); // Reset to current month on open
     renderCalendar();
     showPage('trip-calendar');
+    mapSectionEl.style.display = 'none'; // Hide map initially
 };
 
 const renderCalendar = () => {
@@ -190,87 +184,74 @@ const clearDayData = (dateString) => {
     }
 };
 
-// --- MAP GENERATION & MODAL ---
+// --- MAP GENERATION ---
 let map;
-
 const generateMap = () => {
-    mapTripNameEl.textContent = currentTrip.name;
-
-    const dates = Object.keys(currentTrip.days).sort();
-    if (dates.length === 0) {
-        alert("No itinerary data to generate a map.");
-        return;
-    }
-
-    const itinerary = dates.map(date => currentTrip.days[date]);
-    const locations = [];
-    itinerary.forEach(day => {
-        if (day.type === 'travel') {
-            if (locations.length === 0 || locations[locations.length - 1].name !== day.from.name) {
-                locations.push(day.from);
-            }
-            locations.push(day.to);
-        } else {
-            if (locations.length === 0 || locations[locations.length - 1].name !== day.city.name) {
-                locations.push(day.city);
-            }
-        }
-    });
-
-    // Populate sidebar
-    mapLocationListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
+    mapSectionEl.style.display = 'flex';
     
-    // Show modal
-    mapModalEl.style.display = 'flex';
-
     if (map) {
-        map.remove();
+        map.remove(); // Remove existing map instance
     }
-    map = L.map('fullScreenMap').setView([50, 10], 4);
+    map = L.map('map').setView([50, 10], 4); // Center on Europe
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    const routePoints = locations.map(loc => [loc.lat, loc.lng]);
+    const dates = Object.keys(currentTrip.days).sort(); // Get dates in chronological order
+    const itinerary = dates.map(date => currentTrip.days[date]);
+    const cities = [];
 
-    locations.forEach((loc, index) => {
-        const customIcon = L.divIcon({
-            className: 'day-marker',
-            html: `<div>${index + 1}</div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 30]
-        });
-        L.marker([loc.lat, loc.lng], { icon: customIcon })
-            .addTo(map)
-            .bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
+    itinerary.forEach((day, index) => {
+        if (day.type === 'travel') {
+            cities.push(day.from);
+            cities.push(day.to);
+        } else {
+            cities.push(day.city);
+        }
     });
 
-    const polyline = L.polyline(routePoints, { color: 'blue', weight: 3 }).addTo(map);
-    map.fitBounds(polyline.getBounds());
+    // Remove consecutive duplicates and keep the final city
+    const uniqueCities = cities.reduce((acc, current, idx, arr) => {
+        if (idx > 0 && current.name === acc[acc.length - 1].name) {
+            return acc;
+        }
+        if (idx < arr.length - 1 && current.name === arr[idx+1].name && idx !== 0) {
+             return acc;
+        }
+        acc.push(current);
+        return acc;
+    }, []);
 
-    // Invalidate map size after a short delay
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 100);
-};
+    const routePoints = uniqueCities.map(city => [city.lat, city.lng]);
 
-const closeMapModal = () => {
-    mapModalEl.style.display = 'none';
-    if (map) {
-        map.remove();
-        map = null;
+    if (routePoints.length > 0) {
+        // Add markers
+        uniqueCities.forEach((city, index) => {
+            const customIcon = L.divIcon({
+                className: 'day-marker',
+                html: `<div>${index + 1}</div>`,
+                iconSize: [30, 30],
+                iconAnchor: [15, 30]
+            });
+
+            const marker = L.marker([city.lat, city.lng], { icon: customIcon })
+                .addTo(map)
+                .bindPopup(`<b>${index + 1}. ${city.name}</b>`);
+        });
+
+        // Add polyline
+        const polyline = L.polyline(routePoints, { color: 'blue', weight: 3 }).addTo(map);
+
+        // Fit map to route
+        map.fitBounds(polyline.getBounds());
+    } else {
+        alert("No itinerary data to generate a map.");
     }
 };
 
-sidebarCollapseBtnEl.addEventListener('click', () => {
-    mapSidebarEl.classList.toggle('collapsed');
-});
 
-closeMapBtnEl.addEventListener('click', closeMapModal);
-closeMapSidebarBtnEl.addEventListener('click', closeMapModal);
-
-// --- DAY MODAL & AUTOCOMPLETE ---
+// --- MODAL & AUTOCOMPLETE ---
 const dayModal = document.getElementById('dayModal');
 const modalContent = dayModal.querySelector('.modal-content');
 const modalDayTitle = document.getElementById('modalDayTitle');
