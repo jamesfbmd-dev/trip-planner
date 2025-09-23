@@ -440,17 +440,9 @@ h1, h2 {
 
 /* Custom Marker CSS */
 .day-marker {
-    background-color: var(--primary-color);
-    border-radius: 50%;
-    border: 2px solid white;
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    /* The SVG now controls the appearance. We just remove any conflicting styles. */
+    background-color: transparent;
+    border: none;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 

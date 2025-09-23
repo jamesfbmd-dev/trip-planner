@@ -293,11 +293,17 @@ const generateMap = () => {
     polylines = [];
 
     locations.forEach((loc, index) => {
+        const iconHtml = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="var(--primary-color)"/>
+                <text x="12" y="10" font-size="10" font-weight="bold" text-anchor="middle" fill="white">${index + 1}</text>
+            </svg>`;
+
         const customIcon = L.divIcon({
             className: 'day-marker',
-            html: `<div>${index + 1}</div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 30]
+            html: iconHtml,
+            iconSize: [36, 36],
+            iconAnchor: [18, 36]
         });
         const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
             .addTo(map)
@@ -337,8 +343,10 @@ const generateMap = () => {
             }
         });
 
-        // Intentionally left blank. The mouseout event on the map container will handle this.
-        marker.on('mouseout', () => {});
+        marker.on('mouseout', () => {
+            animatedPolylines.forEach(p => p.remove());
+            animatedPolylines = [];
+        });
 
         markers.push(marker);
 
@@ -374,13 +382,6 @@ sidebarCollapseBtnEl.addEventListener('click', () => {
 
 closeMapBtnEl.addEventListener('click', closeMapModal);
 closeMapSidebarBtnEl.addEventListener('click', closeMapModal);
-
-mapModalEl.addEventListener('mouseout', (e) => {
-    if (e.target === mapModalEl) {
-        animatedPolylines.forEach(p => p.remove());
-        animatedPolylines = [];
-    }
-});
 
 
 // --- DAY MODAL & AUTOCOMPLETE ---
