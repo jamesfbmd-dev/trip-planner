@@ -25,14 +25,14 @@
                 <h2 id="tripTitle"></h2>
                 <div>
                     <button class="btn btn-secondary" id="backToDashboardBtn">Back to Dashboard</button>
-                    <button class="btn btn-success" id="generateMapBtn">Generate Map</button>
+                    <button class="btn btn-primary" id="generateMapBtn">Generate Map</button>
                 </div>
             </div>
             
             <div class="calendar-nav">
-                <button class="btn" id="prevMonthBtn">&lt;</button>
+                <button class="btn btn-secondary" id="prevMonthBtn">&lt;</button>
                 <span class="month-year-display" id="monthYearDisplay"></span>
-                <button class="btn" id="nextMonthBtn">&gt;</button>
+                <button class="btn btn-secondary" id="nextMonthBtn">&gt;</button>
             </div>
             <div class="calendar-weekdays" id="calendarWeekdays">
                 <span>Sun</span>
@@ -45,10 +45,27 @@
             </div>
             <div id="calendarGrid" class="calendar-grid"></div>
 
-            <div id="mapSection" class="map-section">
-                <h3>Trip Route Map</h3>
-                <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Full-screen Map Modal -->
+    <div id="mapModal" class="modal">
+        <div class="map-modal-content">
+            <span class="close-map-btn">&times;</span>
+            <div id="mapSidebar" class="map-sidebar">
+                <div class="sidebar-header">
+                    <h3 id="mapTripName"></h3>
+                </div>
+                <div class="sidebar-content">
+                    <h4>Trip Summary</h4>
+                    <ul id="mapLocationList"></ul>
+                </div>
+                <div class="sidebar-footer">
+                    <button id="closeMapSidebarBtn" class="btn btn-secondary">Close Map</button>
+                </div>
             </div>
+            <div id="sidebarCollapseBtn" class="sidebar-handle"></div>
+            <div id="fullScreenMap" class="map-container"></div>
         </div>
     </div>
 
@@ -99,9 +116,9 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-danger" id="clearDayBtn">Clear</button>
+                <button class="btn btn-secondary" id="cancelDayBtn">Cancel</button>
                 <div class="footer-actions">
-                    <button class="btn btn-secondary" id="cancelDayBtn">Cancel</button>
+                    <button class="btn btn-danger" id="clearDayBtn">Clear</button>
                     <button class="btn btn-primary" id="saveDayBtn">Save</button>
                 </div>
             </div>
