@@ -26,7 +26,7 @@
                 <h2 id="tripTitle"></h2>
                 <div>
                     <button class="btn btn-secondary" id="backToDashboardBtn">Back to Dashboard</button>
-                    <button class="btn btn-primary" id="generateMapBtn">Generate Map</button>
+                    <button class="btn btn-primary" id="generateMapBtn">Show Map</button>
                 </div>
             </div>
             
@@ -101,14 +101,14 @@
                 <div id="travelInputs" class="travel-inputs-group">
                     <div class="input-width-limiter">
                         <div class="modal-input-group">
-                            <label for="fromCityInput">From City:</label>
+                            <label for="fromCityInput">From:</label>
                             <input type="text" id="fromCityInput" placeholder="e.g., London" autocomplete="off">
                             <ul id="fromCityAutocompleteList" class="autocomplete-list"></ul>
                         </div>
                     </div>
                     <div class="input-width-limiter">
                         <div class="modal-input-group">
-                            <label for="toCityInput">To City:</label>
+                            <label for="toCityInput">To:</label>
                             <input type="text" id="toCityInput" placeholder="e.g., Paris" autocomplete="off">
                             <ul id="toCityAutocompleteList" class="autocomplete-list"></ul>
                         </div>
@@ -117,9 +117,9 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelDayBtn">Cancel</button>
+                <button class="btn btn-danger" id="clearDayBtn">Clear</button>
                 <div class="footer-actions">
-                    <button class="btn btn-danger" id="clearDayBtn">Clear</button>
+                    <button class="btn btn-secondary" id="cancelDayBtn">Cancel</button>
                     <button class="btn btn-primary" id="saveDayBtn">Save</button>
                 </div>
             </div>

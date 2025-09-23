@@ -190,15 +190,16 @@ h1, h2 {
     align-items: center;
     background: var(--background-color);
     border: 1px solid var(--border-color);
-    padding: 15px;
+    padding-right: 15px;
     margin-bottom: 10px;
     border-radius: 5px;
     cursor: pointer;
     transition: transform 0.2s;
+    overflow: hidden;
 }
 
-.trip-item:hover {
-    transform: translateX(5px);
+.trip-item img {
+    max-height: 150px;
 }
 
 .new-trip-form {
@@ -247,6 +248,7 @@ h1, h2 {
 }
 
 .calendar-grid {
+    height: 100%;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 10px;
@@ -376,7 +378,7 @@ h1, h2 {
     margin-top: auto;
     padding-top: 20px;
     border-top: 1px solid var(--border-color);
-    text-align: center;
+    text-align: right;
 }
 
 .sidebar-handle {
@@ -474,6 +476,14 @@ h1, h2 {
     width: 90%;
     max-width: 800px;
     position: relative;
+}
+
+.modal-content h3 {
+    font-weight: 300;
+}
+.modal-content h3 > .date {
+    font-weight: 800;
+    color: var(--primary-color);
 }
 
 .close-btn {

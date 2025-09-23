@@ -16,7 +16,58 @@ const EUROPEAN_CITIES = [
     { name: "Copenhagen", lat: 55.6761, lng: 12.5683 },
     { name: "Dublin", lat: 53.3498, lng: -6.2603 },
     { name: "Helsinki", lat: 60.1695, lng: 24.9354 },
-    { name: "Oslo", lat: 59.9139, lng: 10.7522 }
+    { name: "Oslo", lat: 59.9139, lng: 10.7522 },
+    { name: "Warsaw", lat: 52.2297, lng: 21.0122 },
+    { name: "Zurich", lat: 47.3769, lng: 8.5417 },
+    { name: "Munich", lat: 48.1351, lng: 11.5820 },
+    { name: "Barcelona", lat: 41.3851, lng: 2.1734 },
+    { name: "Milan", lat: 45.4642, lng: 9.1900 },
+    { name: "Venice", lat: 45.4408, lng: 12.3155 },
+    { name: "Florence", lat: 43.7699, lng: 11.2556 },
+    { name: "Naples", lat: 40.8518, lng: 14.2681 },
+    { name: "Seville", lat: 37.3891, lng: -5.9845 },
+    { name: "Valencia", lat: 39.4699, lng: -0.3763 },
+    { name: "Porto", lat: 41.1579, lng: -8.6291 },
+    { name: "Krakow", lat: 50.0647, lng: 19.9450 },
+    { name: "Gdansk", lat: 54.3520, lng: 18.6466 },
+    { name: "Tallinn", lat: 59.4370, lng: 24.7536 },
+    { name: "Riga", lat: 56.9496, lng: 24.1052 },
+    { name: "Vilnius", lat: 54.6872, lng: 25.2797 },
+    { name: "Ljubljana", lat: 46.0569, lng: 14.5058 },
+    { name: "Zagreb", lat: 45.8150, lng: 15.9785 },
+    { name: "Sarajevo", lat: 43.8563, lng: 18.4131 },
+    { name: "Belgrade", lat: 44.8176, lng: 20.4569 },
+    { name: "Sofia", lat: 42.6977, lng: 23.3219 },
+    { name: "Bucharest", lat: 44.4268, lng: 26.1025 },
+    { name: "Skopje", lat: 41.9981, lng: 21.4254 },
+    { name: "Tirana", lat: 41.3275, lng: 19.8189 },
+    { name: "Podgorica", lat: 42.4410, lng: 19.2627 },
+    { name: "Reykjavik", lat: 64.1355, lng: -21.8954 },
+    { name: "Luxembourg City", lat: 49.6117, lng: 6.1319 },
+    { name: "Monaco", lat: 43.7384, lng: 7.4246 },
+    { name: "San Marino", lat: 43.9336, lng: 12.4508 },
+    { name: "Andorra la Vella", lat: 42.5078, lng: 1.5211 },
+    { name: "Geneva", lat: 46.2044, lng: 6.1432 },
+    { name: "Basel", lat: 47.5596, lng: 7.5886 },
+    { name: "Hamburg", lat: 53.5511, lng: 9.9937 },
+    { name: "Frankfurt", lat: 50.1109, lng: 8.6821 },
+    { name: "Cologne", lat: 50.9375, lng: 6.9603 },
+    { name: "Dresden", lat: 51.0504, lng: 13.7373 },
+    { name: "Leipzig", lat: 51.3397, lng: 12.3731 },
+    { name: "Stuttgart", lat: 48.7758, lng: 9.1829 },
+    { name: "Nice", lat: 43.7102, lng: 7.2620 },
+    { name: "Marseille", lat: 43.2965, lng: 5.3698 },
+    { name: "Lyon", lat: 45.7640, lng: 4.8357 },
+    { name: "Bordeaux", lat: 44.8378, lng: -0.5792 },
+    { name: "Lille", lat: 50.6292, lng: 3.0573 },
+    { name: "Edinburgh", lat: 55.9533, lng: -3.1883 },
+    { name: "Glasgow", lat: 55.8642, lng: -4.2518 },
+    { name: "Manchester", lat: 53.4808, lng: -2.2426 },
+    { name: "Birmingham", lat: 52.4862, lng: -1.8904 },
+    { name: "Liverpool", lat: 53.4084, lng: -2.9916 },
+    { name: "Cardiff", lat: 51.4816, lng: -3.1791 },
+    { name: "Bristol", lat: 51.4545, lng: -2.5879 },
+    { name: "Leeds", lat: 53.8008, lng: -1.5491 }
 ];
 
 let currentTripId = null;
@@ -82,6 +133,7 @@ const renderDashboard = () => {
         const li = document.createElement('li');
         li.className = 'trip-item';
         li.innerHTML = `
+            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"></img>
             <span>${trip.name}</span>
             <button class="btn btn-secondary" onclick="openTrip('${id}')">Open</button>
         `;
@@ -289,7 +341,7 @@ const clearDayBtn = document.getElementById('clearDayBtn');
 const openDayModal = (dateString) => {
     selectedDate = dateString;
     let formattedDateString = formatDateAsText(dateString);
-    modalDayTitle.innerHTML = `Planning for<br/><span style="color:blue;">${formattedDateString}</span>`;
+    modalDayTitle.innerHTML = `Planning for<br/><span class="date">${formattedDateString}</span>`;
     dayModal.style.display = 'flex';
     
     const prevDay = new Date(selectedDate);
