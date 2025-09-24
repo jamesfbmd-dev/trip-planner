@@ -241,6 +241,35 @@ h1, h2 {
     gap: 10px;
 }
 
+/* --- Activities --- */
+.activities-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.activities-header {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: var(--primary-color);
+}
+
+.day-card-activities {
+    margin-top: 10px;
+    font-size: 0.9em;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.activity-item {
+    margin-bottom: 5px;
+}
+
+.activity-item strong {
+    color: var(--primary-color);
+}
+
 .new-trip-form {
     display: flex;
     gap: 10px;

@@ -305,9 +305,22 @@ const renderDayByDayView = () => {
             } else {
                 content = dayData.city.name;
             }
+            let activitiesHtml = '';
+            if (dayData.activities) {
+                const { morning, afternoon, evening } = dayData.activities;
+                if (morning || afternoon || evening) {
+                    activitiesHtml += '<div class="day-card-activities">';
+                    if (morning) activitiesHtml += `<div class="activity-item"><strong>Morning:</strong> ${morning}</div>`;
+                    if (afternoon) activitiesHtml += `<div class="activity-item"><strong>Afternoon:</strong> ${afternoon}</div>`;
+                    if (evening) activitiesHtml += `<div class="activity-item"><strong>Evening:</strong> ${evening}</div>`;
+                    activitiesHtml += '</div>';
+                }
+            }
+
             card.innerHTML = `
                 <div class="day-card-date">${formatDateAsText(dateString)}</div>
                 <div class="day-card-content">${content}</div>
+                ${activitiesHtml}
                 <div class="day-card-actions">
                     <button class="btn btn-sm btn-secondary edit-day-card-btn" data-date="${dateString}">Edit</button>
                 </div>
@@ -596,6 +609,9 @@ const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
+const morningActivityInput = document.getElementById('morningActivityInput');
+const afternoonActivityInput = document.getElementById('afternoonActivityInput');
+const eveningActivityInput = document.getElementById('eveningActivityInput');
 
 function openDayModal(dateString) {
     selectedDate = dateString;
@@ -618,6 +634,17 @@ function openDayModal(dateString) {
     toCityInput.value = '';
 
     const dayData = currentTrip.days[dateString];
+
+    if (dayData && dayData.activities) {
+        morningActivityInput.value = dayData.activities.morning || '';
+        afternoonActivityInput.value = dayData.activities.afternoon || '';
+        eveningActivityInput.value = dayData.activities.evening || '';
+    } else {
+        morningActivityInput.value = '';
+        afternoonActivityInput.value = '';
+        eveningActivityInput.value = '';
+    }
+
     if (dayData && dayData.type === 'travel') {
         travelBtn.classList.add('active');
         stayBtn.classList.remove('active');
@@ -755,6 +782,13 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             city: { name: city.name, lat: city.lat, lng: city.lng }
         };
     }
+
+    data.activities = {
+        morning: morningActivityInput.value.trim(),
+        afternoon: afternoonActivityInput.value.trim(),
+        evening: eveningActivityInput.value.trim()
+    };
+
     saveDayData(selectedDate, data);
     closeDayModal();
 });
