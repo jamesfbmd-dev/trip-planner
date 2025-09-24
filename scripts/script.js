@@ -74,6 +74,9 @@ let currentTripId = null;
 let currentTrip = null;
 let currentDate = new Date(); // State for the currently displayed month
 let selectedDate = null; // State for the selected day
+let currentView = 'calendar';
+let dayCardStartIndex = 0;
+let isDayCardListenerAttached = false;
 
 const getTrips = () => {
     const trips = localStorage.getItem('trips');
@@ -130,6 +133,14 @@ const newTripNameInput = document.getElementById('newTripName');
 const tripTitleEl = document.getElementById('tripTitle');
 const monthYearDisplay = document.getElementById('monthYearDisplay');
 const calendarGridEl = document.getElementById('calendarGrid');
+const calendarWeekdaysEl = document.getElementById('calendarWeekdays');
+const calendarNavEl = document.querySelector('.calendar-nav');
+const calendarViewBtn = document.getElementById('calendarViewBtn');
+const dayByDayViewBtn = document.getElementById('dayByDayViewBtn');
+const dayByDayView = document.getElementById('dayByDayView');
+const dayCardsContainer = document.getElementById('dayCardsContainer');
+const prevDayCardBtn = document.getElementById('prevDayCardBtn');
+const nextDayCardBtn = document.getElementById('nextDayCardBtn');
 
 const showPage = (pageId) => {
     dashboardEl.classList.remove('active');
@@ -196,8 +207,37 @@ const openTrip = (id) => {
     currentTrip = getTrips()[id];
     tripTitleEl.textContent = currentTrip.name;
     currentDate = new Date(); // Reset to current month on open
-    renderCalendar();
+
+    if (!isDayCardListenerAttached) {
+        dayCardsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('edit-day-card-btn')) {
+                const dateString = e.target.dataset.date;
+                if (dateString) {
+                    openDayModal(dateString);
+                }
+            }
+        });
+        isDayCardListenerAttached = true;
+    }
+
+    renderTripView();
     showPage('trip-calendar');
+};
+
+const renderTripView = () => {
+    if (currentView === 'calendar') {
+        calendarGridEl.style.display = 'grid';
+        calendarWeekdaysEl.style.display = 'grid';
+        calendarNavEl.style.display = 'flex';
+        dayByDayView.style.display = 'none';
+        renderCalendar();
+    } else {
+        calendarGridEl.style.display = 'none';
+        calendarWeekdaysEl.style.display = 'none';
+        calendarNavEl.style.display = 'none';
+        dayByDayView.style.display = 'flex';
+        renderDayByDayView();
+    }
 };
 
 const renderCalendar = () => {
@@ -233,9 +273,54 @@ const renderCalendar = () => {
                 ${dayData ? getDayContent(dayData) : ''}
             </div>
         `;
-        dayCell.addEventListener('click', () => openDayModal(dateString));
         calendarGridEl.appendChild(dayCell);
     }
+};
+
+const renderDayByDayView = () => {
+    dayCardsContainer.innerHTML = '';
+    const tripDays = Object.keys(currentTrip.days).sort();
+
+    if (tripDays.length === 0) {
+        dayCardsContainer.innerHTML = '<p>No days planned for this trip yet.</p>';
+        prevDayCardBtn.style.display = 'none';
+        nextDayCardBtn.style.display = 'none';
+        return;
+    } else {
+        prevDayCardBtn.style.display = 'block';
+        nextDayCardBtn.style.display = 'block';
+    }
+
+    for (let i = 0; i < 3; i++) {
+        const dayIndex = dayCardStartIndex + i;
+        const card = document.createElement('div');
+        card.className = 'day-card';
+
+        if (dayIndex < tripDays.length) {
+            const dateString = tripDays[dayIndex];
+            const dayData = currentTrip.days[dateString];
+            let content = '';
+            if (dayData.type === 'travel') {
+                content = `${dayData.from.name} → ${dayData.to.name}`;
+            } else {
+                content = dayData.city.name;
+            }
+            card.innerHTML = `
+                <div class="day-card-date">${formatDateAsText(dateString)}</div>
+                <div class="day-card-content">${content}</div>
+                <div class="day-card-actions">
+                    <button class="btn btn-sm btn-secondary edit-day-card-btn" data-date="${dateString}">Edit</button>
+                </div>
+            `;
+        } else {
+            card.innerHTML = ''; // Create an empty card
+        }
+        dayCardsContainer.appendChild(card);
+    }
+
+    // Handle navigation button states
+    prevDayCardBtn.disabled = dayCardStartIndex === 0;
+    nextDayCardBtn.disabled = dayCardStartIndex >= tripDays.length - 3;
 };
 
 const getDayContent = (dayData) => {
@@ -256,7 +341,7 @@ const saveDayData = (dateString, data) => {
     trips[currentTripId].days[dateString] = data;
     saveTrips(trips);
     currentTrip = trips[currentTripId]; // Update the currentTrip state
-    renderCalendar();
+    renderTripView();
 };
 
 const clearDayData = (dateString) => {
@@ -265,7 +350,7 @@ const clearDayData = (dateString) => {
         delete trips[currentTripId].days[dateString];
         saveTrips(trips);
         currentTrip = trips[currentTripId]; // Update the currentTrip state
-        renderCalendar();
+        renderTripView();
     }
 };
 
@@ -274,6 +359,7 @@ const mapModalEl = document.getElementById('mapModal');
 const mapSidebarEl = document.getElementById('mapSidebar');
 const mapTripNameEl = document.getElementById('mapTripName');
 const mapLocationListEl = document.getElementById('mapLocationList');
+const timelineListEl = document.getElementById('timelineList');
 const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
 const closeMapBtnEl = document.querySelector('.close-map-btn');
 const closeMapSidebarBtnEl = document.getElementById('closeMapSidebarBtn');
@@ -319,17 +405,24 @@ const generateMap = () => {
         return;
     }
 
-    const itinerary = dates.map(date => currentTrip.days[date]);
+    const itinerary = dates.map(date => ({ date, ...currentTrip.days[date] }));
     const locations = [];
+    const locationSet = new Set();
+
     itinerary.forEach(day => {
         if (day.type === 'travel') {
-            if (locations.length === 0 || locations[locations.length - 1].name !== day.from.name) {
+            if (!locationSet.has(day.from.name)) {
                 locations.push(day.from);
+                locationSet.add(day.from.name);
             }
-            locations.push(day.to);
+            if (!locationSet.has(day.to.name)) {
+                locations.push(day.to);
+                locationSet.add(day.to.name);
+            }
         } else {
-            if (locations.length === 0 || locations[locations.length - 1].name !== day.city.name) {
+            if (!locationSet.has(day.city.name)) {
                 locations.push(day.city);
+                locationSet.add(day.city.name);
             }
         }
     });
@@ -337,6 +430,26 @@ const generateMap = () => {
     // Populate sidebar
     mapLocationListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
     
+    timelineListEl.innerHTML = itinerary.map(day => {
+        const date = new Date(day.date);
+        const dateText = `${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}`;
+        let locationText = '';
+        let markerIndex = -1;
+
+        if (day.type === 'travel') {
+            locationText = `${day.from.name} → ${day.to.name}`;
+            markerIndex = locations.findIndex(l => l.name === day.to.name);
+        } else {
+            locationText = day.city.name;
+            markerIndex = locations.findIndex(l => l.name === day.city.name);
+        }
+
+        return `<li data-marker-index="${markerIndex}">
+                    <div class="timeline-date">${dateText}</div>
+                    <div class="timeline-location">${locationText}</div>
+                </li>`;
+    }).join('');
+
     // Show modal
     mapModalEl.style.display = 'flex';
 
@@ -373,6 +486,7 @@ const generateMap = () => {
             .bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
 
         marker.on('mouseover', () => {
+            if (marker._icon) marker._icon.classList.add('marker-hover');
             const markerIndex = markers.indexOf(marker);
 
             animatedPolylines.forEach(p => p.remove());
@@ -404,6 +518,7 @@ const generateMap = () => {
         });
 
         marker.on('mouseout', () => {
+            if (marker._icon) marker._icon.classList.remove('marker-hover');
             animatedPolylines.forEach(p => p.remove());
             animatedPolylines = [];
         });
@@ -418,7 +533,7 @@ const generateMap = () => {
                 { lat: loc.lat, lng: loc.lng }
             );
 
-            const polyline = L.polyline(curvedPoints, { color: 'blue', weight: 3 }).addTo(map);
+            const polyline = L.polyline(curvedPoints, { color: '#fe7700', weight: 3 }).addTo(map);
             polylines.push(polyline);
         }
     });
@@ -431,6 +546,22 @@ const generateMap = () => {
     setTimeout(() => {
         map.invalidateSize();
     }, 100);
+
+    // Add event listeners for timeline hover
+    document.querySelectorAll('#timelineList li').forEach(item => {
+        item.addEventListener('mouseover', () => {
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                markers[markerIndex].fire('mouseover');
+            }
+        });
+        item.addEventListener('mouseout', () => {
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                markers[markerIndex].fire('mouseout');
+            }
+        });
+    });
 };
 
 const closeMapModal = () => {
@@ -466,7 +597,7 @@ const travelInputsGroup = document.getElementById('travelInputs');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 
-const openDayModal = (dateString) => {
+function openDayModal(dateString) {
     selectedDate = dateString;
     let formattedDateString = formatDateAsText(dateString);
     modalDayTitle.innerHTML = `Planning for<br/><span class="date">${formattedDateString}</span>`;
@@ -505,9 +636,9 @@ const openDayModal = (dateString) => {
     }
 };
 
-const closeDayModal = () => {
+function closeDayModal() {
     dayModal.style.display = 'none';
-};
+}
 
 const handleAutocomplete = (inputEl, listEl) => {
     const query = inputEl.value.toLowerCase();
@@ -569,18 +700,32 @@ const setupAutocompleteNavigation = (inputEl, listEl) => {
 };
 
 // --- EVENT LISTENERS ---
+tripCalendarEl.addEventListener('click', (e) => {
+    const dayCell = e.target.closest('.day-cell:not(.inactive)');
+    if (dayCell) {
+        openDayModal(dayCell.dataset.date);
+        return;
+    }
+
+    const editBtn = e.target.closest('.edit-day-card-btn');
+    if (editBtn) {
+        openDayModal(editBtn.dataset.date);
+        return;
+    }
+});
+
 document.getElementById('createTripBtn').addEventListener('click', createNewTrip);
 document.getElementById('backToDashboardBtn').addEventListener('click', renderDashboard);
 document.getElementById('generateMapBtn').addEventListener('click', generateMap);
 
 document.getElementById('prevMonthBtn').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar();
+    renderTripView();
 });
 
 document.getElementById('nextMonthBtn').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar();
+    renderTripView();
 });
 
 document.getElementById('saveDayBtn').addEventListener('click', () => {
@@ -650,6 +795,52 @@ toCityInput.addEventListener('input', () => handleAutocomplete(toCityInput, toCi
 setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
+
+// --- Sidebar Expand/Collapse ---
+document.querySelectorAll('.expandable-header').forEach(header => {
+    header.addEventListener('click', () => {
+        const content = header.nextElementSibling;
+        const arrow = header.querySelector('.arrow');
+
+        const isVisible = content.style.display === 'block';
+        content.style.display = isVisible ? 'none' : 'block';
+        arrow.classList.toggle('expanded', !isVisible);
+    });
+});
+
+// --- View Toggles & Day Card Navigation ---
+calendarViewBtn.addEventListener('click', () => {
+    if (currentView === 'calendar') return;
+    currentView = 'calendar';
+    calendarViewBtn.classList.add('active');
+    dayByDayViewBtn.classList.remove('active');
+    renderTripView();
+});
+
+dayByDayViewBtn.addEventListener('click', () => {
+    if (currentView === 'day-by-day') return;
+    currentView = 'day-by-day';
+    dayCardStartIndex = 0; // Reset to the start
+    dayByDayViewBtn.classList.add('active');
+    calendarViewBtn.classList.remove('active');
+    renderTripView();
+});
+
+prevDayCardBtn.addEventListener('click', () => {
+    if (dayCardStartIndex > 0) {
+        dayCardStartIndex--;
+        renderDayByDayView();
+    }
+});
+
+nextDayCardBtn.addEventListener('click', () => {
+    const tripDays = Object.keys(currentTrip.days);
+    if (dayCardStartIndex < tripDays.length - 3) {
+        dayCardStartIndex++;
+        renderDayByDayView();
+    }
+});
+
 
 // Initial render
 renderDashboard();
