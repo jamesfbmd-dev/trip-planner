@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trip Planner</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -139,18 +140,43 @@
             </div>
 
             <div class="activities-container">
-                <h4 class="activities-header">Activities</h4>
-                <div class="modal-input-group">
-                    <label for="morningActivityInput">Morning:</label>
-                    <input type="text" id="morningActivityInput" placeholder="e.g., Museum visit">
+                <div class="activity-group">
+                    <div class="activity-header">
+                        <h4>Morning</h4>
+                        <button class="btn btn-sm btn-icon add-activity-btn" data-period="morning"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="add-activity-form" id="add-morning-form" style="display: none;">
+                        <input type="text" placeholder="New activity..." id="morning-activity-input">
+                        <button class="btn btn-sm btn-icon confirm-add-btn" data-period="morning"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-icon cancel-add-btn" data-period="morning"><i class="fas fa-times"></i></button>
+                    </div>
+                    <ul id="morning-activity-list" class="activity-list"></ul>
                 </div>
-                <div class="modal-input-group">
-                    <label for="afternoonActivityInput">Afternoon:</label>
-                    <input type="text" id="afternoonActivityInput" placeholder="e.g., Lunch and shopping">
+
+                <div class="activity-group">
+                    <div class="activity-header">
+                        <h4>Afternoon</h4>
+                        <button class="btn btn-sm btn-icon add-activity-btn" data-period="afternoon"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="add-activity-form" id="add-afternoon-form" style="display: none;">
+                        <input type="text" placeholder="New activity..." id="afternoon-activity-input">
+                        <button class="btn btn-sm btn-icon confirm-add-btn" data-period="afternoon"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-icon cancel-add-btn" data-period="afternoon"><i class="fas fa-times"></i></button>
+                    </div>
+                    <ul id="afternoon-activity-list" class="activity-list"></ul>
                 </div>
-                <div class="modal-input-group">
-                    <label for="eveningActivityInput">Evening:</label>
-                    <input type="text" id="eveningActivityInput" placeholder="e.g., Dinner and a show">
+
+                <div class="activity-group">
+                    <div class="activity-header">
+                        <h4>Evening</h4>
+                        <button class="btn btn-sm btn-icon add-activity-btn" data-period="evening"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div class="add-activity-form" id="add-evening-form" style="display: none;">
+                        <input type="text" placeholder="New activity..." id="evening-activity-input">
+                        <button class="btn btn-sm btn-icon confirm-add-btn" data-period="evening"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-sm btn-icon cancel-add-btn" data-period="evening"><i class="fas fa-times"></i></button>
+                    </div>
+                    <ul id="evening-activity-list" class="activity-list"></ul>
                 </div>
             </div>
 

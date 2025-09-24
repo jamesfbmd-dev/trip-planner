@@ -241,33 +241,83 @@ h1, h2 {
     gap: 10px;
 }
 
-/* --- Activities --- */
+/* --- New Activities UI --- */
 .activities-container {
     margin-top: 20px;
     padding-top: 20px;
     border-top: 1px solid var(--border-color);
 }
 
-.activities-header {
-    margin-top: 0;
+.activity-group {
     margin-bottom: 15px;
-    font-size: 1.2em;
+}
+
+.activity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.activity-header h4 {
+    margin: 0;
     color: var(--primary-color);
+}
+
+.add-activity-form {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.add-activity-form input {
+    flex-grow: 1;
+}
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.activity-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background-color: var(--background-color);
+    border-radius: 4px;
+    margin-bottom: 5px;
+}
+
+.btn-icon {
+    padding: 5px 10px;
+}
+
+.delete-activity-btn i {
+    color: var(--btn-danger-bg);
+}
+.delete-activity-btn:hover i {
+    color: var(--btn-danger-hover-bg);
 }
 
 .day-card-activities {
     margin-top: 10px;
-    font-size: 0.9em;
     padding-top: 10px;
     border-top: 1px solid var(--border-color);
 }
 
-.activity-item {
-    margin-bottom: 5px;
+.day-card-activities h6 {
+    margin: 0 0 5px 0;
+    color: var(--primary-color);
+    font-size: 0.95em;
 }
 
-.activity-item strong {
-    color: var(--primary-color);
+.day-card-activities ul {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 0;
+    font-size: 0.9em;
 }
 
 .new-trip-form {

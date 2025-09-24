@@ -77,6 +77,11 @@ let selectedDate = null; // State for the selected day
 let currentView = 'calendar';
 let dayCardStartIndex = 0;
 let isDayCardListenerAttached = false;
+let modalActivities = {
+    morning: [],
+    afternoon: [],
+    evening: []
+};
 
 const getTrips = () => {
     const trips = localStorage.getItem('trips');
@@ -306,15 +311,24 @@ const renderDayByDayView = () => {
                 content = dayData.city.name;
             }
             let activitiesHtml = '';
-            if (dayData.activities) {
-                const { morning, afternoon, evening } = dayData.activities;
-                if (morning || afternoon || evening) {
-                    activitiesHtml += '<div class="day-card-activities">';
-                    if (morning) activitiesHtml += `<div class="activity-item"><strong>Morning:</strong> ${morning}</div>`;
-                    if (afternoon) activitiesHtml += `<div class="activity-item"><strong>Afternoon:</strong> ${afternoon}</div>`;
-                    if (evening) activitiesHtml += `<div class="activity-item"><strong>Evening:</strong> ${evening}</div>`;
-                    activitiesHtml += '</div>';
+            if (dayData.activities && (dayData.activities.morning.length > 0 || dayData.activities.afternoon.length > 0 || dayData.activities.evening.length > 0)) {
+                activitiesHtml += '<div class="day-card-activities">';
+                if (dayData.activities.morning.length > 0) {
+                    activitiesHtml += '<h6>Morning</h6><ul>';
+                    dayData.activities.morning.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+                    activitiesHtml += '</ul>';
                 }
+                if (dayData.activities.afternoon.length > 0) {
+                    activitiesHtml += '<h6>Afternoon</h6><ul>';
+                    dayData.activities.afternoon.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+                    activitiesHtml += '</ul>';
+                }
+                if (dayData.activities.evening.length > 0) {
+                    activitiesHtml += '<h6>Evening</h6><ul>';
+                    dayData.activities.evening.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+                    activitiesHtml += '</ul>';
+                }
+                activitiesHtml += '</div>';
             }
 
             card.innerHTML = `
@@ -609,9 +623,6 @@ const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
-const morningActivityInput = document.getElementById('morningActivityInput');
-const afternoonActivityInput = document.getElementById('afternoonActivityInput');
-const eveningActivityInput = document.getElementById('eveningActivityInput');
 
 function openDayModal(dateString) {
     selectedDate = dateString;
@@ -636,14 +647,16 @@ function openDayModal(dateString) {
     const dayData = currentTrip.days[dateString];
 
     if (dayData && dayData.activities) {
-        morningActivityInput.value = dayData.activities.morning || '';
-        afternoonActivityInput.value = dayData.activities.afternoon || '';
-        eveningActivityInput.value = dayData.activities.evening || '';
+        modalActivities = {
+            morning: [...dayData.activities.morning],
+            afternoon: [...dayData.activities.afternoon],
+            evening: [...dayData.activities.evening]
+        };
     } else {
-        morningActivityInput.value = '';
-        afternoonActivityInput.value = '';
-        eveningActivityInput.value = '';
+        modalActivities = { morning: [], afternoon: [], evening: [] };
     }
+    renderActivityLists();
+    ['morning', 'afternoon', 'evening'].forEach(hideActivityForm);
 
     if (dayData && dayData.type === 'travel') {
         travelBtn.classList.add('active');
@@ -784,9 +797,9 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
     }
 
     data.activities = {
-        morning: morningActivityInput.value.trim(),
-        afternoon: afternoonActivityInput.value.trim(),
-        evening: eveningActivityInput.value.trim()
+        morning: [...modalActivities.morning],
+        afternoon: [...modalActivities.afternoon],
+        evening: [...modalActivities.evening]
     };
 
     saveDayData(selectedDate, data);
@@ -875,6 +888,71 @@ nextDayCardBtn.addEventListener('click', () => {
     }
 });
 
+
+// --- ACTIVITY MODAL LOGIC ---
+const activitiesContainer = document.querySelector('.activities-container');
+
+const renderActivityLists = () => {
+    ['morning', 'afternoon', 'evening'].forEach(period => {
+        const listEl = document.getElementById(`${period}-activity-list`);
+        listEl.innerHTML = '';
+        modalActivities[period].forEach((activity, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${activity}</span>
+                <button class="btn btn-sm btn-icon delete-activity-btn" data-period="${period}" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
+            `;
+            listEl.appendChild(li);
+        });
+    });
+};
+
+const showActivityForm = (period) => {
+    document.getElementById(`add-${period}-form`).style.display = 'flex';
+    document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'none';
+};
+
+const hideActivityForm = (period) => {
+    document.getElementById(`add-${period}-form`).style.display = 'none';
+    document.getElementById(`${period}-activity-input`).value = '';
+    document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
+};
+
+activitiesContainer.addEventListener('click', (e) => {
+    const addBtn = e.target.closest('.add-activity-btn');
+    const confirmBtn = e.target.closest('.confirm-add-btn');
+    const cancelBtn = e.target.closest('.cancel-add-btn');
+    const deleteBtn = e.target.closest('.delete-activity-btn');
+
+    if (addBtn) {
+        showActivityForm(addBtn.dataset.period);
+        return;
+    }
+
+    if (confirmBtn) {
+        const period = confirmBtn.dataset.period;
+        const inputEl = document.getElementById(`${period}-activity-input`);
+        const activityText = inputEl.value.trim();
+        if (activityText) {
+            modalActivities[period].push(activityText);
+            renderActivityLists();
+        }
+        hideActivityForm(period);
+        return;
+    }
+
+    if (cancelBtn) {
+        hideActivityForm(cancelBtn.dataset.period);
+        return;
+    }
+
+    if (deleteBtn) {
+        const { period, index } = deleteBtn.dataset;
+        modalActivities[period].splice(index, 1);
+        renderActivityLists();
+        return;
+    }
+});
 
 // Initial render
 renderDashboard();
