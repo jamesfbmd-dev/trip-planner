@@ -163,7 +163,7 @@ const renderDashboard = () => {
         const li = document.createElement('li');
         li.className = 'trip-item';
         li.innerHTML = `
-            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D3D%3D"></img>
+            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D3D%3D" alt="Trip image">
             <div class="trip-info">
                 <span class="trip-name">${trip.name}</span>
             </div>
@@ -632,18 +632,6 @@ const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
 
-dayModal.addEventListener('click', (e) => {
-    const header = e.target.closest('.modal-expandable .expandable-header');
-    if (header) {
-        const content = header.nextElementSibling;
-        const arrow = header.querySelector('.arrow');
-        const isVisible = content.style.display === 'block';
-
-        content.style.display = isVisible ? 'none' : 'block';
-        if(arrow) arrow.classList.toggle('expanded', !isVisible);
-    }
-});
-
 function openDayModal(dateString) {
     selectedDate = dateString;
     let formattedDateString = formatDateAsText(dateString);
@@ -874,11 +862,15 @@ setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 document.querySelectorAll('.expandable-header').forEach(header => {
     header.addEventListener('click', () => {
         const content = header.nextElementSibling;
-        const arrow = header.querySelector('.arrow');
+        if (content) {
+            const isVisible = content.style.display === 'block';
+            content.style.display = isVisible ? 'none' : 'block';
 
-        const isVisible = content.style.display === 'block';
-        content.style.display = isVisible ? 'none' : 'block';
-        arrow.classList.toggle('expanded', !isVisible);
+            const arrow = header.querySelector('.arrow');
+            if (arrow) {
+                arrow.classList.toggle('expanded', !isVisible);
+            }
+        }
     });
 });
 
