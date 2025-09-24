@@ -262,6 +262,33 @@ h1, h2 {
     margin-bottom: 20px;
 }
 
+.calendar-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.view-toggle {
+    display: flex;
+    border: 1px solid var(--primary-color);
+    border-radius: var(--btn-border-radius);
+    overflow: hidden;
+}
+
+.view-toggle .btn {
+    border: none;
+    border-radius: 0;
+}
+
+.view-toggle .btn.active {
+    background-color: var(--primary-color);
+    color: var(--text-on-primary);
+}
+
+.view-toggle .btn:not(.active):hover {
+    background-color: var(--btn-secondary-hover-bg);
+}
+
 .calendar-nav {
     display: flex;
     justify-content: space-between;
@@ -346,6 +373,63 @@ h1, h2 {
 .day-content.faded-blue {
     background-color: var(--primary-faded);
     color: white;
+}
+
+/* --- Day-by-Day View --- */
+.day-by-day-view {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+
+.day-cards-container {
+    display: flex;
+    gap: 20px;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+.day-card {
+    flex: 1;
+    max-width: 300px;
+    min-height: 200px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--btn-border-radius);
+    padding: 15px;
+    background-color: var(--background-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.day-card-date {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.day-card-content {
+    font-size: 1em;
+}
+
+.day-card-nav-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.day-card-nav-btn:hover {
+    background-color: var(--background-color);
+    border-color: var(--primary-color);
+}
+
+.day-card-nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 

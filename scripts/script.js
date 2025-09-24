@@ -74,6 +74,8 @@ let currentTripId = null;
 let currentTrip = null;
 let currentDate = new Date(); // State for the currently displayed month
 let selectedDate = null; // State for the selected day
+let currentView = 'calendar';
+let dayCardStartIndex = 0;
 
 const getTrips = () => {
     const trips = localStorage.getItem('trips');
@@ -130,6 +132,13 @@ const newTripNameInput = document.getElementById('newTripName');
 const tripTitleEl = document.getElementById('tripTitle');
 const monthYearDisplay = document.getElementById('monthYearDisplay');
 const calendarGridEl = document.getElementById('calendarGrid');
+const calendarNavEl = document.querySelector('.calendar-nav');
+const calendarViewBtn = document.getElementById('calendarViewBtn');
+const dayByDayViewBtn = document.getElementById('dayByDayViewBtn');
+const dayByDayView = document.getElementById('dayByDayView');
+const dayCardsContainer = document.getElementById('dayCardsContainer');
+const prevDayCardBtn = document.getElementById('prevDayCardBtn');
+const nextDayCardBtn = document.getElementById('nextDayCardBtn');
 
 const showPage = (pageId) => {
     dashboardEl.classList.remove('active');
@@ -196,8 +205,22 @@ const openTrip = (id) => {
     currentTrip = getTrips()[id];
     tripTitleEl.textContent = currentTrip.name;
     currentDate = new Date(); // Reset to current month on open
-    renderCalendar();
+    renderTripView();
     showPage('trip-calendar');
+};
+
+const renderTripView = () => {
+    if (currentView === 'calendar') {
+        calendarGridEl.style.display = 'grid';
+        calendarNavEl.style.display = 'flex';
+        dayByDayView.style.display = 'none';
+        renderCalendar();
+    } else {
+        calendarGridEl.style.display = 'none';
+        calendarNavEl.style.display = 'none';
+        dayByDayView.style.display = 'flex';
+        renderDayByDayView();
+    }
 };
 
 const renderCalendar = () => {
@@ -238,6 +261,54 @@ const renderCalendar = () => {
     }
 };
 
+const renderDayByDayView = () => {
+    dayCardsContainer.innerHTML = '';
+    const tripDays = Object.keys(currentTrip.days).sort();
+
+    if (tripDays.length === 0) {
+        dayCardsContainer.innerHTML = '<p>No days planned for this trip yet.</p>';
+        prevDayCardBtn.style.display = 'none';
+        nextDayCardBtn.style.display = 'none';
+        return;
+    } else {
+        prevDayCardBtn.style.display = 'block';
+        nextDayCardBtn.style.display = 'block';
+    }
+
+    const daysToShow = tripDays.slice(dayCardStartIndex, dayCardStartIndex + 3);
+
+    // Fill remaining space with empty cards if needed
+    while (daysToShow.length < 3) {
+        daysToShow.push(null);
+    }
+
+    daysToShow.forEach(dateString => {
+        const card = document.createElement('div');
+        card.className = 'day-card';
+
+        if (dateString) {
+            const dayData = currentTrip.days[dateString];
+            let content = '';
+            if (dayData.type === 'travel') {
+                content = `<div class="day-card-content">${dayData.from.name} → ${dayData.to.name}</div>`;
+            } else {
+                content = `<div class="day-card-content">${dayData.city.name}</div>`;
+            }
+            card.innerHTML = `
+                <div class="day-card-date">${formatDateAsText(dateString)}</div>
+                ${content}
+            `;
+        } else {
+            card.innerHTML = ''; // Empty card
+        }
+        dayCardsContainer.appendChild(card);
+    });
+
+    // Handle navigation button states
+    prevDayCardBtn.disabled = dayCardStartIndex === 0;
+    nextDayCardBtn.disabled = dayCardStartIndex >= tripDays.length - 3;
+};
+
 const getDayContent = (dayData) => {
     if (dayData.type === 'travel') {
         return `
@@ -256,7 +327,7 @@ const saveDayData = (dateString, data) => {
     trips[currentTripId].days[dateString] = data;
     saveTrips(trips);
     currentTrip = trips[currentTripId]; // Update the currentTrip state
-    renderCalendar();
+    renderTripView();
 };
 
 const clearDayData = (dateString) => {
@@ -265,7 +336,7 @@ const clearDayData = (dateString) => {
         delete trips[currentTripId].days[dateString];
         saveTrips(trips);
         currentTrip = trips[currentTripId]; // Update the currentTrip state
-        renderCalendar();
+        renderTripView();
     }
 };
 
@@ -621,12 +692,12 @@ document.getElementById('generateMapBtn').addEventListener('click', generateMap)
 
 document.getElementById('prevMonthBtn').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() - 1);
-    renderCalendar();
+    renderTripView();
 });
 
 document.getElementById('nextMonthBtn').addEventListener('click', () => {
     currentDate.setMonth(currentDate.getMonth() + 1);
-    renderCalendar();
+    renderTripView();
 });
 
 document.getElementById('saveDayBtn').addEventListener('click', () => {
@@ -708,6 +779,40 @@ document.querySelectorAll('.expandable-header').forEach(header => {
         arrow.classList.toggle('expanded', !isVisible);
     });
 });
+
+// --- View Toggles & Day Card Navigation ---
+calendarViewBtn.addEventListener('click', () => {
+    if (currentView === 'calendar') return;
+    currentView = 'calendar';
+    calendarViewBtn.classList.add('active');
+    dayByDayViewBtn.classList.remove('active');
+    renderTripView();
+});
+
+dayByDayViewBtn.addEventListener('click', () => {
+    if (currentView === 'day-by-day') return;
+    currentView = 'day-by-day';
+    dayCardStartIndex = 0; // Reset to the start
+    dayByDayViewBtn.classList.add('active');
+    calendarViewBtn.classList.remove('active');
+    renderTripView();
+});
+
+prevDayCardBtn.addEventListener('click', () => {
+    if (dayCardStartIndex > 0) {
+        dayCardStartIndex--;
+        renderDayByDayView();
+    }
+});
+
+nextDayCardBtn.addEventListener('click', () => {
+    const tripDays = Object.keys(currentTrip.days);
+    if (dayCardStartIndex < tripDays.length - 3) {
+        dayCardStartIndex++;
+        renderDayByDayView();
+    }
+});
+
 
 // Initial render
 renderDashboard();
