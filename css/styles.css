@@ -503,7 +503,6 @@ h1, h2 {
 
 .day-card-content {
     font-size: 1em;
-    flex-grow: 1; /* Allows the button to be at the bottom */
 }
 
 .day-card-actions {
@@ -515,6 +514,7 @@ h1, h2 {
     margin-top: 15px;
     padding-top: 15px;
     border-top: 1px solid var(--border-color);
+    flex-grow: 1;
 }
 
 .day-card-activities h6 {
@@ -748,7 +748,6 @@ h1, h2 {
     /* The SVG now controls the appearance. We just remove any conflicting styles. */
     background-color: transparent;
     border: none;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     transition: transform 0.2s ease;
     cursor: pointer;
 }

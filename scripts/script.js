@@ -338,8 +338,10 @@ const renderDayByDayView = () => {
             card.innerHTML = `
                 <div class="day-card-image-container">${imageHtml}</div>
                 <div class="day-card-body">
-                    <div class="day-card-date">${formatDateAsText(dateString)}</div>
-                    <div class="day-card-content">${content}</div>
+                    <div>
+                        <div class="day-card-date">${formatDateAsText(dateString)}</div>
+                        <div class="day-card-content">${content}</div>
+                    </div>
                     ${activitiesHtml}
                     <div class="day-card-actions">
                         <button class="btn btn-sm btn-secondary edit-day-card-btn" data-date="${dateString}">Edit</button>
