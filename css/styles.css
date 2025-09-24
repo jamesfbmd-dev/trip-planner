@@ -468,7 +468,7 @@ h1, h2 {
 }
 
 .day-card-image-container {
-    height: 150px;
+    height: 200px;
     flex-shrink: 0;
     width: 100%;
     background-color: #f0f0f0;
