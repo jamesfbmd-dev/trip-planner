@@ -483,6 +483,30 @@ h1, h2 {
     text-align: right;
 }
 
+.day-card-activities {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.day-card-activities h6 {
+    margin: 0 0 8px 0;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.day-card-activities ul {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 0 0 15px 0;
+    font-size: 0.9em;
+}
+
+.day-card-activities ul:last-child {
+    margin-bottom: 0;
+}
+
 .day-card-nav-btn {
     background: transparent;
     border: 1px solid var(--border-color);
