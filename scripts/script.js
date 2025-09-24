@@ -306,7 +306,7 @@ const renderDayByDayView = () => {
             const dayData = currentTrip.days[dateString];
             let content = '';
             if (dayData.type === 'travel') {
-                content = `${dayData.from.name} → ${dayData.to.name}`;
+                content = `${dayData.travelMode || 'Travel'}: ${dayData.from.name} → ${dayData.to.name}`;
             } else {
                 content = dayData.city.name;
             }
@@ -630,6 +630,7 @@ const stayBtn = document.getElementById('stayBtn');
 const travelBtn = document.getElementById('travelBtn');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
+const travelModeInput = document.getElementById('travelModeInput');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
@@ -680,6 +681,7 @@ function openDayModal(dateString) {
         modalContent.classList.add('travel-mode');
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
+        travelModeInput.value = dayData.travelMode || 'Car';
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
         stayBtn.classList.add('active');
@@ -798,7 +800,8 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
         data = {
             type: 'travel',
             from: { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng },
-            to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng }
+            to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
+            travelMode: travelModeInput.value
         };
     } else {
         const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
