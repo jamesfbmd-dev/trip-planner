@@ -76,6 +76,7 @@ let currentDate = new Date(); // State for the currently displayed month
 let selectedDate = null; // State for the selected day
 let currentView = 'calendar';
 let dayCardStartIndex = 0;
+let isDayCardListenerAttached = false;
 
 const getTrips = () => {
     const trips = localStorage.getItem('trips');
@@ -132,6 +133,7 @@ const newTripNameInput = document.getElementById('newTripName');
 const tripTitleEl = document.getElementById('tripTitle');
 const monthYearDisplay = document.getElementById('monthYearDisplay');
 const calendarGridEl = document.getElementById('calendarGrid');
+const calendarWeekdaysEl = document.getElementById('calendarWeekdays');
 const calendarNavEl = document.querySelector('.calendar-nav');
 const calendarViewBtn = document.getElementById('calendarViewBtn');
 const dayByDayViewBtn = document.getElementById('dayByDayViewBtn');
@@ -205,6 +207,19 @@ const openTrip = (id) => {
     currentTrip = getTrips()[id];
     tripTitleEl.textContent = currentTrip.name;
     currentDate = new Date(); // Reset to current month on open
+
+    if (!isDayCardListenerAttached) {
+        dayCardsContainer.addEventListener('click', (e) => {
+            if (e.target.classList.contains('edit-day-card-btn')) {
+                const dateString = e.target.dataset.date;
+                if (dateString) {
+                    openDayModal(dateString);
+                }
+            }
+        });
+        isDayCardListenerAttached = true;
+    }
+
     renderTripView();
     showPage('trip-calendar');
 };
@@ -212,11 +227,13 @@ const openTrip = (id) => {
 const renderTripView = () => {
     if (currentView === 'calendar') {
         calendarGridEl.style.display = 'grid';
+        calendarWeekdaysEl.style.display = 'grid';
         calendarNavEl.style.display = 'flex';
         dayByDayView.style.display = 'none';
         renderCalendar();
     } else {
         calendarGridEl.style.display = 'none';
+        calendarWeekdaysEl.style.display = 'none';
         calendarNavEl.style.display = 'none';
         dayByDayView.style.display = 'flex';
         renderDayByDayView();
@@ -256,7 +273,6 @@ const renderCalendar = () => {
                 ${dayData ? getDayContent(dayData) : ''}
             </div>
         `;
-        dayCell.addEventListener('click', () => openDayModal(dateString));
         calendarGridEl.appendChild(dayCell);
     }
 };
@@ -275,34 +291,32 @@ const renderDayByDayView = () => {
         nextDayCardBtn.style.display = 'block';
     }
 
-    const daysToShow = tripDays.slice(dayCardStartIndex, dayCardStartIndex + 3);
-
-    // Fill remaining space with empty cards if needed
-    while (daysToShow.length < 3) {
-        daysToShow.push(null);
-    }
-
-    daysToShow.forEach(dateString => {
+    for (let i = 0; i < 3; i++) {
+        const dayIndex = dayCardStartIndex + i;
         const card = document.createElement('div');
         card.className = 'day-card';
 
-        if (dateString) {
+        if (dayIndex < tripDays.length) {
+            const dateString = tripDays[dayIndex];
             const dayData = currentTrip.days[dateString];
             let content = '';
             if (dayData.type === 'travel') {
-                content = `<div class="day-card-content">${dayData.from.name} → ${dayData.to.name}</div>`;
+                content = `${dayData.from.name} → ${dayData.to.name}`;
             } else {
-                content = `<div class="day-card-content">${dayData.city.name}</div>`;
+                content = dayData.city.name;
             }
             card.innerHTML = `
                 <div class="day-card-date">${formatDateAsText(dateString)}</div>
-                ${content}
+                <div class="day-card-content">${content}</div>
+                <div class="day-card-actions">
+                    <button class="btn btn-sm btn-secondary edit-day-card-btn" data-date="${dateString}">Edit</button>
+                </div>
             `;
         } else {
-            card.innerHTML = ''; // Empty card
+            card.innerHTML = ''; // Create an empty card
         }
         dayCardsContainer.appendChild(card);
-    });
+    }
 
     // Handle navigation button states
     prevDayCardBtn.disabled = dayCardStartIndex === 0;
@@ -583,7 +597,7 @@ const travelInputsGroup = document.getElementById('travelInputs');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 
-const openDayModal = (dateString) => {
+function openDayModal(dateString) {
     selectedDate = dateString;
     let formattedDateString = formatDateAsText(dateString);
     modalDayTitle.innerHTML = `Planning for<br/><span class="date">${formattedDateString}</span>`;
@@ -622,9 +636,9 @@ const openDayModal = (dateString) => {
     }
 };
 
-const closeDayModal = () => {
+function closeDayModal() {
     dayModal.style.display = 'none';
-};
+}
 
 const handleAutocomplete = (inputEl, listEl) => {
     const query = inputEl.value.toLowerCase();
@@ -686,6 +700,20 @@ const setupAutocompleteNavigation = (inputEl, listEl) => {
 };
 
 // --- EVENT LISTENERS ---
+tripCalendarEl.addEventListener('click', (e) => {
+    const dayCell = e.target.closest('.day-cell:not(.inactive)');
+    if (dayCell) {
+        openDayModal(dayCell.dataset.date);
+        return;
+    }
+
+    const editBtn = e.target.closest('.edit-day-card-btn');
+    if (editBtn) {
+        openDayModal(editBtn.dataset.date);
+        return;
+    }
+});
+
 document.getElementById('createTripBtn').addEventListener('click', createNewTrip);
 document.getElementById('backToDashboardBtn').addEventListener('click', renderDashboard);
 document.getElementById('generateMapBtn').addEventListener('click', generateMap);

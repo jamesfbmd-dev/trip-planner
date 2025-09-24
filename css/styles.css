@@ -384,21 +384,22 @@ h1, h2 {
 }
 
 .day-cards-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     flex-grow: 1;
-    justify-content: center;
+    padding: 0 20px;
 }
 
 .day-card {
-    flex: 1;
-    max-width: 300px;
     min-height: 200px;
     border: 1px solid var(--border-color);
     border-radius: var(--btn-border-radius);
     padding: 15px;
     background-color: var(--background-color);
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
 }
 
 .day-card-date {
@@ -409,6 +410,12 @@ h1, h2 {
 
 .day-card-content {
     font-size: 1em;
+    flex-grow: 1; /* Allows the button to be at the bottom */
+}
+
+.day-card-actions {
+    margin-top: auto; /* Pushes this to the bottom of the card */
+    text-align: right;
 }
 
 .day-card-nav-btn {
