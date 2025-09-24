@@ -331,12 +331,19 @@ const renderDayByDayView = () => {
                 activitiesHtml += '</div>';
             }
 
+            const imageHtml = dayData.imageUrl
+                ? `<img src="${dayData.imageUrl}" alt="Trip image" class="day-card-image">`
+                : '<div class="day-card-image-placeholder"></div>';
+
             card.innerHTML = `
-                <div class="day-card-date">${formatDateAsText(dateString)}</div>
-                <div class="day-card-content">${content}</div>
-                ${activitiesHtml}
-                <div class="day-card-actions">
-                    <button class="btn btn-sm btn-secondary edit-day-card-btn" data-date="${dateString}">Edit</button>
+                <div class="day-card-image-container">${imageHtml}</div>
+                <div class="day-card-body">
+                    <div class="day-card-date">${formatDateAsText(dateString)}</div>
+                    <div class="day-card-content">${content}</div>
+                    ${activitiesHtml}
+                    <div class="day-card-actions">
+                        <button class="btn btn-sm btn-secondary edit-day-card-btn" data-date="${dateString}">Edit</button>
+                    </div>
                 </div>
             `;
         } else {
@@ -623,6 +630,19 @@ const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
+const imageUrlInput = document.getElementById('imageUrlInput');
+
+dayModal.addEventListener('click', (e) => {
+    const header = e.target.closest('.modal-expandable .expandable-header');
+    if (header) {
+        const content = header.nextElementSibling;
+        const arrow = header.querySelector('.arrow');
+        const isVisible = content.style.display === 'block';
+
+        content.style.display = isVisible ? 'none' : 'block';
+        if(arrow) arrow.classList.toggle('expanded', !isVisible);
+    }
+});
 
 function openDayModal(dateString) {
     selectedDate = dateString;
@@ -657,6 +677,12 @@ function openDayModal(dateString) {
     }
     renderActivityLists();
     ['morning', 'afternoon', 'evening'].forEach(hideActivityForm);
+
+    imageUrlInput.value = (dayData && dayData.imageUrl) ? dayData.imageUrl : '';
+
+    // Close expandable sections by default
+    dayModal.querySelectorAll('.modal-expandable .expandable-content').forEach(content => content.style.display = 'none');
+    dayModal.querySelectorAll('.modal-expandable .arrow').forEach(arrow => arrow.classList.remove('expanded'));
 
     if (dayData && dayData.type === 'travel') {
         travelBtn.classList.add('active');
@@ -801,6 +827,7 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
         afternoon: [...modalActivities.afternoon],
         evening: [...modalActivities.evening]
     };
+    data.imageUrl = imageUrlInput.value.trim();
 
     saveDayData(selectedDate, data);
     closeDayModal();

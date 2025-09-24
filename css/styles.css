@@ -320,6 +320,46 @@ h1, h2 {
     font-size: 0.9em;
 }
 
+.modal-expandable {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.modal-expandable .expandable-header {
+    cursor: pointer;
+}
+
+.modal-expandable .expandable-header:hover .expandable-title {
+    color: var(--primary-hover-bg);
+}
+
+.day-card-image-container {
+    height: 150px;
+    background-color: #f0f0f0;
+    border-radius: var(--btn-border-radius) var(--btn-border-radius) 0 0;
+    overflow: hidden;
+}
+
+.day-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.day-card-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0;
+}
+
+.day-card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
 .new-trip-form {
     display: flex;
     gap: 10px;
@@ -474,11 +514,11 @@ h1, h2 {
     min-height: 200px;
     border: 1px solid var(--border-color);
     border-radius: var(--btn-border-radius);
-    padding: 15px;
     background-color: var(--background-color);
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
+    padding: 0;
 }
 
 .day-card-date {
