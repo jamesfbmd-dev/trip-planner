@@ -676,17 +676,13 @@ function openDayModal(dateString) {
     dayModal.querySelectorAll('.modal-expandable .arrow').forEach(arrow => arrow.classList.remove('expanded'));
 
     if (dayData && dayData.type === 'travel') {
-        travelBtn.classList.add('active');
-        stayBtn.classList.remove('active');
-        modalContent.classList.add('travel-mode');
+        travelBtn.click(); // Use the button's click handler to set the correct state
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
         travelModeInput.value = dayData.travelMode || 'Car';
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
-        stayBtn.classList.add('active');
-        travelBtn.classList.remove('active');
-        modalContent.classList.remove('travel-mode');
+        stayBtn.click(); // Use the button's click handler to set the correct state
         if (dayData) {
             cityInput.value = dayData.city.name;
         }
@@ -829,13 +825,15 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
 stayBtn.addEventListener('click', () => {
     stayBtn.classList.add('active');
     travelBtn.classList.remove('active');
-    modalContent.classList.remove('travel-mode');
+    cityInputsGroup.style.display = 'block';
+    travelInputsGroup.style.display = 'none';
 });
 
 travelBtn.addEventListener('click', () => {
     travelBtn.classList.add('active');
     stayBtn.classList.remove('active');
-    modalContent.classList.add('travel-mode');
+    cityInputsGroup.style.display = 'none';
+    travelInputsGroup.style.display = 'block';
 });
 
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);
