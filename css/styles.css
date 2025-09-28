@@ -700,6 +700,27 @@ h1, h2 {
     padding-left: 10px;
 }
 
+.timeline-weekday {
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.timeline-date-formatted {
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+.timeline-travel-mode {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.timeline-travel-mode i {
+    margin-right: 8px;
+}
+
 .sidebar-footer {
     margin-top: auto;
     padding-top: 20px;

@@ -484,14 +484,34 @@ const generateMap = () => {
     // Populate sidebar
     mapLocationListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
     
+    const formatTimelineDate = (date) => {
+        const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
+        const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
+        const day = date.getDate();
+        const year = date.getFullYear().toString().slice(-2);
+        const suffix = (d => {
+            if (d > 3 && d < 21) return "th";
+            return ["th","st","nd","rd"][Math.min(d % 10, 4)];
+        })(day);
+        return `<div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div>`;
+    };
+
     timelineListEl.innerHTML = itinerary.map(day => {
         const date = new Date(day.date);
-        const dateText = `${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}`;
+        const dateText = formatTimelineDate(date);
         let locationText = '';
         let markerIndex = -1;
 
         if (day.type === 'travel') {
-            locationText = `${day.from.name} → ${day.to.name}`;
+            const travelMode = day.travelMode || 'Car';
+            const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
+            locationText = `
+                <div class="timeline-travel-mode">
+                    <i class="fas ${iconClass}"></i>
+                    <span>${travelMode}</span>
+                </div>
+                <div class="timeline-travel-details">${day.from.name} → ${day.to.name}</div>
+            `;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
             locationText = day.city.name;
