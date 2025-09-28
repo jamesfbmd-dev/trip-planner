@@ -77,6 +77,21 @@ let selectedDate = null; // State for the selected day
 let currentView = 'calendar';
 let dayCardStartIndex = 0;
 let isDayCardListenerAttached = false;
+let modalActivities = {
+    morning: [],
+    afternoon: [],
+    evening: []
+};
+
+const TRAVEL_MODE_ICONS = {
+    'Car': 'fa-car',
+    'Train': 'fa-train',
+    'Flight': 'fa-plane',
+    'Bus': 'fa-bus',
+    'Coach': 'fa-bus-alt',
+    'Ferry': 'fa-ship',
+    'Taxi': 'fa-taxi'
+};
 
 const getTrips = () => {
     const trips = localStorage.getItem('trips');
@@ -158,7 +173,7 @@ const renderDashboard = () => {
         const li = document.createElement('li');
         li.className = 'trip-item';
         li.innerHTML = `
-            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D3D%3D"></img>
+            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D3D%3D" alt="Trip image">
             <div class="trip-info">
                 <span class="trip-name">${trip.name}</span>
             </div>
@@ -301,15 +316,54 @@ const renderDayByDayView = () => {
             const dayData = currentTrip.days[dateString];
             let content = '';
             if (dayData.type === 'travel') {
-                content = `${dayData.from.name} → ${dayData.to.name}`;
+                const travelMode = dayData.travelMode || 'Car';
+                const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
+                content = `
+                    <div class="travel-mode-header">
+                        <i class="fas ${iconClass}"></i>
+                        <span>${travelMode}</span>
+                    </div>
+                    <div class="travel-details">${dayData.from.name} → ${dayData.to.name}</div>
+                `;
             } else {
                 content = dayData.city.name;
             }
+            let activitiesHtml = '';
+            if (dayData.activities && (dayData.activities.morning.length > 0 || dayData.activities.afternoon.length > 0 || dayData.activities.evening.length > 0)) {
+                activitiesHtml += '<div class="day-card-activities">';
+                if (dayData.activities.morning.length > 0) {
+                    activitiesHtml += '<h6>Morning</h6><ul>';
+                    dayData.activities.morning.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+                    activitiesHtml += '</ul>';
+                }
+                if (dayData.activities.afternoon.length > 0) {
+                    activitiesHtml += '<h6>Afternoon</h6><ul>';
+                    dayData.activities.afternoon.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+                    activitiesHtml += '</ul>';
+                }
+                if (dayData.activities.evening.length > 0) {
+                    activitiesHtml += '<h6>Evening</h6><ul>';
+                    dayData.activities.evening.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+                    activitiesHtml += '</ul>';
+                }
+                activitiesHtml += '</div>';
+            }
+
+            const imageHtml = dayData.imageUrl
+                ? `<img src="${dayData.imageUrl}" alt="Trip image" class="day-card-image">`
+                : '<div class="day-card-image-placeholder"></div>';
+
             card.innerHTML = `
-                <div class="day-card-date">${formatDateAsText(dateString)}</div>
-                <div class="day-card-content">${content}</div>
-                <div class="day-card-actions">
-                    <button class="btn btn-sm btn-secondary edit-day-card-btn" data-date="${dateString}">Edit</button>
+                <div class="day-card-image-container">${imageHtml}</div>
+                <div class="day-card-body">
+                    <div>
+                        <div class="day-card-date">${formatDateAsText(dateString)}</div>
+                        <div class="day-card-content">${content}</div>
+                    </div>
+                    ${activitiesHtml}
+                    <div class="day-card-actions">
+                        <button class="btn btn-sm btn-secondary edit-day-card-btn" data-date="${dateString}">Edit</button>
+                    </div>
                 </div>
             `;
         } else {
@@ -430,14 +484,34 @@ const generateMap = () => {
     // Populate sidebar
     mapLocationListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
     
+    const formatTimelineDate = (date) => {
+        const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
+        const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
+        const day = date.getDate();
+        const year = date.getFullYear().toString().slice(-2);
+        const suffix = (d => {
+            if (d > 3 && d < 21) return "th";
+            return ["th","st","nd","rd"][Math.min(d % 10, 4)];
+        })(day);
+        return `<div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div>`;
+    };
+
     timelineListEl.innerHTML = itinerary.map(day => {
         const date = new Date(day.date);
-        const dateText = `${date.toLocaleString('default', { month: 'short' })} ${date.getDate()}`;
+        const dateText = formatTimelineDate(date);
         let locationText = '';
         let markerIndex = -1;
 
         if (day.type === 'travel') {
-            locationText = `${day.from.name} → ${day.to.name}`;
+            const travelMode = day.travelMode || 'Car';
+            const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
+            locationText = `
+                <div class="timeline-travel-mode">
+                    <i class="fas ${iconClass}"></i>
+                    <span>${travelMode}</span>
+                </div>
+                <div class="timeline-travel-details">${day.from.name} → ${day.to.name}</div>
+            `;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
             locationText = day.city.name;
@@ -594,8 +668,10 @@ const stayBtn = document.getElementById('stayBtn');
 const travelBtn = document.getElementById('travelBtn');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
+const travelModeInput = document.getElementById('travelModeInput');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
+const imageUrlInput = document.getElementById('imageUrlInput');
 
 function openDayModal(dateString) {
     selectedDate = dateString;
@@ -618,17 +694,33 @@ function openDayModal(dateString) {
     toCityInput.value = '';
 
     const dayData = currentTrip.days[dateString];
+
+    if (dayData && dayData.activities) {
+        modalActivities = {
+            morning: [...dayData.activities.morning],
+            afternoon: [...dayData.activities.afternoon],
+            evening: [...dayData.activities.evening]
+        };
+    } else {
+        modalActivities = { morning: [], afternoon: [], evening: [] };
+    }
+    renderActivityLists();
+    ['morning', 'afternoon', 'evening'].forEach(hideActivityForm);
+
+    imageUrlInput.value = (dayData && dayData.imageUrl) ? dayData.imageUrl : '';
+
+    // Close expandable sections by default
+    dayModal.querySelectorAll('.modal-expandable .expandable-content').forEach(content => content.style.display = 'none');
+    dayModal.querySelectorAll('.modal-expandable .arrow').forEach(arrow => arrow.classList.remove('expanded'));
+
     if (dayData && dayData.type === 'travel') {
-        travelBtn.classList.add('active');
-        stayBtn.classList.remove('active');
-        modalContent.classList.add('travel-mode');
+        travelBtn.click(); // Use the button's click handler to set the correct state
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
+        travelModeInput.value = dayData.travelMode || 'Car';
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
-        stayBtn.classList.add('active');
-        travelBtn.classList.remove('active');
-        modalContent.classList.remove('travel-mode');
+        stayBtn.click(); // Use the button's click handler to set the correct state
         if (dayData) {
             cityInput.value = dayData.city.name;
         }
@@ -742,7 +834,8 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
         data = {
             type: 'travel',
             from: { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng },
-            to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng }
+            to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
+            travelMode: travelModeInput.value
         };
     } else {
         const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
@@ -755,6 +848,14 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             city: { name: city.name, lat: city.lat, lng: city.lng }
         };
     }
+
+    data.activities = {
+        morning: [...modalActivities.morning],
+        afternoon: [...modalActivities.afternoon],
+        evening: [...modalActivities.evening]
+    };
+    data.imageUrl = imageUrlInput.value.trim();
+
     saveDayData(selectedDate, data);
     closeDayModal();
 });
@@ -762,13 +863,15 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
 stayBtn.addEventListener('click', () => {
     stayBtn.classList.add('active');
     travelBtn.classList.remove('active');
-    modalContent.classList.remove('travel-mode');
+    cityInputsGroup.style.display = 'block';
+    travelInputsGroup.style.display = 'none';
 });
 
 travelBtn.addEventListener('click', () => {
     travelBtn.classList.add('active');
     stayBtn.classList.remove('active');
-    modalContent.classList.add('travel-mode');
+    cityInputsGroup.style.display = 'none';
+    travelInputsGroup.style.display = 'block';
 });
 
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);
@@ -800,11 +903,15 @@ setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 document.querySelectorAll('.expandable-header').forEach(header => {
     header.addEventListener('click', () => {
         const content = header.nextElementSibling;
-        const arrow = header.querySelector('.arrow');
+        if (content) {
+            const isVisible = content.style.display === 'block';
+            content.style.display = isVisible ? 'none' : 'block';
 
-        const isVisible = content.style.display === 'block';
-        content.style.display = isVisible ? 'none' : 'block';
-        arrow.classList.toggle('expanded', !isVisible);
+            const arrow = header.querySelector('.arrow');
+            if (arrow) {
+                arrow.classList.toggle('expanded', !isVisible);
+            }
+        }
     });
 });
 
@@ -841,6 +948,71 @@ nextDayCardBtn.addEventListener('click', () => {
     }
 });
 
+
+// --- ACTIVITY MODAL LOGIC ---
+const activitiesContainer = document.querySelector('.activities-container');
+
+const renderActivityLists = () => {
+    ['morning', 'afternoon', 'evening'].forEach(period => {
+        const listEl = document.getElementById(`${period}-activity-list`);
+        listEl.innerHTML = '';
+        modalActivities[period].forEach((activity, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${activity}</span>
+                <button class="btn btn-sm btn-icon delete-activity-btn" data-period="${period}" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
+            `;
+            listEl.appendChild(li);
+        });
+    });
+};
+
+const showActivityForm = (period) => {
+    document.getElementById(`add-${period}-form`).style.display = 'flex';
+    document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'none';
+};
+
+const hideActivityForm = (period) => {
+    document.getElementById(`add-${period}-form`).style.display = 'none';
+    document.getElementById(`${period}-activity-input`).value = '';
+    document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
+};
+
+activitiesContainer.addEventListener('click', (e) => {
+    const addBtn = e.target.closest('.add-activity-btn');
+    const confirmBtn = e.target.closest('.confirm-add-btn');
+    const cancelBtn = e.target.closest('.cancel-add-btn');
+    const deleteBtn = e.target.closest('.delete-activity-btn');
+
+    if (addBtn) {
+        showActivityForm(addBtn.dataset.period);
+        return;
+    }
+
+    if (confirmBtn) {
+        const period = confirmBtn.dataset.period;
+        const inputEl = document.getElementById(`${period}-activity-input`);
+        const activityText = inputEl.value.trim();
+        if (activityText) {
+            modalActivities[period].push(activityText);
+            renderActivityLists();
+        }
+        hideActivityForm(period);
+        return;
+    }
+
+    if (cancelBtn) {
+        hideActivityForm(cancelBtn.dataset.period);
+        return;
+    }
+
+    if (deleteBtn) {
+        const { period, index } = deleteBtn.dataset;
+        modalActivities[period].splice(index, 1);
+        renderActivityLists();
+        return;
+    }
+});
 
 // Initial render
 renderDashboard();

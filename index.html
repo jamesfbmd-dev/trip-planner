@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trip Planner</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -102,14 +103,15 @@
             <span class="close-btn">&times;</span>
             <h3 id="modalDayTitle"></h3>
             
-            <div class="day-type-control">
-                <div class="pill-selector">
-                    <button id="stayBtn" class="pill-btn active">Stay</button>
-                    <button id="travelBtn" class="pill-btn">Travel</button>
+            <div class="modal-body">
+                <div class="day-type-control">
+                    <div class="pill-selector">
+                        <button id="stayBtn" class="pill-btn active">Stay</button>
+                        <button id="travelBtn" class="pill-btn">Travel</button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="inputs-container">
+                <div class="inputs-container">
                 <div id="cityInputs" class="city-inputs-group">
                     <div class="input-width-limiter">
                         <div class="modal-input-group">
@@ -122,6 +124,18 @@
 
                 <div id="travelInputs" class="travel-inputs-group">
                     <div class="input-width-limiter">
+                        <div class="modal-input-group">
+                            <label for="travelModeInput">Travel Mode:</label>
+                            <select id="travelModeInput">
+                                <option value="Car">Car</option>
+                                <option value="Train">Train</option>
+                                <option value="Flight">Flight</option>
+                                <option value="Bus">Bus</option>
+                                <option value="Coach">Coach</option>
+                                <option value="Ferry">Ferry</option>
+                                <option value="Taxi">Taxi</option>
+                            </select>
+                        </div>
                         <div class="modal-input-group">
                             <label for="fromCityInput">From:</label>
                             <input type="text" id="fromCityInput" placeholder="e.g., London" autocomplete="off">
@@ -136,6 +150,67 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="expandable-section modal-expandable">
+                <div class="expandable-header">
+                    <h4 class="expandable-title">Activities</h4>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="expandable-content" style="display: none;">
+                    <div class="activities-container">
+                        <div class="activity-group">
+                            <div class="activity-header">
+                                <h5>Morning</h5>
+                                <button class="btn btn-sm btn-icon add-activity-btn" data-period="morning"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div class="add-activity-form" id="add-morning-form" style="display: none;">
+                                <input type="text" placeholder="New activity..." id="morning-activity-input">
+                                <button class="btn btn-sm btn-icon confirm-add-btn" data-period="morning"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-sm btn-icon cancel-add-btn" data-period="morning"><i class="fas fa-times"></i></button>
+                            </div>
+                            <ul id="morning-activity-list" class="activity-list"></ul>
+                        </div>
+                        <div class="activity-group">
+                            <div class="activity-header">
+                                <h5>Afternoon</h5>
+                                <button class="btn btn-sm btn-icon add-activity-btn" data-period="afternoon"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div class="add-activity-form" id="add-afternoon-form" style="display: none;">
+                                <input type="text" placeholder="New activity..." id="afternoon-activity-input">
+                                <button class="btn btn-sm btn-icon confirm-add-btn" data-period="afternoon"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-sm btn-icon cancel-add-btn" data-period="afternoon"><i class="fas fa-times"></i></button>
+                            </div>
+                            <ul id="afternoon-activity-list" class="activity-list"></ul>
+                        </div>
+                        <div class="activity-group">
+                            <div class="activity-header">
+                                <h5>Evening</h5>
+                                <button class="btn btn-sm btn-icon add-activity-btn" data-period="evening"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div class="add-activity-form" id="add-evening-form" style="display: none;">
+                                <input type="text" placeholder="New activity..." id="evening-activity-input">
+                                <button class="btn btn-sm btn-icon confirm-add-btn" data-period="evening"><i class="fas fa-check"></i></button>
+                                <button class="btn btn-sm btn-icon cancel-add-btn" data-period="evening"><i class="fas fa-times"></i></button>
+                            </div>
+                            <ul id="evening-activity-list" class="activity-list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="expandable-section modal-expandable">
+                <div class="expandable-header">
+                    <h4 class="expandable-title">Image</h4>
+                    <span class="arrow">▼</span>
+                </div>
+                <div class="expandable-content" style="display: none;">
+                    <div class="modal-input-group">
+                        <label for="imageUrlInput">Image URL:</label>
+                        <input type="text" id="imageUrlInput" placeholder="https://example.com/image.png">
+                    </div>
+                </div>
+            </div>
             </div>
 
             <div class="modal-footer">
