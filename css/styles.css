@@ -515,6 +515,17 @@ h1, h2 {
     font-size: 1em;
 }
 
+.travel-mode-header {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.travel-mode-header i {
+    margin-right: 8px;
+}
+
 .day-card-actions {
     margin-top: auto; /* Pushes this to the bottom of the card */
     text-align: right;

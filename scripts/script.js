@@ -83,6 +83,16 @@ let modalActivities = {
     evening: []
 };
 
+const TRAVEL_MODE_ICONS = {
+    'Car': 'fa-car',
+    'Train': 'fa-train',
+    'Flight': 'fa-plane',
+    'Bus': 'fa-bus',
+    'Coach': 'fa-bus-alt',
+    'Ferry': 'fa-ship',
+    'Taxi': 'fa-taxi'
+};
+
 const getTrips = () => {
     const trips = localStorage.getItem('trips');
     return trips ? JSON.parse(trips) : {};
@@ -306,7 +316,15 @@ const renderDayByDayView = () => {
             const dayData = currentTrip.days[dateString];
             let content = '';
             if (dayData.type === 'travel') {
-                content = `${dayData.travelMode || 'Travel'}: ${dayData.from.name} → ${dayData.to.name}`;
+                const travelMode = dayData.travelMode || 'Car';
+                const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
+                content = `
+                    <div class="travel-mode-header">
+                        <i class="fas ${iconClass}"></i>
+                        <span>${travelMode}</span>
+                    </div>
+                    <div class="travel-details">${dayData.from.name} → ${dayData.to.name}</div>
+                `;
             } else {
                 content = dayData.city.name;
             }
