@@ -453,7 +453,7 @@ h1, h2 {
 /* --- Day-by-Day View --- */
 .day-by-day-view {
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: space-between;
     padding: 20px 0;
 }
@@ -557,7 +557,9 @@ h1, h2 {
 }
 
 .day-card-nav-btn {
-    background: transparent;
+    margin-top: 80px;
+    background: var(--primary-color);
+    color: white;
     border: 1px solid var(--border-color);
     border-radius: 50%;
     width: 40px;
@@ -569,11 +571,12 @@ h1, h2 {
 
 .day-card-nav-btn:hover {
     background-color: var(--background-color);
+    color: var(--primary-color);
     border-color: var(--primary-color);
 }
 
 .day-card-nav-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: not-allowed;
 }
 
@@ -968,6 +971,12 @@ input:focus + .slider {
 
 input:checked + .slider:before {
     transform: translateX(26px);
+}
+
+.inputs-container {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .travel-inputs-group {
