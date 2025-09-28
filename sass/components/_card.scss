@@ -1,0 +1,129 @@
+/* --- Day-by-Day View --- */
+.day-by-day-view {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+
+.day-cards-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    flex-grow: 1;
+    padding: 0 20px;
+}
+
+.day-card {
+    min-height: 200px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--btn-border-radius);
+    background-color: var(--background-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.day-card-image-container {
+    height: 200px;
+    flex-shrink: 0;
+    width: 100%;
+    background-color: #f0f0f0;
+    border-radius: var(--btn-border-radius) var(--btn-border-radius) 0 0;
+    overflow: hidden;
+}
+
+.day-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.day-card-image-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: #e0e0e0;
+}
+
+.day-card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.day-card-date {
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.day-card-content {
+    font-size: 1em;
+}
+
+.travel-mode-header {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.travel-mode-header i {
+    margin-right: 8px;
+}
+
+.day-card-actions {
+    margin-top: auto; /* Pushes this to the bottom of the card */
+    text-align: right;
+}
+
+.day-card-activities {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    flex-grow: 1;
+}
+
+.day-card-activities h6 {
+    margin: 0 0 8px 0;
+    color: var(--primary-color);
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.day-card-activities ul {
+    list-style: disc;
+    padding-left: 20px;
+    margin: 0 0 15px 0;
+    font-size: 0.9em;
+}
+
+.day-card-activities ul:last-child {
+    margin-bottom: 0;
+}
+
+.day-card-nav-btn {
+    margin-top: 80px;
+    background: var(--primary-color);
+    color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.day-card-nav-btn:hover {
+    background-color: var(--background-color);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.day-card-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}

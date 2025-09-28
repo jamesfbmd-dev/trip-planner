@@ -1,0 +1,33 @@
+/* --- Map Section --- */
+#fullScreenMap {
+    height: 100%;
+    width: 100%;
+    border-radius: 0 8px 8px 0;
+}
+
+.map-container {
+    flex-grow: 1;
+    height: 100%;
+}
+
+/* Custom Marker CSS */
+.day-marker {
+    /* The SVG now controls the appearance. We just remove any conflicting styles. */
+    background-color: transparent;
+    border: none;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.day-marker svg path {
+    transition: fill 0.2s ease;
+}
+
+.day-marker.marker-hover {
+    transform: scale(1.05);
+    z-index: 1001; /* To appear above other markers */
+}
+
+.day-marker.marker-hover svg path {
+    fill: orange;
+}
