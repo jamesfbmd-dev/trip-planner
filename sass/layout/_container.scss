@@ -1,3 +1,5 @@
+@use '../abstracts' as *;
+
 .app-wrapper {
     padding: 20px;
     display: flex;
@@ -9,7 +11,7 @@
 .container {
     width: 100%;
     max-width: 100%;
-    background: var(--card-background);
+    background: $card-background;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 30px;

@@ -1,0 +1,60 @@
+@use 'variables' as *;
+
+@mixin button-base {
+    display: inline-block;
+    padding: $btn-padding;
+    font-size: $btn-font-size;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: $btn-border-radius;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: $btn-focus-shadow;
+    }
+
+    &:disabled, &.disabled {
+        pointer-events: none;
+        background-color: $btn-disabled-bg;
+        border-color: $btn-disabled-border;
+        color: $btn-disabled-text;
+        opacity: 0.65;
+    }
+}
+
+@mixin button-variant($background, $color, $hover-background, $active-background, $font-weight: $btn-font-weight-secondary) {
+    background-color: $background;
+    color: $color;
+    font-weight: $font-weight;
+
+    &:hover {
+        background-color: $hover-background;
+    }
+
+    &:active {
+        background-color: $active-background;
+        transform: translateY(1px);
+    }
+}
+
+@mixin button-outline-variant($color, $border-color, $hover-background, $active-background) {
+    background-color: transparent;
+    color: $color;
+    border: 1px solid $border-color;
+
+    &:hover {
+        background-color: $hover-background;
+    }
+
+    &:active {
+        background-color: $active-background;
+        transform: translateY(1px);
+    }
+}

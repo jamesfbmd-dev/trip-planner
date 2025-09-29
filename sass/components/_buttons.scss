@@ -1,107 +1,63 @@
-/* --- Buttons --- */
+@use '../abstracts' as *;
+
 .btn {
-    display: inline-block;
-    padding: var(--btn-padding);
-    font-size: var(--btn-font-size);
-    font-weight: var(--btn-font-weight-secondary);
-    line-height: 1.5;
-    text-align: center;
-    text-decoration: none;
-    vertical-align: middle;
-    cursor: pointer;
-    user-select: none;
-    background-color: transparent;
-    border: 1px solid transparent;
-    border-radius: var(--btn-border-radius);
-    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-}
+    @include button-base;
 
-.btn:focus-visible {
-    outline: none;
-    box-shadow: var(--btn-focus-shadow);
-}
+    &-primary {
+        @include button-variant(
+            $background: $btn-primary-bg,
+            $color: $btn-primary-text,
+            $hover-background: $btn-primary-hover-bg,
+            $active-background: $btn-primary-active-bg,
+            $font-weight: $btn-font-weight-primary
+        );
+    }
 
-.btn:disabled, .btn.disabled {
-    pointer-events: none;
-    background-color: var(--btn-disabled-bg);
-    border-color: var(--btn-disabled-border);
-    color: var(--btn-disabled-text);
-    opacity: 0.65;
-}
+    &-secondary {
+        @include button-outline-variant(
+            $color: $btn-secondary-text,
+            $border-color: $btn-secondary-border,
+            $hover-background: $btn-secondary-hover-bg,
+            $active-background: $btn-secondary-active-bg
+        );
+    }
 
-.btn-primary {
-    background-color: var(--btn-primary-bg);
-    color: var(--btn-primary-text);
-    font-weight: var(--btn-font-weight-primary);
-}
-.btn-primary:hover {
-    background-color: var(--btn-primary-hover-bg);
-}
-.btn-primary:active {
-    background-color: var(--btn-primary-active-bg);
-    transform: translateY(1px);
-}
+    &-success {
+        @include button-variant(
+            $background: $btn-success-bg,
+            $color: $btn-success-text,
+            $hover-background: $btn-success-hover-bg,
+            $active-background: $btn-success-active-bg
+        );
+    }
 
-.btn-secondary {
-    background-color: var(--btn-secondary-bg);
-    color: var(--btn-secondary-text);
-    border-color: var(--btn-secondary-border);
-}
-.btn-secondary:hover {
-    background-color: var(--btn-secondary-hover-bg);
-}
-.btn-secondary:active {
-    background-color: var(--btn-secondary-active-bg);
-    transform: translateY(1px);
-}
+    &-danger {
+        @include button-variant(
+            $background: $btn-danger-bg,
+            $color: $btn-danger-text,
+            $hover-background: $btn-danger-hover-bg,
+            $active-background: $btn-danger-active-bg
+        );
+    }
 
-.btn-success {
-    background-color: var(--btn-success-bg);
-    color: var(--btn-success-text);
-}
-.btn-success:hover {
-    background-color: var(--btn-success-hover-bg);
-}
-.btn-success:active {
-    background-color: var(--btn-success-active-bg);
-    transform: translateY(1px);
-}
+    &-sm {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
 
-.btn-danger {
-    background-color: var(--btn-danger-bg);
-    color: var(--btn-danger-text);
-}
-.btn-danger:hover {
-    background-color: var(--btn-danger-hover-bg);
-}
-.btn-danger:active {
-    background-color: var(--btn-danger-active-bg);
-    transform: translateY(1px);
-}
+    &-link {
+        background-color: transparent;
+        border-color: transparent;
+        color: $primary-color;
+        text-decoration: underline;
+        font-weight: 500;
 
-.btn-sm {
-    padding: 8px 16px;
-    font-size: 14px;
-}
+        &:hover {
+            color: $btn-primary-hover-bg;
+        }
+    }
 
-.btn-link {
-    background-color: transparent;
-    border-color: transparent;
-    color: var(--primary-color);
-    text-decoration: underline;
-    font-weight: 500;
-}
-.btn-link:hover {
-    color: var(--btn-primary-hover-bg);
-}
-
-.btn-icon {
-    padding: 5px 10px;
-}
-
-.delete-activity-btn i {
-    color: var(--btn-danger-bg);
-}
-.delete-activity-btn:hover i {
-    color: var(--btn-danger-hover-bg);
+    &-icon {
+        padding: 5px 10px;
+    }
 }

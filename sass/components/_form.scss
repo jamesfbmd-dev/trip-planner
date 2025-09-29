@@ -1,14 +1,16 @@
+@use '../abstracts' as *;
+
 .new-trip-form {
     display: flex;
     gap: 10px;
     margin-top: 20px;
-}
 
-.new-trip-form input {
-    flex-grow: 1;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
+    input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid $border-color;
+        border-radius: 5px;
+    }
 }
 
 #travelModeInput {
@@ -24,53 +26,65 @@
 /* --- New Activities UI --- */
 .activities-container {
     padding-top: 10px;
-}
 
-.activity-group {
-    margin-bottom: 15px;
-}
-.activity-group:last-child {
-    margin-bottom: 0;
-}
+    .activity-group {
+        margin-bottom: 15px;
 
-.activity-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
 
-.activity-header h5 {
-    margin: 0;
-    color: var(--primary-color);
-    font-size: 1em;
-    font-weight: 600;
-}
+    .activity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
 
-.add-activity-form {
-    display: flex;
-    gap: 5px;
-    margin-bottom: 10px;
-}
+        h5 {
+            margin: 0;
+            color: $primary-color;
+            font-size: 1em;
+            font-weight: 600;
+        }
+    }
 
-.add-activity-form input {
-    flex-grow: 1;
-}
+    .add-activity-form {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 10px;
 
-.activity-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 150px;
-    overflow-y: auto;
-}
+        input {
+            flex-grow: 1;
+        }
+    }
 
-.activity-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    background-color: var(--background-color);
-    border-radius: 4px;
-    margin-bottom: 5px;
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        max-height: 150px;
+        overflow-y: auto;
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background-color: $background-color;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+    }
+
+    .delete-activity-btn {
+        i {
+            color: $btn-danger-bg;
+        }
+        &:hover {
+            i {
+                color: $btn-danger-hover-bg;
+            }
+        }
+    }
 }
