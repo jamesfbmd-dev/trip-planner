@@ -1,2 +1,5 @@
-/scripts/firebase-config.js
-scripts/firebase-config.js
+# Dependencies
+/node_modules
+
+# Config
+firebase-config.js

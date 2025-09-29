@@ -76,6 +76,7 @@ let currentDate = new Date(); // State for the currently displayed month
 let selectedDate = null; // State for the selected day
 let currentView = 'calendar';
 let dayCardStartIndex = 0;
+let cardsPerPage = 3; // Default to desktop
 let isDayCardListenerAttached = false;
 let modalActivities = {
     morning: [],
@@ -108,14 +109,6 @@ const deleteTrip = (tripId) => {
     saveTrips(trips);
 };
 
-const renameTrip = (tripId, newName) => {
-    const trips = getTrips();
-    if (trips[tripId]) {
-        trips[tripId].name = newName;
-        saveTrips(trips);
-    }
-};
-
 // Helper function to format date as YYYY-MM-DD
 const formatDate = (date) => {
     const year = date.getFullYear();
@@ -126,17 +119,14 @@ const formatDate = (date) => {
 
 const formatDateAsText = (dateString) => {
     const date = new Date(dateString);
-
     const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
     const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
     const day = date.getDate();
     const year = date.getFullYear();
-
     const suffix = (d => {
         if (d > 3 && d < 21) return "th";
         return ["th","st","nd","rd"][Math.min(d % 10, 4)];
     })(day);
-
     return `${weekday} ${day}${suffix} ${month} ${year}`;
 };
 
@@ -144,7 +134,7 @@ const formatDateAsText = (dateString) => {
 const dashboardEl = document.getElementById('dashboard');
 const tripCalendarEl = document.getElementById('trip-calendar');
 const tripListEl = document.getElementById('tripList');
-const newTripNameInput = document.getElementById('newTripName');
+const openCreateTripModalBtn = document.getElementById('openCreateTripModalBtn');
 const tripTitleEl = document.getElementById('tripTitle');
 const monthYearDisplay = document.getElementById('monthYearDisplay');
 const calendarGridEl = document.getElementById('calendarGrid');
@@ -156,6 +146,16 @@ const dayByDayView = document.getElementById('dayByDayView');
 const dayCardsContainer = document.getElementById('dayCardsContainer');
 const prevDayCardBtn = document.getElementById('prevDayCardBtn');
 const nextDayCardBtn = document.getElementById('nextDayCardBtn');
+
+// New Trip Modal elements
+const tripModal = document.getElementById('tripModal');
+const tripModalTitle = document.getElementById('tripModalTitle');
+const closeTripModalBtn = document.getElementById('closeTripModalBtn');
+const tripIdInput = document.getElementById('tripIdInput');
+const tripNameInput = document.getElementById('tripNameInput');
+const tripImageUrlInput = document.getElementById('tripImageUrlInput');
+const saveTripBtn = document.getElementById('saveTripBtn');
+const cancelTripBtn = document.getElementById('cancelTripBtn');
 
 const showPage = (pageId) => {
     dashboardEl.classList.remove('active');
@@ -170,22 +170,47 @@ const renderDashboard = () => {
     tripListEl.innerHTML = '';
     for (const id in trips) {
         const trip = trips[id];
+        const defaultImageUrl = 'https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D3D%3D';
+        const imageUrl = trip.imageUrl || defaultImageUrl;
         const li = document.createElement('li');
         li.className = 'trip-item';
         li.innerHTML = `
-            <img src="https://plus.unsplash.com/premium_photo-1690372791935-3efc879e4ca3?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%D3D%3D" alt="Trip image">
+            <img src="${imageUrl}" alt="Trip image">
             <div class="trip-info">
                 <span class="trip-name">${trip.name}</span>
             </div>
             <div class="trip-actions">
                 <button class="btn btn-sm btn-primary" onclick="openTrip('${id}')">Open</button>
-                <button class="btn btn-sm btn-secondary" onclick="handleRenameTrip('${id}', '${trip.name}')">Rename</button>
-                <button class="btn btn-sm btn-danger" onclick="handleDeleteTrip('${id}')">Delete</button>
+                <div class="submenu-container">
+                    <button class="btn btn-sm btn-icon" onclick="toggleSubmenu(event, '${id}')"><i class="fas fa-ellipsis-v"></i></button>
+                    <div class="submenu" id="submenu-${id}">
+                        <button class="submenu-item" onclick="openEditTripModal('${id}')">Edit</button>
+                        <button class="submenu-item" onclick="handleDeleteTrip('${id}')">Delete</button>
+                    </div>
+                </div>
             </div>
         `;
         tripListEl.appendChild(li);
     }
 };
+
+const toggleSubmenu = (event, tripId) => {
+    event.stopPropagation();
+    const allSubmenus = document.querySelectorAll('.submenu');
+    allSubmenus.forEach(submenu => {
+        if (submenu.id !== `submenu-${tripId}`) {
+            submenu.style.display = 'none';
+        }
+    });
+    const submenu = document.getElementById(`submenu-${tripId}`);
+    submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+};
+
+window.addEventListener('click', () => {
+    document.querySelectorAll('.submenu').forEach(submenu => {
+        submenu.style.display = 'none';
+    });
+});
 
 const handleDeleteTrip = (tripId) => {
     if (confirm('Are you sure you want to delete this trip? This action cannot be undone.')) {
@@ -194,25 +219,54 @@ const handleDeleteTrip = (tripId) => {
     }
 };
 
-const handleRenameTrip = (tripId, currentName) => {
-    const newName = prompt('Enter a new name for your trip:', currentName);
-    if (newName && newName.trim() !== '') {
-        renameTrip(tripId, newName.trim());
-        renderDashboard();
+const openCreateTripModal = () => {
+    tripModalTitle.textContent = 'Create Trip';
+    tripIdInput.value = '';
+    tripNameInput.value = '';
+    tripImageUrlInput.value = '';
+    tripModal.style.display = 'flex';
+};
+
+const openEditTripModal = (tripId) => {
+    const trips = getTrips();
+    const trip = trips[tripId];
+    if (trip) {
+        tripModalTitle.textContent = 'Edit Trip';
+        tripIdInput.value = tripId;
+        tripNameInput.value = trip.name;
+        tripImageUrlInput.value = trip.imageUrl || '';
+        tripModal.style.display = 'flex';
     }
 };
 
-const createNewTrip = () => {
-    const tripName = newTripNameInput.value.trim();
+const closeTripModal = () => {
+    tripModal.style.display = 'none';
+};
+
+const saveTrip = () => {
+    const tripId = tripIdInput.value;
+    const tripName = tripNameInput.value.trim();
+    const imageUrl = tripImageUrlInput.value.trim();
+
     if (!tripName) {
         alert('Please enter a trip name.');
         return;
     }
+
     const trips = getTrips();
-    const id = `trip-${Date.now()}`;
-    trips[id] = { name: tripName, days: {} }; // `days` is now an object
+
+    if (tripId) { // Editing existing trip
+        if (trips[tripId]) {
+            trips[tripId].name = tripName;
+            trips[tripId].imageUrl = imageUrl;
+        }
+    } else { // Creating new trip
+        const id = `trip-${Date.now()}`;
+        trips[id] = { name: tripName, imageUrl: imageUrl, days: {} };
+    }
+
     saveTrips(trips);
-    newTripNameInput.value = '';
+    closeTripModal();
     renderDashboard();
 };
 
@@ -306,7 +360,7 @@ const renderDayByDayView = () => {
         nextDayCardBtn.style.display = 'block';
     }
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < cardsPerPage; i++) {
         const dayIndex = dayCardStartIndex + i;
         const card = document.createElement('div');
         card.className = 'day-card';
@@ -374,7 +428,7 @@ const renderDayByDayView = () => {
 
     // Handle navigation button states
     prevDayCardBtn.disabled = dayCardStartIndex === 0;
-    nextDayCardBtn.disabled = dayCardStartIndex >= tripDays.length - 3;
+    nextDayCardBtn.disabled = dayCardStartIndex >= tripDays.length - cardsPerPage;
 };
 
 const getDayContent = (dayData) => {
@@ -806,7 +860,11 @@ tripCalendarEl.addEventListener('click', (e) => {
     }
 });
 
-document.getElementById('createTripBtn').addEventListener('click', createNewTrip);
+openCreateTripModalBtn.addEventListener('click', openCreateTripModal);
+closeTripModalBtn.addEventListener('click', closeTripModal);
+cancelTripBtn.addEventListener('click', closeTripModal);
+saveTripBtn.addEventListener('click', saveTrip);
+
 document.getElementById('backToDashboardBtn').addEventListener('click', renderDashboard);
 document.getElementById('generateMapBtn').addEventListener('click', generateMap);
 
@@ -934,15 +992,13 @@ dayByDayViewBtn.addEventListener('click', () => {
 });
 
 prevDayCardBtn.addEventListener('click', () => {
-    if (dayCardStartIndex > 0) {
-        dayCardStartIndex--;
-        renderDayByDayView();
-    }
+    dayCardStartIndex = Math.max(0, dayCardStartIndex - 1);
+    renderDayByDayView();
 });
 
 nextDayCardBtn.addEventListener('click', () => {
-    const tripDays = Object.keys(currentTrip.days);
-    if (dayCardStartIndex < tripDays.length - 3) {
+    const tripDays = Object.keys(currentTrip.days).sort();
+    if (dayCardStartIndex < tripDays.length - cardsPerPage) {
         dayCardStartIndex++;
         renderDayByDayView();
     }
@@ -1014,5 +1070,31 @@ activitiesContainer.addEventListener('click', (e) => {
     }
 });
 
+// --- RESPONSIVE LOGIC ---
+const mediaQueryLg = window.matchMedia('(min-width: 992px)');
+const mediaQueryMd = window.matchMedia('(min-width: 768px)');
+
+function updateCardsPerPage() {
+    const oldCardsPerPage = cardsPerPage;
+    if (mediaQueryLg.matches) {
+        cardsPerPage = 3;
+    } else if (mediaQueryMd.matches) {
+        cardsPerPage = 2;
+    } else {
+        cardsPerPage = 1;
+    }
+
+    if (oldCardsPerPage !== cardsPerPage) {
+        dayCardStartIndex = 0; // Reset index on breakpoint change
+        if (currentView === 'day-by-day') {
+            renderDayByDayView();
+        }
+    }
+}
+
+mediaQueryLg.addEventListener('change', updateCardsPerPage);
+mediaQueryMd.addEventListener('change', updateCardsPerPage);
+
 // Initial render
+updateCardsPerPage();
 renderDashboard();

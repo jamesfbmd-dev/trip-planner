@@ -1,0 +1,32 @@
+@use '../abstracts' as *;
+
+.app-wrapper {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+
+    @include respond-to('md') {
+        padding: 20px;
+    }
+}
+
+.container {
+    width: 100%;
+    max-width: 100%;
+    background: $card-background;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+
+    @include respond-to('md') {
+        padding: 20px;
+    }
+
+    @include respond-to('lg') {
+        padding: 30px;
+    }
+}

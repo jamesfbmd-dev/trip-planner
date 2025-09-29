@@ -1,0 +1,63 @@
+@use '../abstracts' as *;
+
+.btn {
+    @include button-base;
+
+    &-primary {
+        @include button-variant(
+            $background: $btn-primary-bg,
+            $color: $btn-primary-text,
+            $hover-background: $btn-primary-hover-bg,
+            $active-background: $btn-primary-active-bg,
+            $font-weight: $btn-font-weight-primary
+        );
+    }
+
+    &-secondary {
+        @include button-outline-variant(
+            $color: $btn-secondary-text,
+            $border-color: $btn-secondary-border,
+            $hover-background: $btn-secondary-hover-bg,
+            $active-background: $btn-secondary-active-bg
+        );
+    }
+
+    &-success {
+        @include button-variant(
+            $background: $btn-success-bg,
+            $color: $btn-success-text,
+            $hover-background: $btn-success-hover-bg,
+            $active-background: $btn-success-active-bg
+        );
+    }
+
+    &-danger {
+        @include button-variant(
+            $background: $btn-danger-bg,
+            $color: $btn-danger-text,
+            $hover-background: $btn-danger-hover-bg,
+            $active-background: $btn-danger-active-bg
+        );
+    }
+
+    &-sm {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    &-link {
+        background-color: transparent;
+        border-color: transparent;
+        color: $primary-color;
+        text-decoration: underline;
+        font-weight: 500;
+
+        &:hover {
+            color: $btn-primary-hover-bg;
+        }
+    }
+
+    &-icon {
+        padding: 5px 10px;
+    }
+}
