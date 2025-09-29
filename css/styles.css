@@ -410,16 +410,20 @@ h2 {
     align-items: center;
   }
 }
-.trip-calendar .calendar-header-actions {
+.trip-calendar .calendar-header-right {
   display: flex;
   align-items: center;
   gap: 10px;
   justify-content: center;
 }
 @media (min-width: 768px) {
-  .trip-calendar .calendar-header-actions {
+  .trip-calendar .calendar-header-right {
     gap: 15px;
   }
+}
+.trip-calendar .calendar-header #backToDashboardBtn i,
+.trip-calendar .calendar-header #generateMapBtn i {
+  margin-right: 8px;
 }
 .trip-calendar .view-toggle {
   display: flex;
@@ -472,7 +476,7 @@ h2 {
   }
 }
 .trip-calendar .calendar-grid {
-  height: 100%;
+  height: auto;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 5px;
@@ -555,7 +559,7 @@ h2 {
 /* --- Day-by-Day View --- */
 .day-by-day-view {
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: space-between;
   padding: 10px 0;
 }
@@ -660,6 +664,7 @@ h2 {
   margin-bottom: 0;
 }
 .day-by-day-view .day-card-nav-btn {
+  margin-top: 80px;
   background: #2D365A;
   color: white;
   border: 1px solid #e9ecef;

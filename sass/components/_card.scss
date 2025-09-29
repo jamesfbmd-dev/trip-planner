@@ -3,7 +3,7 @@
 /* --- Day-by-Day View --- */
 .day-by-day-view {
     display: flex;
-    align-items: center; // Vertically center arrows with the card container
+    align-items: start;
     justify-content: space-between;
     padding: 10px 0;
 
@@ -120,6 +120,7 @@
     }
 
     .day-card-nav-btn {
+        margin-top: 80px;
         background: $primary-color;
         color: white;
         border: 1px solid $border-color;

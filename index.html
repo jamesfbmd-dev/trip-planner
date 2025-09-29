@@ -24,14 +24,16 @@
         <!-- Trip Calendar Page -->
         <div id="trip-calendar" class="trip-calendar">
             <div class="calendar-header">
+                <div class="calendar-header-left">
+                    <button class="btn btn-secondary" id="backToDashboardBtn"><i class="fas fa-arrow-left"></i> Dashboard</button>
+                </div>
                 <h2 id="tripTitle"></h2>
-                <div class="calendar-header-actions">
+                <div class="calendar-header-right">
                     <div id="viewToggle" class="view-toggle">
                         <button id="calendarViewBtn" class="btn btn-sm btn-secondary active">Calendar</button>
                         <button id="dayByDayViewBtn" class="btn btn-sm btn-secondary">Day-by-day</button>
                     </div>
-                    <button class="btn btn-secondary" id="backToDashboardBtn">Back to Dashboard</button>
-                    <button class="btn btn-primary ml-5" id="generateMapBtn">Show Map</button>
+                    <button class="btn btn-primary" id="generateMapBtn"><i class="fas fa-map-marked-alt"></i> Map</button>
                 </div>
             </div>
             

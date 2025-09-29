@@ -15,14 +15,25 @@
             align-items: center;
         }
 
-        &-actions {
+        &-left {
+            // No specific styles needed, flexbox handles it
+        }
+
+        &-right {
             display: flex;
             align-items: center;
             gap: 10px;
-            justify-content: center;
+            justify-content: center; // Center on mobile
 
             @include respond-to('md') {
                 gap: 15px;
+            }
+        }
+
+        #backToDashboardBtn,
+        #generateMapBtn {
+            i {
+                margin-right: 8px;
             }
         }
     }
@@ -83,7 +94,7 @@
     }
 
     .calendar-grid {
-        height: 100%;
+        height: auto;
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         gap: 5px;
