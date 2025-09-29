@@ -45,3 +45,11 @@ $btn-danger-active-bg: #bd2130;
 $btn-disabled-bg: #e9ecef;
 $btn-disabled-text: #6c757d;
 $btn-disabled-border: #e9ecef;
+
+// Breakpoints
+$breakpoints: (
+  'sm': 576px,
+  'md': 768px,
+  'lg': 992px,
+  'xl': 1200px,
+);

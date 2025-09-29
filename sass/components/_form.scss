@@ -2,6 +2,7 @@
 
 .new-trip-form {
     display: flex;
+    flex-direction: column; // Stack on mobile
     gap: 10px;
     margin-top: 20px;
 
@@ -10,6 +11,10 @@
         padding: 10px;
         border: 1px solid $border-color;
         border-radius: 5px;
+    }
+
+    @include respond-to('sm') {
+        flex-direction: row; // Horizontal on small screens and up
     }
 }
 

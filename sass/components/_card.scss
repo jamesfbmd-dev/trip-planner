@@ -9,10 +9,19 @@
 
     .day-cards-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: 1fr; // 1 column on mobile
         gap: 20px;
         flex-grow: 1;
-        padding: 0 20px;
+        padding: 0;
+
+        @include respond-to('md') {
+            grid-template-columns: repeat(2, 1fr); // 2 columns on tablet
+            padding: 0 20px;
+        }
+
+        @include respond-to('lg') {
+            grid-template-columns: repeat(3, 1fr); // 3 columns on desktop
+        }
     }
 
     .day-card {
@@ -106,26 +115,31 @@
     }
 
     .day-card-nav-btn {
-        margin-top: 80px;
-        background: $primary-color;
-        color: white;
-        border: 1px solid $border-color;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        font-size: 20px;
-        cursor: pointer;
-        transition: background-color 0.2s, border-color 0.2s;
+        display: none; // Hidden on mobile to avoid clutter
 
-        &:hover {
-            background-color: $background-color;
-            color: $primary-color;
-            border-color: $primary-color;
-        }
+        @include respond-to('md') {
+            display: block; // Reappears on tablet and up
+            margin-top: 80px;
+            background: $primary-color;
+            color: white;
+            border: 1px solid $border-color;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
 
-        &:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
+            &:hover {
+                background-color: $background-color;
+                color: $primary-color;
+                border-color: $primary-color;
+            }
+
+            &:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
         }
     }
 }

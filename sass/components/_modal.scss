@@ -12,17 +12,25 @@
     background-color: rgba(0, 0, 0, 0.4);
     justify-content: center;
     align-items: center;
+    padding: 10px;
 
     .modal-content {
         background-color: $card-background;
-        padding: 30px;
+        padding: 15px;
         border-radius: 8px;
-        min-width: 405px;
-        max-width: 800px;
+        width: 100%;
+        max-width: 500px;
         position: relative;
+
+        @include respond-to('md') {
+            padding: 30px;
+            max-width: 800px;
+        }
 
         h3 {
             font-weight: 300;
+            font-size: 1.5em;
+            margin-top: 0;
             > .date {
                 font-weight: 800;
                 color: $primary-color;
@@ -31,7 +39,7 @@
     }
 
     .modal-body {
-        max-height: 60vh;
+        max-height: 70vh;
         overflow-y: auto;
         padding: 10px;
         margin: 0 -10px;
@@ -80,14 +88,19 @@
 
         .pill-btn {
             flex: 1;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border: none;
             background-color: transparent;
             color: $primary-color;
             cursor: pointer;
             transition: background-color 0.2s, color 0.2s;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 500;
+
+            @include respond-to('sm') {
+                padding: 10px 20px;
+                font-size: 16px;
+            }
 
             &.active {
                 background-color: $primary-color;
@@ -205,15 +218,28 @@
 
     .modal-footer {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column; // Stack buttons vertically on mobile
+        align-items: stretch;
+        gap: 10px;
         margin-top: 20px;
         padding-top: 20px;
         border-top: 1px solid $border-color;
 
         .footer-actions {
             display: flex;
+            flex-direction: column; // Stack action buttons as well
             gap: 10px;
+        }
+
+        @include respond-to('sm') {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+
+            .footer-actions {
+                flex-direction: row; // Revert to horizontal for larger screens
+                gap: 10px;
+            }
         }
     }
 }

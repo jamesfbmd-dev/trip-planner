@@ -1,11 +1,17 @@
+@use 'sass:map';
 @use 'variables' as *;
 
 @mixin button-base {
     display: inline-block;
-    padding: $btn-padding;
-    font-size: $btn-font-size;
+    padding: 10px 20px;
+    font-size: 14px;
     line-height: 1.5;
     text-align: center;
+
+    @include respond-to('md') {
+        padding: $btn-padding;
+        font-size: $btn-font-size;
+    }
     text-decoration: none;
     vertical-align: middle;
     cursor: pointer;
@@ -27,6 +33,17 @@
         color: $btn-disabled-text;
         opacity: 0.65;
     }
+}
+
+@mixin respond-to($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    @media (min-width: map.get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  } @else {
+    @warn "Unfortunately, no value could be retrieved from `#{$breakpoint}`. "
+        + "Available breakpoints are: #{map.keys($breakpoints)}.";
+  }
 }
 
 @mixin button-variant($background, $color, $hover-background, $active-background, $font-weight: $btn-font-weight-secondary) {

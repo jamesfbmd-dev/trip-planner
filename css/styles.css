@@ -54,18 +54,41 @@ body {
   display: block;
 }
 
-h1, h2 {
+h1 {
   text-align: center;
   color: #2D365A;
   margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.5rem;
+  }
+}
+
+h2 {
+  text-align: center;
+  color: #2D365A;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+@media (min-width: 768px) {
+  h2 {
+    font-size: 2rem;
+  }
 }
 
 .app-wrapper {
-  padding: 20px;
+  padding: 10px;
   display: flex;
   justify-content: center;
   height: 100vh;
   box-sizing: border-box;
+}
+@media (min-width: 768px) {
+  .app-wrapper {
+    padding: 20px;
+  }
 }
 
 .container {
@@ -74,9 +97,19 @@ h1, h2 {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 30px;
+  padding: 15px;
   display: flex;
   flex-direction: column;
+}
+@media (min-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    padding: 30px;
+  }
 }
 
 .map-sidebar {
@@ -84,9 +117,9 @@ h1, h2 {
   left: 0;
   top: 0;
   height: 100%;
-  width: 350px;
+  width: 280px;
   background-color: #ffffff;
-  padding: 20px;
+  padding: 15px;
   border-right: 1px solid #e9ecef;
   transition: left 0.3s ease;
   display: flex;
@@ -94,9 +127,20 @@ h1, h2 {
   overflow-y: auto;
   z-index: 1005;
 }
+@media (min-width: 768px) {
+  .map-sidebar {
+    width: 350px;
+    padding: 20px;
+  }
+}
 
 .map-sidebar.collapsed {
-  left: -350px;
+  left: -280px;
+}
+@media (min-width: 768px) {
+  .map-sidebar.collapsed {
+    left: -350px;
+  }
 }
 
 .sidebar-header {
@@ -214,7 +258,7 @@ h1, h2 {
 .sidebar-handle {
   position: absolute;
   top: 50%;
-  left: 350px; /* Aligns with the sidebar's right edge */
+  left: 280px;
   transform: translateY(-50%);
   width: 20px;
   height: 60px;
@@ -226,6 +270,11 @@ h1, h2 {
   border-radius: 0 5px 5px 0;
   transition: left 0.3s ease;
   z-index: 1010;
+}
+@media (min-width: 768px) {
+  .sidebar-handle {
+    left: 350px;
+  }
 }
 
 .sidebar-handle::after {
@@ -248,10 +297,18 @@ h1, h2 {
 
 .btn {
   display: inline-block;
-  padding: 12px 24px;
-  font-size: 16px;
+  padding: 10px 20px;
+  font-size: 14px;
   line-height: 1.5;
   text-align: center;
+}
+@media (min-width: 768px) {
+  .btn {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+}
+.btn {
   text-decoration: none;
   vertical-align: middle;
   cursor: pointer;
@@ -340,14 +397,29 @@ h1, h2 {
 
 .trip-calendar .calendar-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+  gap: 15px;
   margin-bottom: 20px;
+}
+@media (min-width: 768px) {
+  .trip-calendar .calendar-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 .trip-calendar .calendar-header-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .trip-calendar .calendar-header-actions {
+    gap: 15px;
+  }
 }
 .trip-calendar .view-toggle {
   display: flex;
@@ -373,38 +445,61 @@ h1, h2 {
   margin-bottom: 20px;
 }
 .trip-calendar .calendar-nav .month-year-display {
-  font-size: 1.5em;
+  font-size: 1.2em;
   font-weight: bold;
   text-align: center;
   flex-grow: 1;
 }
+@media (min-width: 768px) {
+  .trip-calendar .calendar-nav .month-year-display {
+    font-size: 1.5em;
+  }
+}
 .trip-calendar .calendar-weekdays {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
+  gap: 5px;
   text-align: center;
   font-weight: bold;
   color: #6c757d;
   margin-bottom: 10px;
+  font-size: 0.8em;
+}
+@media (min-width: 768px) {
+  .trip-calendar .calendar-weekdays {
+    gap: 10px;
+    font-size: 1em;
+  }
 }
 .trip-calendar .calendar-grid {
   height: 100%;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
+  gap: 5px;
+}
+@media (min-width: 768px) {
+  .trip-calendar .calendar-grid {
+    gap: 10px;
+  }
 }
 .trip-calendar .day-cell {
   background: #f8f9fa;
   border: 1px solid #e9ecef;
   border-radius: 5px;
-  padding: 7px;
-  min-height: 100px;
+  padding: 4px;
+  min-height: 80px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   position: relative;
   cursor: pointer;
   transition: box-shadow 0.2s;
+}
+@media (min-width: 768px) {
+  .trip-calendar .day-cell {
+    padding: 7px;
+    min-height: 100px;
+  }
 }
 .trip-calendar .day-cell.inactive {
   background: #f1f3f5;
@@ -418,23 +513,39 @@ h1, h2 {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 .trip-calendar .day-cell .day-number {
-  font-size: 1.2em;
+  font-size: 1em;
   font-weight: bold;
   color: #6c757d;
   align-self: flex-end;
 }
+@media (min-width: 768px) {
+  .trip-calendar .day-cell .day-number {
+    font-size: 1.2em;
+  }
+}
 .trip-calendar .day-cell .day-content-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 3px;
+}
+@media (min-width: 768px) {
+  .trip-calendar .day-cell .day-content-wrapper {
+    gap: 5px;
+  }
 }
 .trip-calendar .day-cell .day-content-wrapper .day-content {
-  font-size: 0.9em;
+  font-size: 0.7em;
   text-align: center;
-  padding: 2px 5px;
+  padding: 1px 3px;
   border-radius: 4px;
   color: white;
   background-color: #2D365A;
+}
+@media (min-width: 768px) {
+  .trip-calendar .day-cell .day-content-wrapper .day-content {
+    font-size: 0.9em;
+    padding: 2px 5px;
+  }
 }
 .trip-calendar .day-cell .day-content-wrapper .day-content.faded-blue {
   background-color: rgba(45, 54, 90, 0.4);
@@ -449,10 +560,21 @@ h1, h2 {
 }
 .day-by-day-view .day-cards-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 20px;
   flex-grow: 1;
-  padding: 0 20px;
+  padding: 0;
+}
+@media (min-width: 768px) {
+  .day-by-day-view .day-cards-container {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 20px;
+  }
+}
+@media (min-width: 992px) {
+  .day-by-day-view .day-cards-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 .day-by-day-view .day-card {
   min-height: 200px;
@@ -531,29 +653,36 @@ h1, h2 {
   margin-bottom: 0;
 }
 .day-by-day-view .day-card-nav-btn {
-  margin-top: 80px;
-  background: #2D365A;
-  color: white;
-  border: 1px solid #e9ecef;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  display: none;
 }
-.day-by-day-view .day-card-nav-btn:hover {
-  background-color: #f8f9fa;
-  color: #2D365A;
-  border-color: #2D365A;
-}
-.day-by-day-view .day-card-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+@media (min-width: 768px) {
+  .day-by-day-view .day-card-nav-btn {
+    display: block;
+    margin-top: 80px;
+    background: #2D365A;
+    color: white;
+    border: 1px solid #e9ecef;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+  .day-by-day-view .day-card-nav-btn:hover {
+    background-color: #f8f9fa;
+    color: #2D365A;
+    border-color: #2D365A;
+  }
+  .day-by-day-view .day-card-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
 }
 
 .new-trip-form {
   display: flex;
+  flex-direction: column;
   gap: 10px;
   margin-top: 20px;
 }
@@ -562,6 +691,11 @@ h1, h2 {
   padding: 10px;
   border: 1px solid #e9ecef;
   border-radius: 5px;
+}
+@media (min-width: 576px) {
+  .new-trip-form {
+    flex-direction: row;
+  }
 }
 
 #travelModeInput {
@@ -639,24 +773,33 @@ h1, h2 {
   background-color: rgba(0, 0, 0, 0.4);
   justify-content: center;
   align-items: center;
+  padding: 10px;
 }
 .modal .modal-content {
   background-color: #ffffff;
-  padding: 30px;
+  padding: 15px;
   border-radius: 8px;
-  min-width: 405px;
-  max-width: 800px;
+  width: 100%;
+  max-width: 500px;
   position: relative;
+}
+@media (min-width: 768px) {
+  .modal .modal-content {
+    padding: 30px;
+    max-width: 800px;
+  }
 }
 .modal .modal-content h3 {
   font-weight: 300;
+  font-size: 1.5em;
+  margin-top: 0;
 }
 .modal .modal-content h3 > .date {
   font-weight: 800;
   color: #2D365A;
 }
 .modal .modal-body {
-  max-height: 60vh;
+  max-height: 70vh;
   overflow-y: auto;
   padding: 10px;
   margin: 0 -10px;
@@ -699,14 +842,20 @@ h1, h2 {
 }
 .modal .pill-selector .pill-btn {
   flex: 1;
-  padding: 10px 20px;
+  padding: 8px 15px;
   border: none;
   background-color: transparent;
   color: #2D365A;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
+}
+@media (min-width: 576px) {
+  .modal .pill-selector .pill-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+  }
 }
 .modal .pill-selector .pill-btn.active {
   background-color: #2D365A;
@@ -804,15 +953,28 @@ h1, h2 {
 }
 .modal .modal-footer {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
   margin-top: 20px;
   padding-top: 20px;
   border-top: 1px solid #e9ecef;
 }
 .modal .modal-footer .footer-actions {
   display: flex;
+  flex-direction: column;
   gap: 10px;
+}
+@media (min-width: 576px) {
+  .modal .modal-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .modal .modal-footer .footer-actions {
+    flex-direction: row;
+    gap: 10px;
+  }
 }
 
 /* --- Full-screen Map Modal --- */
@@ -850,11 +1012,12 @@ h1, h2 {
 }
 .trip-list .trip-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
   background: #f8f9fa;
   border: 1px solid #e9ecef;
-  padding-right: 15px;
+  padding: 15px;
   margin-bottom: 10px;
   border-radius: 5px;
   cursor: pointer;
@@ -862,11 +1025,15 @@ h1, h2 {
   overflow: hidden;
 }
 .trip-list .trip-item img {
-  max-height: 100px;
-  margin-right: 20px;
+  max-height: 150px;
+  width: 100%;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border-radius: 5px;
 }
 .trip-list .trip-item .trip-info {
   flex-grow: 1;
+  margin-bottom: 15px;
 }
 .trip-list .trip-item .trip-name {
   font-size: 1.2em;
@@ -875,6 +1042,33 @@ h1, h2 {
 .trip-list .trip-item .trip-actions {
   display: flex;
   gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+@media (min-width: 768px) {
+  .trip-list .trip-item {
+    flex-direction: row;
+    align-items: center;
+    text-align: left;
+    padding: 0;
+  }
+  .trip-list .trip-item img {
+    max-height: 100px;
+    width: 120px;
+    height: 100px;
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+  .trip-list .trip-item .trip-info {
+    flex-grow: 1;
+    margin-bottom: 0;
+    padding: 0 20px;
+  }
+  .trip-list .trip-item .trip-actions {
+    padding-right: 20px;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
 }
 
 /* Standard Classes  */
