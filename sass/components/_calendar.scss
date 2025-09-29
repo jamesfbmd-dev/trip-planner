@@ -105,6 +105,7 @@
         position: relative;
         cursor: pointer;
         transition: box-shadow 0.2s;
+        overflow: hidden;
 
         @include respond-to('md') {
             padding: 7px;

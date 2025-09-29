@@ -76,6 +76,7 @@ let currentDate = new Date(); // State for the currently displayed month
 let selectedDate = null; // State for the selected day
 let currentView = 'calendar';
 let dayCardStartIndex = 0;
+let cardsPerPage = 3; // Default to desktop
 let isDayCardListenerAttached = false;
 let modalActivities = {
     morning: [],
@@ -306,7 +307,7 @@ const renderDayByDayView = () => {
         nextDayCardBtn.style.display = 'block';
     }
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < cardsPerPage; i++) {
         const dayIndex = dayCardStartIndex + i;
         const card = document.createElement('div');
         card.className = 'day-card';
@@ -374,7 +375,7 @@ const renderDayByDayView = () => {
 
     // Handle navigation button states
     prevDayCardBtn.disabled = dayCardStartIndex === 0;
-    nextDayCardBtn.disabled = dayCardStartIndex >= tripDays.length - 3;
+    nextDayCardBtn.disabled = dayCardStartIndex >= tripDays.length - cardsPerPage;
 };
 
 const getDayContent = (dayData) => {
@@ -934,15 +935,13 @@ dayByDayViewBtn.addEventListener('click', () => {
 });
 
 prevDayCardBtn.addEventListener('click', () => {
-    if (dayCardStartIndex > 0) {
-        dayCardStartIndex--;
-        renderDayByDayView();
-    }
+    dayCardStartIndex = Math.max(0, dayCardStartIndex - 1);
+    renderDayByDayView();
 });
 
 nextDayCardBtn.addEventListener('click', () => {
-    const tripDays = Object.keys(currentTrip.days);
-    if (dayCardStartIndex < tripDays.length - 3) {
+    const tripDays = Object.keys(currentTrip.days).sort();
+    if (dayCardStartIndex < tripDays.length - cardsPerPage) {
         dayCardStartIndex++;
         renderDayByDayView();
     }
@@ -1014,5 +1013,31 @@ activitiesContainer.addEventListener('click', (e) => {
     }
 });
 
+// --- RESPONSIVE LOGIC ---
+const mediaQueryLg = window.matchMedia('(min-width: 992px)');
+const mediaQueryMd = window.matchMedia('(min-width: 768px)');
+
+function updateCardsPerPage() {
+    const oldCardsPerPage = cardsPerPage;
+    if (mediaQueryLg.matches) {
+        cardsPerPage = 3;
+    } else if (mediaQueryMd.matches) {
+        cardsPerPage = 2;
+    } else {
+        cardsPerPage = 1;
+    }
+
+    if (oldCardsPerPage !== cardsPerPage) {
+        dayCardStartIndex = 0; // Reset index on breakpoint change
+        if (currentView === 'day-by-day') {
+            renderDayByDayView();
+        }
+    }
+}
+
+mediaQueryLg.addEventListener('change', updateCardsPerPage);
+mediaQueryMd.addEventListener('change', updateCardsPerPage);
+
 // Initial render
+updateCardsPerPage();
 renderDashboard();
