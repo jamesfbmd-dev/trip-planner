@@ -18,7 +18,7 @@
         border-radius: 5px;
         cursor: pointer;
         transition: transform 0.2s;
-        overflow: hidden;
+        // overflow: hidden; // Removed to allow submenu to show
 
         img {
             max-height: 150px;
@@ -40,9 +40,16 @@
 
         .trip-actions {
             display: flex;
+            align-items: center; // Vertically align buttons
             gap: 10px;
             justify-content: center;
             flex-wrap: wrap; // Allow buttons to wrap
+
+            .submenu-container {
+                .btn i {
+                    font-size: 20px;
+                }
+            }
         }
 
         @include respond-to('md') {
