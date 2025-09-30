@@ -29,3 +29,13 @@ This project uses Gulp to automate SASS compilation. To set up the project for l
     npm run watch:sass
     ```
     This will compile the SASS files once and then continue watching all `.scss` files in the `sass/` directory. When you save a change, it will automatically recompile `sass/main.scss` to `css/styles.css`. You can now open `index.html` in your browser and see your style changes reflected live.
+
+### Troubleshooting
+
+If you encounter a `ReferenceError: globalThis is not defined` error when running the `watch:sass` script, it likely means you have an incompatible version of the `sass` package in your `node_modules` directory. To fix this, perform a clean installation:
+
+1.  Delete the `node_modules` directory.
+2.  Delete the `package-lock.json` file (if it exists).
+3.  Run `npm install` again.
+
+This will ensure you have the correct versions of all dependencies as specified in `package.json`.
