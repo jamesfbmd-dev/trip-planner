@@ -13,21 +13,23 @@ A simple, interactive trip planner application that allows users to create, visu
 - **Responsive Design:** The application is designed to work on desktop, tablet, and mobile devices.
 - **Local Storage:** All your trip data is saved in your browser's local storage, so your trips will be there when you come back.
 
-## Local Development
+## Local Development with Gulp
 
-To set up the project for local development and compile the SASS files, follow these steps:
-
-**Note:** The `sass` package requires Node.js v12.0.0 or newer. Please ensure you have a compatible version installed before proceeding.
+This project uses Gulp to automate SASS compilation. To set up the project for local development, follow these steps:
 
 1.  **Install Dependencies:**
-    Navigate to the root of the project and install the required development dependencies (in this case, `sass`).
+    Navigate to the root of the project and install the required development dependencies.
     ```bash
     npm install
     ```
 
-2.  **Run SASS Watch:**
-    To automatically compile `.scss` files to `.css` whenever you save a change, run the predefined `sass:watch` script from your terminal:
+2.  **Run Gulp Watch:**
+    To start the Gulp task runner, which will compile SASS and watch for changes, run the following command from your terminal:
     ```bash
-    npm run sass:watch
+    npm start
     ```
-    This will watch the `sass/main.scss` file and its imports, compiling the output to `css/styles.css`. You can now open `index.html` in your browser and see your style changes reflected live upon saving.
+    Alternatively, if you have Gulp CLI installed globally, you can simply run:
+    ```bash
+    gulp
+    ```
+    This will compile the SASS files once and then continue watching all `.scss` files in the `sass/` directory. When you save a change, it will automatically recompile `sass/main.scss` to `css/styles.css`. You can now open `index.html` in your browser and see your style changes reflected live.
