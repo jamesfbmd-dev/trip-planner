@@ -12,3 +12,31 @@ A simple, interactive trip planner application that allows users to create, visu
 - **Interactive Map:** Generate a full-screen map of your trip, showing all your destinations and the routes between them.
 - **Responsive Design:** The application is designed to work on desktop, tablet, and mobile devices.
 - **Local Storage:** All your trip data is saved in your browser's local storage, so your trips will be there when you come back.
+
+## Local Development with Gulp
+
+This project uses Gulp to automate SASS compilation. The dependencies have been configured to be compatible with older Node.js environments (v10+).
+
+To set up the project for local development, follow these steps:
+
+1.  **Install Dependencies:**
+    Navigate to the root of the project and install the required development dependencies.
+    ```bash
+    npm install
+    ```
+
+2.  **Run Gulp Watch:**
+    To start the Gulp task runner, which will compile SASS and watch for changes, run the `watch` script.
+    ```bash
+    npm run watch
+    ```
+    This will compile `sass/main.scss` to `css/styles.css` and continue watching for changes. You can now open `index.html` in your browser and see your style changes reflected live.
+
+### Troubleshooting
+
+If you encounter any errors during or after installation, please perform a clean installation to ensure you have the correct dependencies:
+
+1.  Delete the `node_modules` directory and the `package-lock.json` file.
+2.  Run `npm install` again.
+
+This will build the dependencies from scratch using the versions specified in `package.json`.

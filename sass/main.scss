@@ -1,8 +1,8 @@
-@use 'abstracts';
-@use 'vendors';
-@use 'base';
-@use 'layout';
-@use 'components';
-@use 'pages';
-@use 'themes';
-@use 'utils';
+@import 'abstracts/index';
+@import 'vendors/index';
+@import 'base/index';
+@import 'layout/index';
+@import 'components/index';
+@import 'pages/index';
+@import 'themes/index';
+@import 'utils/index';
