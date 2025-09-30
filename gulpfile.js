@@ -1,9 +1,6 @@
 const gulp = require('gulp');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const rename = require('gulp-rename');
-
-// Set the compiler to node-sass explicitly to ensure compatibility
-sass.compiler = require('node-sass');
 
 // Define paths
 const paths = {
@@ -23,13 +20,9 @@ function compileSass() {
 }
 
 // Watch SASS task
-function watchSass() {
+function watch() {
   gulp.watch(paths.sass.src, compileSass);
 }
-
-// Define complex tasks
-const build = gulp.series(compileSass);
-const watch = gulp.series(build, watchSass);
 
 // Export tasks
 exports.compileSass = compileSass;

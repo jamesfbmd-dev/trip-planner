@@ -15,7 +15,9 @@ A simple, interactive trip planner application that allows users to create, visu
 
 ## Local Development with Gulp
 
-This project uses Gulp to automate SASS compilation. The dependencies are configured to be compatible with older Node.js versions (v10+).
+This project uses Gulp to automate SASS compilation with the modern Dart `sass` compiler.
+
+**Important:** This setup requires Node.js v14.0.0 or newer. Please ensure you have a compatible version installed before proceeding.
 
 To set up the project for local development, follow these steps:
 
@@ -26,17 +28,8 @@ To set up the project for local development, follow these steps:
     ```
 
 2.  **Run Gulp Watch:**
-    To start the Gulp task runner, which will compile SASS and watch for changes, run the `watch:sass` script.
+    To start the Gulp task runner, which will compile SASS and watch for changes, run the `watch` script.
     ```bash
-    npm run watch:sass
+    npm run watch
     ```
     This will compile `sass/main.scss` to `css/styles.css` and continue watching for changes. You can now open `index.html` in your browser and see your style changes reflected live.
-
-### Troubleshooting
-
-If you encounter any errors during or after installation (such as a `globalThis is not defined` error), please perform a clean installation to ensure you have the correct dependencies:
-
-1.  Delete the `node_modules` directory and the `package-lock.json` file.
-2.  Run `npm install` again.
-
-This will build the dependencies from scratch using the versions specified in `package.json`.
