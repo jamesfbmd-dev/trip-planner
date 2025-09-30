@@ -24,11 +24,11 @@ This project uses Gulp to automate SASS compilation. To set up the project for l
     ```
 
 2.  **Run Gulp Watch:**
-    To start the Gulp task runner, which will compile SASS and watch for changes, run the following command from your terminal:
+    To start the Gulp task runner, which will compile SASS and watch for changes, run the `watch:sass` script from your terminal:
     ```bash
-    npm start
+    npm run watch:sass
     ```
-    Alternatively, if you have Gulp CLI installed globally, you can simply run:
+    This command uses the locally installed Gulp package. Alternatively, if you have the Gulp CLI installed globally, you can run the default task directly:
     ```bash
     gulp
     ```
