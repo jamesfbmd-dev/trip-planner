@@ -1,7 +1,5 @@
 @import 'buttons';
-@import 'calendar';
-@import 'card';
-@import 'form';
-@import 'modal';
-@import 'submenu';
-@import 'trip-list';
+@import 'dashboard/index';
+@import 'calendar/index';
+@import 'map/index';
+@import 'modals/index';
