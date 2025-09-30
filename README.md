@@ -15,7 +15,9 @@ A simple, interactive trip planner application that allows users to create, visu
 
 ## Local Development with Gulp
 
-This project uses Gulp to automate SASS compilation. To set up the project for local development, follow these steps:
+This project uses Gulp to automate SASS compilation. The dependencies are configured to be compatible with older Node.js versions (v10+).
+
+To set up the project for local development, follow these steps:
 
 1.  **Install Dependencies:**
     Navigate to the root of the project and install the required development dependencies.
@@ -24,18 +26,17 @@ This project uses Gulp to automate SASS compilation. To set up the project for l
     ```
 
 2.  **Run Gulp Watch:**
-    To start the Gulp task runner, which will compile SASS and watch for changes, run the `watch:sass` script from your terminal. This is the recommended way to run the task as it uses the version of Gulp specified in the project's dependencies.
+    To start the Gulp task runner, which will compile SASS and watch for changes, run the `watch:sass` script.
     ```bash
     npm run watch:sass
     ```
-    This will compile the SASS files once and then continue watching all `.scss` files in the `sass/` directory. When you save a change, it will automatically recompile `sass/main.scss` to `css/styles.css`. You can now open `index.html` in your browser and see your style changes reflected live.
+    This will compile `sass/main.scss` to `css/styles.css` and continue watching for changes. You can now open `index.html` in your browser and see your style changes reflected live.
 
 ### Troubleshooting
 
-If you encounter a `ReferenceError: globalThis is not defined` error when running the `watch:sass` script, it likely means you have an incompatible version of the `sass` package in your `node_modules` directory. To fix this, perform a clean installation:
+If you encounter any errors during or after installation (such as a `globalThis is not defined` error), please perform a clean installation to ensure you have the correct dependencies:
 
-1.  Delete the `node_modules` directory.
-2.  Delete the `package-lock.json` file (if it exists).
-3.  Run `npm install` again.
+1.  Delete the `node_modules` directory and the `package-lock.json` file.
+2.  Run `npm install` again.
 
-This will ensure you have the correct versions of all dependencies as specified in `package.json`.
+This will build the dependencies from scratch using the versions specified in `package.json`.

@@ -1,5 +1,9 @@
 const gulp = require('gulp');
 const sass = require('gulp-sass');
+const rename = require('gulp-rename');
+
+// Set the compiler to node-sass explicitly to ensure compatibility
+sass.compiler = require('node-sass');
 
 // Define paths
 const paths = {
@@ -14,6 +18,7 @@ const paths = {
 function compileSass() {
   return gulp.src(paths.mainSass)
     .pipe(sass().on('error', sass.logError))
+    .pipe(rename('styles.css'))
     .pipe(gulp.dest(paths.sass.dest));
 }
 

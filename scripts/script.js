@@ -932,7 +932,7 @@ travelBtn.addEventListener('click', () => {
     travelInputsGroup.style.display = 'block';
 });
 
-document.getElementById('closeDayModalBtn').addEventListener('click', closeDayModal);
+document.querySelector('.close-btn').addEventListener('click', closeDayModal);
 
 cancelDayBtn.addEventListener('click', closeDayModal);
 
