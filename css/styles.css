@@ -769,8 +769,6 @@ h2 {
     margin-bottom: 10px; }
   .modal .travel-inputs-group {
     display: none; }
-  .modal .input-width-limiter {
-    max-width: 350px; }
   .modal .autocomplete-list {
     list-style: none;
     padding: 0;
@@ -869,6 +867,8 @@ h2 {
 @use '../abstracts' as *;
 /* --- Dashboard --- */
 .trip-list {
+  width: 100%;
+  max-width: 800px;
   list-style: none;
   padding: 0;
   margin-top: 20px; }
@@ -935,6 +935,11 @@ h2 {
     margin: 0; }
   .dashboard-header #openCreateTripModalBtn i {
     margin-right: 8px; }
+
+.dashboard-body {
+  width: 100%;
+  display: flex;
+  justify-content: center; }
 
 /* Standard Classes  */
 .ml-5 {

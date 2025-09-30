@@ -2,6 +2,8 @@
 
 /* --- Dashboard --- */
 .trip-list {
+    width: 100%;
+    max-width: 800px;
     list-style: none;
     padding: 0;
     margin-top: 20px;
@@ -18,7 +20,6 @@
         border-radius: 5px;
         cursor: pointer;
         transition: transform 0.2s;
-        // overflow: hidden; // Removed to allow submenu to show
 
         img {
             max-height: 150px;
@@ -40,10 +41,10 @@
 
         .trip-actions {
             display: flex;
-            align-items: center; // Vertically align buttons
+            align-items: center;
             gap: 10px;
             justify-content: center;
-            flex-wrap: wrap; // Allow buttons to wrap
+            flex-wrap: wrap;
 
             .submenu-container {
                 .btn i {

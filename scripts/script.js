@@ -723,6 +723,7 @@ const travelBtn = document.getElementById('travelBtn');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
 const travelModeInput = document.getElementById('travelModeInput');
+const dayModalCloseBtn = document.getElementById('dayModalCloseBtn');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
@@ -935,6 +936,7 @@ travelBtn.addEventListener('click', () => {
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);
 
 cancelDayBtn.addEventListener('click', closeDayModal);
+dayModalCloseBtn.addEventListener('click', closeDayModal);
 
 clearDayBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear all data for this day?')) {
