@@ -21,6 +21,9 @@
         width: 100%;
         max-width: 500px;
         position: relative;
+        max-height: 98vh;
+        display: flex;
+        flex-direction: column;
 
         @include respond-to('md') {
             padding: 30px;
