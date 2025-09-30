@@ -17,6 +17,8 @@ A simple, interactive trip planner application that allows users to create, visu
 
 To set up the project for local development and compile the SASS files, follow these steps:
 
+**Note:** The `sass` package requires Node.js v12.0.0 or newer. Please ensure you have a compatible version installed before proceeding.
+
 1.  **Install Dependencies:**
     Navigate to the root of the project and install the required development dependencies (in this case, `sass`).
     ```bash
