@@ -269,10 +269,17 @@
         flex-grow: 1;
         overflow-y: auto;
         max-height: none; // Override default max-height
+        min-height: 0; // Fix for flexbox shrinking
     }
 
     .modal-footer {
         flex-shrink: 0;
+    }
+
+    .modal-expandable:last-of-type {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
     }
 }
 
