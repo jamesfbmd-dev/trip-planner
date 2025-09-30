@@ -13,6 +13,7 @@
     justify-content: center;
     align-items: center;
     padding: 10px;
+    box-sizing: border-box;
 
     .modal-content {
         background-color: $card-background;
@@ -270,16 +271,16 @@
         overflow-y: auto;
         max-height: none; // Override default max-height
         min-height: 0; // Fix for flexbox shrinking
+
+        .modal-expandable:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
     }
 
     .modal-footer {
         flex-shrink: 0;
-    }
-
-    .modal-expandable:last-of-type {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
     }
 }
 
