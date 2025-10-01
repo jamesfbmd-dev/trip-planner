@@ -641,6 +641,44 @@ const generateMap = () => {
             .addTo(map)
             .bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
 
+        marker.on('mouseover', () => {
+            if (marker._icon) marker._icon.classList.add('marker-hover');
+            const markerIndex = markers.indexOf(marker);
+
+            animatedPolylines.forEach(p => p.remove());
+            animatedPolylines = [];
+
+            if (markerIndex > 0) {
+                const incomingLine = polylines[markerIndex - 1];
+                const antPath = L.polyline.antPath(incomingLine.getLatLngs(), {
+                    color: 'red',
+                    pulseColor: 'white',
+                    weight: 5,
+                    dashArray: [10, 20],
+                    reversed: true,
+                }).addTo(map);
+                animatedPolylines.push(antPath);
+            }
+
+            if (markerIndex < polylines.length) {
+                const outgoingLine = polylines[markerIndex];
+                const antPath = L.polyline.antPath(outgoingLine.getLatLngs(), {
+                    color: 'green',
+                    pulseColor: 'white',
+                    weight: 5,
+                    dashArray: [10, 20],
+                    reversed: false,
+                }).addTo(map);
+                animatedPolylines.push(antPath);
+            }
+        });
+
+        marker.on('mouseout', () => {
+            if (marker._icon) marker._icon.classList.remove('marker-hover');
+            animatedPolylines.forEach(p => p.remove());
+            animatedPolylines = [];
+        });
+
         markers.push(marker);
 
         if (index > 0) {
@@ -687,7 +725,7 @@ const generateMap = () => {
         const markerIndex = parseInt(item.dataset.markerIndex, 10);
         if (!isVisible && markerIndex >= 0 && markers[markerIndex]) {
             const marker = markers[markerIndex];
-            map.flyTo(marker.getLatLng(), 14); // Zoom to level 14
+            map.flyTo(marker.getLatLng(), 14, { duration: 0.5 }); // Zoom to level 14
         }
     });
 };
