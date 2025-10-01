@@ -1,0 +1,40 @@
+.number-spinner {
+  display: flex;
+  align-items: center;
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    border: 1px solid $border-color;
+    border-radius: $btn-border-radius;
+    text-align: center;
+    width: 60px;
+    margin: 0 5px;
+    padding: 8px;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+
+  .spinner-btn {
+    background-color: $primary-color;
+    color: $text-on-primary;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: $btn-primary-hover-bg;
+    }
+
+    &:active {
+      background-color: $btn-primary-active-bg;
+    }
+  }
+}

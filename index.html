@@ -155,12 +155,17 @@
                         </div>
                         <div class="modal-input-group">
                             <label for="nightsInput">Number of nights:</label>
-                            <input type="number" id="nightsInput" class="stepper" value="1" min="1">
+                            <div class="number-spinner">
+                                <button id="decreaseNightsBtn" class="spinner-btn">-</button>
+                                <input type="number" id="nightsInput" value="1" min="1">
+                                <button id="increaseNightsBtn" class="spinner-btn">+</button>
+                            </div>
                         </div>
                         <div class="modal-input-group">
                             <label>Check-out Date:</label>
                             <span id="checkoutDateDisplay" class="read-only-display"></span>
                         </div>
+                        <p id="overwriteWarning" class="inline-warning"></p>
                     </div>
                 </div>
 
@@ -261,24 +266,6 @@
                 <div class="footer-actions">
                     <button class="btn btn-secondary btn-sm" id="cancelDayBtn">Cancel</button>
                     <button class="btn btn-primary btn-sm" id="saveDayBtn">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for confirming overwrite -->
-    <div id="overwriteModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="overwriteModalTitle">Overwrite Existing Plans?</h3>
-            </div>
-            <div class="modal-body">
-                <p id="overwriteMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <div class="footer-actions">
-                    <button class="btn btn-secondary" id="cancelOverwriteBtn">Cancel</button>
-                    <button class="btn btn-danger" id="confirmOverwriteBtn">Overwrite & Save</button>
                 </div>
             </div>
         </div>

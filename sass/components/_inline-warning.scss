@@ -1,0 +1,6 @@
+.inline-warning {
+  color: $btn-danger-bg;
+  font-size: 14px;
+  margin-top: 10px;
+  min-height: 20px; // Reserve space to prevent layout shift
+}
