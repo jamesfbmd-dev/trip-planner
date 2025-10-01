@@ -596,7 +596,10 @@ const generateMap = () => {
             <div class="timeline-item-header">
                 <div class="timeline-date">${dateText}</div>
                 <div class="timeline-location">${locationText}</div>
-                <span class="arrow">▼</span>
+                <div class="timeline-controls">
+                    <button class="btn btn-icon btn-sm zoom-to-marker-btn" title="Zoom to location"><i class="fas fa-bullseye"></i></button>
+                    <span class="arrow">▼</span>
+                </div>
             </div>
             <div class="timeline-item-content" style="display: none;">
                 ${activitiesHtml}
@@ -705,28 +708,49 @@ const generateMap = () => {
 
     // --- NEW CLICK LISTENER ---
     timelineListEl.addEventListener('click', (e) => {
+        const zoomBtn = e.target.closest('.zoom-to-marker-btn');
         const header = e.target.closest('.timeline-item-header');
-        if (!header) return;
 
-        const content = header.nextElementSibling;
-        const arrow = header.querySelector('.arrow');
-        const item = header.parentElement;
-
-        // Toggle display
-        const isVisible = content.style.display === 'block';
-        content.style.display = isVisible ? 'none' : 'block';
-
-        // Change arrow direction
-        if (arrow) {
-            arrow.innerHTML = isVisible ? '▼' : '▲';
+        if (zoomBtn) {
+            e.stopPropagation(); // prevent the header click from firing
+            const item = zoomBtn.closest('.timeline-item');
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                const marker = markers[markerIndex];
+                map.flyTo(marker.getLatLng(), 12, { duration: 0.5 });
+            }
+            return;
         }
 
-        // Zoom to marker
-        const markerIndex = parseInt(item.dataset.markerIndex, 10);
-        if (!isVisible && markerIndex >= 0 && markers[markerIndex]) {
-            const marker = markers[markerIndex];
-            map.flyTo(marker.getLatLng(), 14, { duration: 0.5 }); // Zoom to level 14
+        if (header) {
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('.arrow');
+
+            // Toggle display
+            const isVisible = content.style.display === 'block';
+            content.style.display = isVisible ? 'none' : 'block';
+
+            // Change arrow direction
+            if (arrow) {
+                arrow.innerHTML = isVisible ? '▼' : '▲';
+            }
         }
+    });
+
+    // Add event listeners for timeline hover
+    document.querySelectorAll('#timelineList li').forEach(item => {
+        item.addEventListener('mouseover', () => {
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                markers[markerIndex].fire('mouseover');
+            }
+        });
+        item.addEventListener('mouseout', () => {
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                markers[markerIndex].fire('mouseout');
+            }
+        });
     });
 };
 

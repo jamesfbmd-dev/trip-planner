@@ -116,6 +116,12 @@
     .timeline-location {
         flex-grow: 1;
     }
+
+    .timeline-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 }
 
 .timeline-item-content {
