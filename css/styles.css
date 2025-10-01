@@ -1374,6 +1374,10 @@ h2 {
   }
 }
 
+#overwriteModal {
+  z-index: 1001;
+}
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;

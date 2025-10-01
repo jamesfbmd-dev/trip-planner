@@ -815,9 +815,12 @@ const modalDayTitle = document.getElementById('modalDayTitle');
 const cityInput = document.getElementById('cityInput');
 const fromCityInput = document.getElementById('fromCityInput');
 const toCityInput = document.getElementById('toCityInput');
-const multipleNightsCheckbox = document.getElementById('multipleNightsCheckbox');
-const multipleNightsContainer = document.getElementById('multipleNightsContainer');
 const nightsInput = document.getElementById('nightsInput');
+const checkoutDateDisplay = document.getElementById('checkoutDateDisplay');
+const overwriteModal = document.getElementById('overwriteModal');
+const overwriteMessage = document.getElementById('overwriteMessage');
+const cancelOverwriteBtn = document.getElementById('cancelOverwriteBtn');
+const confirmOverwriteBtn = document.getElementById('confirmOverwriteBtn');
 const cityAutocompleteList = document.getElementById('cityAutocompleteList');
 const fromCityAutocompleteList = document.getElementById('fromCityAutocompleteList');
 const toCityAutocompleteList = document.getElementById('toCityAutocompleteList');
@@ -832,16 +835,36 @@ const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
 const generateImageUrlBtn = document.getElementById('generateImageURL');
 
+const updateCheckoutDate = () => {
+    const nights = parseInt(nightsInput.value, 10);
+    if (!selectedDate || isNaN(nights) || nights < 1) {
+        checkoutDateDisplay.textContent = '';
+        return;
+    }
+
+    const checkout = new Date(selectedDate);
+    checkout.setDate(checkout.getDate() + nights);
+
+    const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(checkout);
+    const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(checkout);
+    const day = checkout.getDate();
+    const year = checkout.getFullYear();
+    const suffix = (d => {
+        if (d > 3 && d < 21) return "th";
+        return ["th","st","nd","rd"][Math.min(d % 10, 4)];
+    })(day);
+
+    checkoutDateDisplay.textContent = `${weekday} ${day}${suffix} ${month} ${year}`;
+};
+
 function openDayModal(dateString) {
     selectedDate = dateString;
     let formattedDateString = formatDateAsText(dateString);
     modalDayTitle.innerHTML = `Planning for<br/><span class="date">${formattedDateString}</span>`;
     dayModal.style.display = 'flex';
     
-    // Reset multi-night controls
-    multipleNightsCheckbox.checked = false;
-    multipleNightsContainer.style.display = 'none';
     nightsInput.value = '1';
+    updateCheckoutDate();
 
     const prevDay = new Date(selectedDate);
     prevDay.setDate(prevDay.getDate() - 1);
@@ -1014,10 +1037,32 @@ document.getElementById('nextMonthBtn').addEventListener('click', () => {
     renderTripView();
 });
 
+const performSave = (dayData) => {
+    const numNights = parseInt(nightsInput.value, 10);
+    if (isNaN(numNights) || numNights < 1) {
+        return; // Should have been caught earlier, but as a safeguard
+    }
+
+    for (let i = 0; i < numNights; i++) {
+        const date = new Date(selectedDate);
+        date.setDate(date.getDate() + i);
+        const dateString = formatDate(date);
+
+        let currentDayData = { ...dayData };
+        // For multi-night stays, only the first day should have activities and image
+        if (i > 0) {
+            currentDayData.activities = { morning: [], afternoon: [], evening: [] };
+            currentDayData.imageUrl = '';
+        }
+        saveDayData(dateString, currentDayData);
+    }
+};
+
 document.getElementById('saveDayBtn').addEventListener('click', () => {
     const isTravelDay = travelBtn.classList.contains('active');
     let data = {};
 
+    // Step 1: Validate and gather data from the form
     if (isTravelDay) {
         const fromCity = EUROPEAN_CITIES.find(c => c.name === fromCityInput.value);
         const toCity = EUROPEAN_CITIES.find(c => c.name === toCityInput.value);
@@ -1037,6 +1082,11 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             alert('Please select a valid city.');
             return;
         }
+        const numNights = parseInt(nightsInput.value, 10);
+        if (isNaN(numNights) || numNights < 1) {
+            alert('Please enter a valid number of nights.');
+            return;
+        }
         data = {
             type: 'stay',
             city: { name: city.name, lat: city.lat, lng: city.lng }
@@ -1050,31 +1100,44 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
     };
     data.imageUrl = imageUrlInput.value.trim();
 
-    const isMultiNight = multipleNightsCheckbox.checked && !isTravelDay;
-    const numNights = isMultiNight ? parseInt(nightsInput.value, 10) : 1;
-
-    if (isNaN(numNights) || numNights < 1) {
-        alert('Please enter a valid number of nights.');
+    // Step 2: Check for conflicts if it's a multi-night stay
+    const numNights = parseInt(nightsInput.value, 10);
+    if (isTravelDay || numNights <= 1) {
+        performSave(data);
+        closeDayModal();
         return;
     }
 
-    for (let i = 0; i < numNights; i++) {
+    const conflictingDates = [];
+    for (let i = 1; i < numNights; i++) {
         const date = new Date(selectedDate);
         date.setDate(date.getDate() + i);
         const dateString = formatDate(date);
-
-        // For multi-night stays, only the first day should have activities and image
-        if (i > 0) {
-            const multiNightData = { ...data };
-            multiNightData.activities = { morning: [], afternoon: [], evening: [] };
-            multiNightData.imageUrl = '';
-            saveDayData(dateString, multiNightData);
-        } else {
-            saveDayData(dateString, data);
+        if (currentTrip.days[dateString]) {
+            conflictingDates.push(date);
         }
     }
 
-    closeDayModal();
+    // Step 3: Show confirmation or save directly
+    if (conflictingDates.length > 0) {
+        const city = cityInput.value;
+        const formattedDates = conflictingDates.map(d => formatDateAsText(formatDate(d))).join(', ');
+        const datesString = conflictingDates.length > 1 ? 'dates' : 'date';
+
+        overwriteMessage.innerHTML = `By increasing the stay to <strong>${numNights}</strong> nights in <strong>${city}</strong>, you will overwrite existing plans on the following ${datesString}: <strong>${formattedDates}</strong>. Do you wish to continue and overwrite these plans?`;
+
+        confirmOverwriteBtn.onclick = () => {
+            performSave(data);
+            closeDayModal();
+            overwriteModal.style.display = 'none';
+        };
+
+        overwriteModal.style.display = 'flex';
+    } else {
+        // No conflicts, save directly
+        performSave(data);
+        closeDayModal();
+    }
 });
 
 stayBtn.addEventListener('click', () => {
@@ -1082,7 +1145,6 @@ stayBtn.addEventListener('click', () => {
     travelBtn.classList.remove('active');
     cityInputsGroup.style.display = 'block';
     travelInputsGroup.style.display = 'none';
-    multipleNightsCheckbox.parentElement.style.display = 'block';
 });
 
 travelBtn.addEventListener('click', () => {
@@ -1090,12 +1152,6 @@ travelBtn.addEventListener('click', () => {
     stayBtn.classList.remove('active');
     cityInputsGroup.style.display = 'none';
     travelInputsGroup.style.display = 'block';
-    multipleNightsCheckbox.parentElement.style.display = 'none';
-    multipleNightsContainer.style.display = 'none'; // Also hide the number input
-});
-
-multipleNightsCheckbox.addEventListener('change', () => {
-    multipleNightsContainer.style.display = multipleNightsCheckbox.checked ? 'block' : 'none';
 });
 
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);
@@ -1114,6 +1170,13 @@ window.addEventListener('click', (event) => {
     if (event.target === dayModal) {
         closeDayModal();
     }
+    if (event.target === overwriteModal) {
+        overwriteModal.style.display = 'none';
+    }
+});
+
+cancelOverwriteBtn.addEventListener('click', () => {
+    overwriteModal.style.display = 'none';
 });
 
 cityInput.addEventListener('input', () => handleAutocomplete(cityInput, cityAutocompleteList));
@@ -1123,6 +1186,8 @@ toCityInput.addEventListener('input', () => handleAutocomplete(toCityInput, toCi
 setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
+
+nightsInput.addEventListener('input', updateCheckoutDate);
 
 // --- Sidebar Expand/Collapse ---
 document.querySelectorAll('.expandable-header').forEach(header => {
