@@ -774,7 +774,7 @@ h2 {
 }
 @media (min-width: 768px) {
   .map-sidebar {
-    width: 350px;
+    width: 450px;
     padding: 20px;
   }
 }
@@ -784,7 +784,7 @@ h2 {
 }
 @media (min-width: 768px) {
   .map-sidebar.collapsed {
-    left: -350px;
+    left: -450px;
   }
 }
 
@@ -802,6 +802,17 @@ h2 {
 .sidebar-content h4 {
   margin-top: 0;
   margin-bottom: 10px;
+}
+
+.sidebar-content h5 {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  font-size: 1em;
+  font-weight: 600;
+  color: #2D365A;
+}
+.sidebar-content h5.mt-3 {
+  margin-top: 20px;
 }
 
 .expandable-section {
@@ -841,8 +852,7 @@ h2 {
 }
 
 .sidebar-content li {
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
+  padding: 4px 0;
 }
 
 #timelineList .timeline-date {
@@ -860,11 +870,14 @@ h2 {
   border-bottom: 1px solid #e9ecef;
   padding: 10px 0;
 }
+.timeline-item:last-child {
+  border-bottom: none;
+}
 
 .timeline-item-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 15px;
   cursor: pointer;
   padding: 5px;
   border-radius: 4px;
@@ -873,8 +886,18 @@ h2 {
 .timeline-item-header:hover {
   background-color: #f8f9fa;
 }
+.timeline-item-header .timeline-date {
+  flex: 0 0 110px;
+}
 .timeline-item-header .timeline-location {
   flex-grow: 1;
+  padding-left: 0;
+}
+.timeline-item-header .timeline-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-shrink: 0;
 }
 
 .timeline-item-content {
@@ -888,6 +911,16 @@ h2 {
 
 .timeline-location-stay {
   font-weight: 600;
+}
+
+.timeline-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 0.85em;
+  font-weight: 500;
+  color: #FFFFFF;
+  background-color: #2D365A;
+  border-radius: 4px;
 }
 
 .timeline-weekday {
@@ -936,7 +969,7 @@ h2 {
 }
 @media (min-width: 768px) {
   .sidebar-handle {
-    left: 350px;
+    left: 450px;
   }
 }
 

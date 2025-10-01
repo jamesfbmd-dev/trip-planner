@@ -466,7 +466,8 @@ const clearDayData = (dateString) => {
 const mapModalEl = document.getElementById('mapModal');
 const mapSidebarEl = document.getElementById('mapSidebar');
 const mapTripNameEl = document.getElementById('mapTripName');
-const mapLocationListEl = document.getElementById('mapLocationList');
+const overviewDestinationsListEl = document.getElementById('overviewDestinationsList');
+const overviewTravelModesListEl = document.getElementById('overviewTravelModesList');
 const timelineListEl = document.getElementById('timelineList');
 const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
 const closeMapBtnEl = document.querySelector('.close-map-btn');
@@ -516,6 +517,7 @@ const generateMap = () => {
     const itinerary = dates.map(date => ({ date, ...currentTrip.days[date] }));
     const locations = [];
     const locationSet = new Set();
+    const travelModes = new Set();
 
     itinerary.forEach(day => {
         if (day.type === 'travel') {
@@ -527,6 +529,9 @@ const generateMap = () => {
                 locations.push(day.to);
                 locationSet.add(day.to.name);
             }
+            if (day.travelMode) {
+                travelModes.add(day.travelMode);
+            }
         } else {
             if (!locationSet.has(day.city.name)) {
                 locations.push(day.city);
@@ -535,8 +540,9 @@ const generateMap = () => {
         }
     });
 
-    // Populate sidebar
-    mapLocationListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
+    // Populate Overview
+    overviewDestinationsListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
+    overviewTravelModesListEl.innerHTML = [...travelModes].map(mode => `<li>${mode}</li>`).join('');
     
     const formatTimelineDate = (date) => {
         const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
@@ -566,11 +572,13 @@ const generateMap = () => {
                     <i class="fas ${iconClass}"></i>
                     <span>${travelMode}</span>
                 </div>
-                <div class="timeline-travel-details">${day.from.name} → ${day.to.name}</div>
+                <div class="timeline-travel-details">
+                    <span class="timeline-badge">${day.from.name}</span> → <span class="timeline-badge">${day.to.name}</span>
+                </div>
             `;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
-            locationText = `<div class="timeline-location-stay">${day.city.name}</div>`;
+            locationText = `<div class="timeline-location-stay"><span class="timeline-badge">${day.city.name}</span></div>`;
             markerIndex = locations.findIndex(l => l.name === day.city.name);
         }
 
@@ -597,7 +605,7 @@ const generateMap = () => {
                 <div class="timeline-date">${dateText}</div>
                 <div class="timeline-location">${locationText}</div>
                 <div class="timeline-controls">
-                    <button class="btn btn-icon btn-sm zoom-to-marker-btn" title="Zoom to location"><i class="fas fa-bullseye"></i></button>
+                    <button class="btn btn-icon btn-sm zoom-to-marker-btn" title="Zoom to location"><i class="fas fa-crosshairs"></i></button>
                     <span class="arrow">▼</span>
                 </div>
             </div>
