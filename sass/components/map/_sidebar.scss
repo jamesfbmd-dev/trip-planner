@@ -67,11 +67,6 @@
 
 .arrow {
     font-size: 1.2em;
-    transition: transform 0.3s ease;
-}
-
-.arrow.expanded {
-    transform: rotate(180deg);
 }
 
 .expandable-content {
@@ -89,17 +84,6 @@
     border-bottom: 1px solid #eee;
 }
 
-#timelineList li {
-    cursor: pointer;
-    padding: 10px 5px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-#timelineList li:hover {
-    background-color: $background-color;
-}
-
 #timelineList .timeline-date {
     font-weight: bold;
     font-size: 0.9em;
@@ -109,6 +93,43 @@
 #timelineList .timeline-location {
     font-size: 0.9em;
     padding-left: 10px;
+}
+
+.timeline-item {
+    border-bottom: 1px solid $border-color;
+    padding: 10px 0;
+}
+
+.timeline-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: $background-color;
+    }
+
+    .timeline-location {
+        flex-grow: 1;
+    }
+}
+
+.timeline-item-content {
+    padding: 10px 5px 0 15px;
+    font-size: 0.9em;
+
+    ul {
+        list-style: disc;
+        padding-left: 20px;
+    }
+}
+
+.timeline-location-stay {
+    font-weight: 600;
 }
 
 .timeline-weekday {

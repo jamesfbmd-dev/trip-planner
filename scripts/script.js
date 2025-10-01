@@ -550,7 +550,9 @@ const generateMap = () => {
         return `<div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div>`;
     };
 
-    timelineListEl.innerHTML = itinerary.map(day => {
+    // --- NEW TIMELINE RENDERING ---
+    timelineListEl.innerHTML = ''; // Clear the list first
+    itinerary.forEach(day => {
         const date = new Date(day.date);
         const dateText = formatTimelineDate(date);
         let locationText = '';
@@ -568,15 +570,41 @@ const generateMap = () => {
             `;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
-            locationText = day.city.name;
+            locationText = `<div class="timeline-location-stay">${day.city.name}</div>`;
             markerIndex = locations.findIndex(l => l.name === day.city.name);
         }
 
-        return `<li data-marker-index="${markerIndex}">
-                    <div class="timeline-date">${dateText}</div>
-                    <div class="timeline-location">${locationText}</div>
-                </li>`;
-    }).join('');
+        let activitiesHtml = '<p>No activities planned.</p>';
+        if (day.activities && (day.activities.morning.length > 0 || day.activities.afternoon.length > 0 || day.activities.evening.length > 0)) {
+            activitiesHtml = '<ul>';
+            if (day.activities.morning.length > 0) {
+                day.activities.morning.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            if (day.activities.afternoon.length > 0) {
+                day.activities.afternoon.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            if (day.activities.evening.length > 0) {
+                day.activities.evening.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            activitiesHtml += '</ul>';
+        }
+
+        const li = document.createElement('li');
+        li.className = 'timeline-item';
+        li.dataset.markerIndex = markerIndex;
+        li.innerHTML = `
+            <div class="timeline-item-header">
+                <div class="timeline-date">${dateText}</div>
+                <div class="timeline-location">${locationText}</div>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="timeline-item-content" style="display: none;">
+                ${activitiesHtml}
+            </div>
+        `;
+        timelineListEl.appendChild(li);
+    });
+    // --- END NEW TIMELINE RENDERING ---
 
     // Show modal
     mapModalEl.style.display = 'flex';
@@ -613,44 +641,6 @@ const generateMap = () => {
             .addTo(map)
             .bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
 
-        marker.on('mouseover', () => {
-            if (marker._icon) marker._icon.classList.add('marker-hover');
-            const markerIndex = markers.indexOf(marker);
-
-            animatedPolylines.forEach(p => p.remove());
-            animatedPolylines = [];
-
-            if (markerIndex > 0) {
-                const incomingLine = polylines[markerIndex - 1];
-                const antPath = L.polyline.antPath(incomingLine.getLatLngs(), {
-                    color: 'red',
-                    pulseColor: 'white',
-                    weight: 5,
-                    dashArray: [10, 20],
-                    reversed: true,
-                }).addTo(map);
-                animatedPolylines.push(antPath);
-            }
-
-            if (markerIndex < polylines.length) {
-                const outgoingLine = polylines[markerIndex];
-                const antPath = L.polyline.antPath(outgoingLine.getLatLngs(), {
-                    color: 'green',
-                    pulseColor: 'white',
-                    weight: 5,
-                    dashArray: [10, 20],
-                    reversed: false,
-                }).addTo(map);
-                animatedPolylines.push(antPath);
-            }
-        });
-
-        marker.on('mouseout', () => {
-            if (marker._icon) marker._icon.classList.remove('marker-hover');
-            animatedPolylines.forEach(p => p.remove());
-            animatedPolylines = [];
-        });
-
         markers.push(marker);
 
         if (index > 0) {
@@ -675,20 +665,30 @@ const generateMap = () => {
         map.invalidateSize();
     }, 100);
 
-    // Add event listeners for timeline hover
-    document.querySelectorAll('#timelineList li').forEach(item => {
-        item.addEventListener('mouseover', () => {
-            const markerIndex = parseInt(item.dataset.markerIndex, 10);
-            if (markerIndex >= 0 && markers[markerIndex]) {
-                markers[markerIndex].fire('mouseover');
-            }
-        });
-        item.addEventListener('mouseout', () => {
-            const markerIndex = parseInt(item.dataset.markerIndex, 10);
-            if (markerIndex >= 0 && markers[markerIndex]) {
-                markers[markerIndex].fire('mouseout');
-            }
-        });
+    // --- NEW CLICK LISTENER ---
+    timelineListEl.addEventListener('click', (e) => {
+        const header = e.target.closest('.timeline-item-header');
+        if (!header) return;
+
+        const content = header.nextElementSibling;
+        const arrow = header.querySelector('.arrow');
+        const item = header.parentElement;
+
+        // Toggle display
+        const isVisible = content.style.display === 'block';
+        content.style.display = isVisible ? 'none' : 'block';
+
+        // Change arrow direction
+        if (arrow) {
+            arrow.innerHTML = isVisible ? '▼' : '▲';
+        }
+
+        // Zoom to marker
+        const markerIndex = parseInt(item.dataset.markerIndex, 10);
+        if (!isVisible && markerIndex >= 0 && markers[markerIndex]) {
+            const marker = markers[markerIndex];
+            map.flyTo(marker.getLatLng(), 14); // Zoom to level 14
+        }
     });
 };
 
