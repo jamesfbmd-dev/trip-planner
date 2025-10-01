@@ -210,6 +210,19 @@ h2 {
 .btn-icon {
   padding: 5px 10px;
 }
+.btn-underline {
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 12px;
+  color: #2D365A;
+  text-decoration: underline;
+  margin-top: 5px;
+}
+.btn-underline:hover {
+  color: #6c757d;
+}
 
 /* --- Dashboard --- */
 .trip-list {
@@ -372,6 +385,7 @@ h2 {
   font-weight: bold;
   text-align: center;
   flex-grow: 1;
+  color: #2D365A;
 }
 @media (min-width: 768px) {
   .trip-calendar .calendar-nav .month-year-display {
@@ -650,6 +664,12 @@ h2 {
 }
 #mapModal .modal-content h3 > .date {
   font-weight: 800;
+  color: #2D365A;
+}
+#mapModal .modal-content h4 {
+  color: #2D365A;
+}
+#mapModal .modal-content label {
   color: #2D365A;
 }
 #mapModal .modal-body {
@@ -1033,6 +1053,12 @@ h2 {
   font-weight: 800;
   color: #2D365A;
 }
+#dayModal .modal-content h4 {
+  color: #2D365A;
+}
+#dayModal .modal-content label {
+  color: #2D365A;
+}
 #dayModal .modal-body {
   max-height: 70vh;
   overflow-y: auto;
@@ -1111,6 +1137,9 @@ h2 {
     flex-direction: row;
     gap: 10px;
   }
+}
+#dayModal .modal-content .modal-body .modal-expandable:last-of-type {
+  border-bottom: none;
 }
 #dayModal .day-type-control {
   display: flex;
@@ -1257,6 +1286,12 @@ h2 {
 }
 #tripModal .modal-content h3 > .date {
   font-weight: 800;
+  color: #2D365A;
+}
+#tripModal .modal-content h4 {
+  color: #2D365A;
+}
+#tripModal .modal-content label {
   color: #2D365A;
 }
 #tripModal .modal-body {

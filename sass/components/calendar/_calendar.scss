@@ -68,6 +68,7 @@
             font-weight: bold;
             text-align: center;
             flex-grow: 1;
+            color: $primary-color;
 
             @include respond-to('md') {
                 font-size: 1.5em; // Larger on tablet and up

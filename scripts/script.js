@@ -67,7 +67,37 @@ const EUROPEAN_CITIES = [
     { name: "Liverpool", lat: 53.4084, lng: -2.9916 },
     { name: "Cardiff", lat: 51.4816, lng: -3.1791 },
     { name: "Bristol", lat: 51.4545, lng: -2.5879 },
-    { name: "Leeds", lat: 53.8008, lng: -1.5491 }
+    { name: "Leeds", lat: 53.8008, lng: -1.5491 },
+    // Major APAC cities
+  { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
+  { name: "Seoul", lat: 37.5665, lng: 126.9780 },
+  { name: "Shanghai", lat: 31.2304, lng: 121.4737 },
+  { name: "Beijing", lat: 39.9042, lng: 116.4074 },
+  { name: "Bangkok", lat: 13.7563, lng: 100.5018 },
+  { name: "Singapore", lat: 1.3521, lng: 103.8198 },
+  { name: "Hong Kong", lat: 22.3193, lng: 114.1694 },
+  { name: "Sydney", lat: -33.8688, lng: 151.2093 },
+  { name: "Melbourne", lat: -37.8136, lng: 144.9631 },
+  { name: "Jakarta", lat: -6.2088, lng: 106.8456 },
+
+  // Additional European / global locations
+  { name: "Blenheim", lat: -41.5292, lng: 173.9626 },        // NZ
+  { name: "Como", lat: 45.8081, lng: 9.0852 },               // Italy
+  { name: "Crawley", lat: 51.1096, lng: -0.1870 },           // UK
+  { name: "Cranleigh", lat: 51.1252, lng: -0.4821 },         // UK
+  { name: "Wellington", lat: -41.2865, lng: 174.7762 },      // NZ
+  { name: "Hakone", lat: 35.2325, lng: 139.1063 },           // Japan
+  { name: "Konstanz", lat: 47.6779, lng: 9.1737 },           // Germany
+  { name: "Salzburg", lat: 47.8095, lng: 13.0550 },          // Austria
+  { name: "Pompeii", lat: 40.7460, lng: 14.4989 },           // Italy
+  { name: "Interlaken", lat: 46.6863, lng: 7.8632 },         // Switzerland
+  { name: "Lucerne", lat: 47.0502, lng: 8.3093 },            // Switzerland
+  { name: "Andorra la Vella", lat: 42.5078, lng: 1.5211 },   // Andorra
+  { name: "Nantes", lat: 47.2184, lng: -1.5536 },            // France
+  { name: "Angers", lat: 47.4784, lng: -0.5632 },             // France
+  { name: "Nuremberg", lat: 49.4521, lng: 11.0767 },         // Germany
+  { name: "Wroclaw", lat: 51.1079, lng: 17.0385 },           // Poland
+  { name: "Arcachon", lat: 44.6583, lng: -1.1700 }           // France
 ];
 
 let currentTripId = null;
@@ -725,7 +755,7 @@ const generateMap = () => {
             const markerIndex = parseInt(item.dataset.markerIndex, 10);
             if (markerIndex >= 0 && markers[markerIndex]) {
                 const marker = markers[markerIndex];
-                map.flyTo(marker.getLatLng(), 12, { duration: 0.5 });
+                map.flyTo(marker.getLatLng(), 11, { duration: 0.5 });
             }
             return;
         }
@@ -797,6 +827,7 @@ const dayModalCloseBtn = document.getElementById('dayModalCloseBtn');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
+const generateImageUrlBtn = document.getElementById('generateImageURL');
 
 function openDayModal(dateString) {
     selectedDate = dateString;
@@ -928,6 +959,32 @@ tripCalendarEl.addEventListener('click', (e) => {
     if (editBtn) {
         openDayModal(editBtn.dataset.date);
         return;
+    }
+});
+
+// Auto fill Image URL field
+generateImageUrlBtn.addEventListener('click', async () => {
+
+    if(stayBtn.classList.contains('active')){
+
+        let city = document.getElementById('cityInput').value;
+        const oldPlaceholder = imageUrlInput.placeholder;
+        if (!imageUrlInput.value) imageUrlInput.placeholder = "Fetching image...";
+        const imageUrl = await getImageUrl(city);
+        // Restore placeholder
+        imageUrlInput.placeholder = oldPlaceholder;
+        imageUrlInput.value = imageUrl;
+
+    } else if (travelBtn.classList.contains('active')) {
+
+        let city = document.getElementById('toCityInput').value;
+        const oldPlaceholder = imageUrlInput.placeholder;
+        if (!imageUrlInput.value) imageUrlInput.placeholder = "Fetching image...";
+        const imageUrl = await getImageUrl(city);
+        // Restore placeholder
+        imageUrlInput.placeholder = oldPlaceholder;
+        imageUrlInput.value = imageUrl;
+
     }
 });
 

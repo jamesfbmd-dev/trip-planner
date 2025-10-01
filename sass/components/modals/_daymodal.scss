@@ -3,6 +3,16 @@
 #dayModal {
     @include modal-base;
 
+    .modal-content {
+        .modal-body {
+            .modal-expandable {
+                &:last-of-type {
+                    border-bottom: none;
+                }
+            }
+        }
+    }
+
     .day-type-control {
         display: flex;
         justify-content: center;
