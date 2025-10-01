@@ -815,6 +815,9 @@ const modalDayTitle = document.getElementById('modalDayTitle');
 const cityInput = document.getElementById('cityInput');
 const fromCityInput = document.getElementById('fromCityInput');
 const toCityInput = document.getElementById('toCityInput');
+const multipleNightsCheckbox = document.getElementById('multipleNightsCheckbox');
+const multipleNightsContainer = document.getElementById('multipleNightsContainer');
+const nightsInput = document.getElementById('nightsInput');
 const cityAutocompleteList = document.getElementById('cityAutocompleteList');
 const fromCityAutocompleteList = document.getElementById('fromCityAutocompleteList');
 const toCityAutocompleteList = document.getElementById('toCityAutocompleteList');
@@ -835,6 +838,11 @@ function openDayModal(dateString) {
     modalDayTitle.innerHTML = `Planning for<br/><span class="date">${formattedDateString}</span>`;
     dayModal.style.display = 'flex';
     
+    // Reset multi-night controls
+    multipleNightsCheckbox.checked = false;
+    multipleNightsContainer.style.display = 'none';
+    nightsInput.value = '1';
+
     const prevDay = new Date(selectedDate);
     prevDay.setDate(prevDay.getDate() - 1);
     const prevDayString = formatDate(prevDay);
@@ -1023,7 +1031,7 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
             travelMode: travelModeInput.value
         };
-    } else {
+    } else { // 'Stay' is selected
         const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
         if (!city) {
             alert('Please select a valid city.');
@@ -1042,7 +1050,30 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
     };
     data.imageUrl = imageUrlInput.value.trim();
 
-    saveDayData(selectedDate, data);
+    const isMultiNight = multipleNightsCheckbox.checked && !isTravelDay;
+    const numNights = isMultiNight ? parseInt(nightsInput.value, 10) : 1;
+
+    if (isNaN(numNights) || numNights < 1) {
+        alert('Please enter a valid number of nights.');
+        return;
+    }
+
+    for (let i = 0; i < numNights; i++) {
+        const date = new Date(selectedDate);
+        date.setDate(date.getDate() + i);
+        const dateString = formatDate(date);
+
+        // For multi-night stays, only the first day should have activities and image
+        if (i > 0) {
+            const multiNightData = { ...data };
+            multiNightData.activities = { morning: [], afternoon: [], evening: [] };
+            multiNightData.imageUrl = '';
+            saveDayData(dateString, multiNightData);
+        } else {
+            saveDayData(dateString, data);
+        }
+    }
+
     closeDayModal();
 });
 
@@ -1051,6 +1082,7 @@ stayBtn.addEventListener('click', () => {
     travelBtn.classList.remove('active');
     cityInputsGroup.style.display = 'block';
     travelInputsGroup.style.display = 'none';
+    multipleNightsCheckbox.parentElement.style.display = 'block';
 });
 
 travelBtn.addEventListener('click', () => {
@@ -1058,6 +1090,12 @@ travelBtn.addEventListener('click', () => {
     stayBtn.classList.remove('active');
     cityInputsGroup.style.display = 'none';
     travelInputsGroup.style.display = 'block';
+    multipleNightsCheckbox.parentElement.style.display = 'none';
+    multipleNightsContainer.style.display = 'none'; // Also hide the number input
+});
+
+multipleNightsCheckbox.addEventListener('change', () => {
+    multipleNightsContainer.style.display = multipleNightsCheckbox.checked ? 'block' : 'none';
 });
 
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);

@@ -153,6 +153,16 @@
                             <input type="text" id="cityInput" placeholder="e.g., Paris" autocomplete="off">
                             <ul id="cityAutocompleteList" class="autocomplete-list"></ul>
                         </div>
+                        <div class="modal-input-group">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="multipleNightsCheckbox">
+                                <span class="checkbox-label">Stay multiple nights?</span>
+                            </label>
+                        </div>
+                        <div id="multipleNightsContainer" class="modal-input-group" style="display: none;">
+                            <label for="nightsInput">Number of nights:</label>
+                            <input type="number" id="nightsInput" min="1" value="1">
+                        </div>
                     </div>
                 </div>
 
