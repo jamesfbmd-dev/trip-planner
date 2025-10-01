@@ -17,7 +17,9 @@
                 <h1>Your Trips</h1>
                 <button class="btn btn-primary" id="openCreateTripModalBtn"><i class="fas fa-plus"></i> Create Trip</button>
             </div>
-            <ul id="tripList" class="trip-list"></ul>
+            <div class="dashboard-body">
+                <ul id="tripList" class="trip-list"></ul>
+            </div>
         </div>
 
         <!-- Trip Calendar Page -->
@@ -65,7 +67,9 @@
     <div id="tripModal" class="modal">
         <div class="modal-content">
             <span class="close-btn" id="closeTripModalBtn">&times;</span>
-            <h3 id="tripModalTitle">Create Trip</h3>
+            <div class="modal-header">
+                <h3 id="tripModalTitle">Create Trip</h3>
+            </div>
             <div class="modal-body">
                 <input type="hidden" id="tripIdInput">
                 <div class="modal-input-group">
@@ -97,11 +101,14 @@
                 <div class="sidebar-content">
                     <div class="expandable-section">
                         <div class="expandable-header">
-                            <h4 class="expandable-title">Destinations</h4>
+                            <h4 class="expandable-title">Overview</h4>
                             <span class="arrow">▼</span>
                         </div>
                         <div class="expandable-content" style="display: none;">
-                            <ul id="mapLocationList"></ul>
+                            <h5>Destinations</h5>
+                            <ul id="overviewDestinationsList"></ul>
+                            <h5 class="mt-3">Travel Modes</h5>
+                            <ul id="overviewTravelModesList"></ul>
                         </div>
                     </div>
                     <div class="expandable-section">
@@ -126,9 +133,10 @@
     <!-- Modal for editing day -->
     <div id="dayModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h3 id="modalDayTitle"></h3>
-            
+            <span class="close-btn" id="dayModalCloseBtn">&times;</span>
+            <div class="modal-header">
+                <h3 id="modalDayTitle"></h3>
+            </div>
             <div class="modal-body">
                 <div class="day-type-control">
                     <div class="pill-selector">
@@ -234,6 +242,7 @@
                     <div class="modal-input-group">
                         <label for="imageUrlInput">Image URL:</label>
                         <input type="text" id="imageUrlInput" placeholder="https://example.com/image.png">
+                        <button class="btn-underline" id="generateImageURL">Generate Image</button>
                     </div>
                 </div>
             </div>
@@ -252,6 +261,8 @@
     </div>
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/leaflet-ant-path@1.3.0/dist/leaflet-ant-path.js"></script>
+    <script src="./scripts/pixabay-api-key.js"></script>
+    <script src="./scripts/pixabay-api.js"></script>
     <script src="./scripts/script.js"></script>
 
     </body>

@@ -67,7 +67,37 @@ const EUROPEAN_CITIES = [
     { name: "Liverpool", lat: 53.4084, lng: -2.9916 },
     { name: "Cardiff", lat: 51.4816, lng: -3.1791 },
     { name: "Bristol", lat: 51.4545, lng: -2.5879 },
-    { name: "Leeds", lat: 53.8008, lng: -1.5491 }
+    { name: "Leeds", lat: 53.8008, lng: -1.5491 },
+    // Major APAC cities
+  { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
+  { name: "Seoul", lat: 37.5665, lng: 126.9780 },
+  { name: "Shanghai", lat: 31.2304, lng: 121.4737 },
+  { name: "Beijing", lat: 39.9042, lng: 116.4074 },
+  { name: "Bangkok", lat: 13.7563, lng: 100.5018 },
+  { name: "Singapore", lat: 1.3521, lng: 103.8198 },
+  { name: "Hong Kong", lat: 22.3193, lng: 114.1694 },
+  { name: "Sydney", lat: -33.8688, lng: 151.2093 },
+  { name: "Melbourne", lat: -37.8136, lng: 144.9631 },
+  { name: "Jakarta", lat: -6.2088, lng: 106.8456 },
+
+  // Additional European / global locations
+  { name: "Blenheim", lat: -41.5292, lng: 173.9626 },        // NZ
+  { name: "Como", lat: 45.8081, lng: 9.0852 },               // Italy
+  { name: "Crawley", lat: 51.1096, lng: -0.1870 },           // UK
+  { name: "Cranleigh", lat: 51.1252, lng: -0.4821 },         // UK
+  { name: "Wellington", lat: -41.2865, lng: 174.7762 },      // NZ
+  { name: "Hakone", lat: 35.2325, lng: 139.1063 },           // Japan
+  { name: "Konstanz", lat: 47.6779, lng: 9.1737 },           // Germany
+  { name: "Salzburg", lat: 47.8095, lng: 13.0550 },          // Austria
+  { name: "Pompeii", lat: 40.7460, lng: 14.4989 },           // Italy
+  { name: "Interlaken", lat: 46.6863, lng: 7.8632 },         // Switzerland
+  { name: "Lucerne", lat: 47.0502, lng: 8.3093 },            // Switzerland
+  { name: "Andorra la Vella", lat: 42.5078, lng: 1.5211 },   // Andorra
+  { name: "Nantes", lat: 47.2184, lng: -1.5536 },            // France
+  { name: "Angers", lat: 47.4784, lng: -0.5632 },             // France
+  { name: "Nuremberg", lat: 49.4521, lng: 11.0767 },         // Germany
+  { name: "Wroclaw", lat: 51.1079, lng: 17.0385 },           // Poland
+  { name: "Arcachon", lat: 44.6583, lng: -1.1700 }           // France
 ];
 
 let currentTripId = null;
@@ -466,7 +496,8 @@ const clearDayData = (dateString) => {
 const mapModalEl = document.getElementById('mapModal');
 const mapSidebarEl = document.getElementById('mapSidebar');
 const mapTripNameEl = document.getElementById('mapTripName');
-const mapLocationListEl = document.getElementById('mapLocationList');
+const overviewDestinationsListEl = document.getElementById('overviewDestinationsList');
+const overviewTravelModesListEl = document.getElementById('overviewTravelModesList');
 const timelineListEl = document.getElementById('timelineList');
 const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
 const closeMapBtnEl = document.querySelector('.close-map-btn');
@@ -516,6 +547,7 @@ const generateMap = () => {
     const itinerary = dates.map(date => ({ date, ...currentTrip.days[date] }));
     const locations = [];
     const locationSet = new Set();
+    const travelModes = new Set();
 
     itinerary.forEach(day => {
         if (day.type === 'travel') {
@@ -527,6 +559,9 @@ const generateMap = () => {
                 locations.push(day.to);
                 locationSet.add(day.to.name);
             }
+            if (day.travelMode) {
+                travelModes.add(day.travelMode);
+            }
         } else {
             if (!locationSet.has(day.city.name)) {
                 locations.push(day.city);
@@ -535,8 +570,9 @@ const generateMap = () => {
         }
     });
 
-    // Populate sidebar
-    mapLocationListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
+    // Populate Overview
+    overviewDestinationsListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
+    overviewTravelModesListEl.innerHTML = [...travelModes].map(mode => `<li>${mode}</li>`).join('');
     
     const formatTimelineDate = (date) => {
         const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
@@ -550,7 +586,9 @@ const generateMap = () => {
         return `<div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div>`;
     };
 
-    timelineListEl.innerHTML = itinerary.map(day => {
+    // --- NEW TIMELINE RENDERING ---
+    timelineListEl.innerHTML = ''; // Clear the list first
+    itinerary.forEach(day => {
         const date = new Date(day.date);
         const dateText = formatTimelineDate(date);
         let locationText = '';
@@ -564,19 +602,50 @@ const generateMap = () => {
                     <i class="fas ${iconClass}"></i>
                     <span>${travelMode}</span>
                 </div>
-                <div class="timeline-travel-details">${day.from.name} → ${day.to.name}</div>
+                <div class="timeline-travel-details">
+                    <span class="timeline-badge">${day.from.name}</span> → <span class="timeline-badge">${day.to.name}</span>
+                </div>
             `;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
-            locationText = day.city.name;
+            locationText = `<div class="timeline-location-stay"><span class="timeline-badge">${day.city.name}</span></div>`;
             markerIndex = locations.findIndex(l => l.name === day.city.name);
         }
 
-        return `<li data-marker-index="${markerIndex}">
-                    <div class="timeline-date">${dateText}</div>
-                    <div class="timeline-location">${locationText}</div>
-                </li>`;
-    }).join('');
+        let activitiesHtml = '<p>No activities planned.</p>';
+        if (day.activities && (day.activities.morning.length > 0 || day.activities.afternoon.length > 0 || day.activities.evening.length > 0)) {
+            activitiesHtml = '<ul>';
+            if (day.activities.morning.length > 0) {
+                day.activities.morning.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            if (day.activities.afternoon.length > 0) {
+                day.activities.afternoon.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            if (day.activities.evening.length > 0) {
+                day.activities.evening.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            activitiesHtml += '</ul>';
+        }
+
+        const li = document.createElement('li');
+        li.className = 'timeline-item';
+        li.dataset.markerIndex = markerIndex;
+        li.innerHTML = `
+            <div class="timeline-item-header">
+                <div class="timeline-date">${dateText}</div>
+                <div class="timeline-location">${locationText}</div>
+                <div class="timeline-controls">
+                    <button class="btn btn-icon btn-sm zoom-to-marker-btn" title="Zoom to location"><i class="fas fa-crosshairs"></i></button>
+                    <span class="arrow">▼</span>
+                </div>
+            </div>
+            <div class="timeline-item-content" style="display: none;">
+                ${activitiesHtml}
+            </div>
+        `;
+        timelineListEl.appendChild(li);
+    });
+    // --- END NEW TIMELINE RENDERING ---
 
     // Show modal
     mapModalEl.style.display = 'flex';
@@ -675,6 +744,37 @@ const generateMap = () => {
         map.invalidateSize();
     }, 100);
 
+    // --- NEW CLICK LISTENER ---
+    timelineListEl.addEventListener('click', (e) => {
+        const zoomBtn = e.target.closest('.zoom-to-marker-btn');
+        const header = e.target.closest('.timeline-item-header');
+
+        if (zoomBtn) {
+            e.stopPropagation(); // prevent the header click from firing
+            const item = zoomBtn.closest('.timeline-item');
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                const marker = markers[markerIndex];
+                map.flyTo(marker.getLatLng(), 11, { duration: 0.5 });
+            }
+            return;
+        }
+
+        if (header) {
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('.arrow');
+
+            // Toggle display
+            const isVisible = content.style.display === 'block';
+            content.style.display = isVisible ? 'none' : 'block';
+
+            // Change arrow direction
+            if (arrow) {
+                arrow.innerHTML = isVisible ? '▼' : '▲';
+            }
+        }
+    });
+
     // Add event listeners for timeline hover
     document.querySelectorAll('#timelineList li').forEach(item => {
         item.addEventListener('mouseover', () => {
@@ -723,9 +823,11 @@ const travelBtn = document.getElementById('travelBtn');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
 const travelModeInput = document.getElementById('travelModeInput');
+const dayModalCloseBtn = document.getElementById('dayModalCloseBtn');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
+const generateImageUrlBtn = document.getElementById('generateImageURL');
 
 function openDayModal(dateString) {
     selectedDate = dateString;
@@ -860,6 +962,32 @@ tripCalendarEl.addEventListener('click', (e) => {
     }
 });
 
+// Auto fill Image URL field
+generateImageUrlBtn.addEventListener('click', async () => {
+
+    if(stayBtn.classList.contains('active')){
+
+        let city = document.getElementById('cityInput').value;
+        const oldPlaceholder = imageUrlInput.placeholder;
+        if (!imageUrlInput.value) imageUrlInput.placeholder = "Fetching image...";
+        const imageUrl = await getImageUrl(city);
+        // Restore placeholder
+        imageUrlInput.placeholder = oldPlaceholder;
+        imageUrlInput.value = imageUrl;
+
+    } else if (travelBtn.classList.contains('active')) {
+
+        let city = document.getElementById('toCityInput').value;
+        const oldPlaceholder = imageUrlInput.placeholder;
+        if (!imageUrlInput.value) imageUrlInput.placeholder = "Fetching image...";
+        const imageUrl = await getImageUrl(city);
+        // Restore placeholder
+        imageUrlInput.placeholder = oldPlaceholder;
+        imageUrlInput.value = imageUrl;
+
+    }
+});
+
 openCreateTripModalBtn.addEventListener('click', openCreateTripModal);
 closeTripModalBtn.addEventListener('click', closeTripModal);
 cancelTripBtn.addEventListener('click', closeTripModal);
@@ -935,6 +1063,7 @@ travelBtn.addEventListener('click', () => {
 document.querySelector('.close-btn').addEventListener('click', closeDayModal);
 
 cancelDayBtn.addEventListener('click', closeDayModal);
+dayModalCloseBtn.addEventListener('click', closeDayModal);
 
 clearDayBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear all data for this day?')) {

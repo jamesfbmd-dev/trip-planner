@@ -1,7 +1,5 @@
-@forward 'buttons';
-@forward 'calendar';
-@forward 'card';
-@forward 'form';
-@forward 'modal';
-@forward 'trip-list';
-@forward 'submenu';
+@import 'buttons';
+@import 'dashboard/index';
+@import 'calendar/index';
+@import 'map/index';
+@import 'modals/index';
