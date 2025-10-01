@@ -613,6 +613,124 @@ h2 {
   }
 }
 
+#mapModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+#mapModal .modal-content {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  max-height: 98vh;
+  display: flex;
+  flex-direction: column;
+}
+@media (min-width: 768px) {
+  #mapModal .modal-content {
+    padding: 30px;
+    max-width: 800px;
+  }
+}
+#mapModal .modal-content h3 {
+  font-weight: 300;
+  font-size: 1.5em;
+  margin-top: 0;
+}
+#mapModal .modal-content h3 > .date {
+  font-weight: 800;
+  color: #2D365A;
+}
+#mapModal .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 10px;
+  margin: 0 -10px;
+}
+#mapModal .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #6c757d;
+}
+#mapModal .modal-input-group {
+  margin-bottom: 15px;
+  position: relative;
+}
+#mapModal .modal-input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+#mapModal .modal-input-group input, #mapModal .modal-input-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+}
+#mapModal .autocomplete-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #e9ecef;
+  border-top: none;
+  background: #ffffff;
+  max-height: 200px;
+  overflow-y: auto;
+  position: absolute;
+  width: 100%;
+  z-index: 1001;
+  box-sizing: border-box;
+}
+#mapModal .autocomplete-list:empty {
+  display: none;
+}
+#mapModal .autocomplete-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+#mapModal .autocomplete-list li:hover, #mapModal .autocomplete-list li.active-item {
+  background-color: #f8f9fa;
+}
+#mapModal .modal-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+#mapModal .modal-footer .footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+@media (min-width: 576px) {
+  #mapModal .modal-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #mapModal .modal-footer .footer-actions {
+    flex-direction: row;
+    gap: 10px;
+  }
+}
 #mapModal .map-modal-content {
   display: flex;
   width: 100%;
@@ -824,8 +942,7 @@ h2 {
   /* Pointing right */
 }
 
-/* --- Modal --- */
-.modal {
+#dayModal {
   display: none;
   position: fixed;
   z-index: 1000;
@@ -837,8 +954,9 @@ h2 {
   justify-content: center;
   align-items: center;
   padding: 10px;
+  /* --- New Activities UI --- */
 }
-.modal .modal-content {
+#dayModal .modal-content {
   background-color: #ffffff;
   padding: 15px;
   border-radius: 8px;
@@ -850,27 +968,27 @@ h2 {
   flex-direction: column;
 }
 @media (min-width: 768px) {
-  .modal .modal-content {
+  #dayModal .modal-content {
     padding: 30px;
     max-width: 800px;
   }
 }
-.modal .modal-content h3 {
+#dayModal .modal-content h3 {
   font-weight: 300;
   font-size: 1.5em;
   margin-top: 0;
 }
-.modal .modal-content h3 > .date {
+#dayModal .modal-content h3 > .date {
   font-weight: 800;
   color: #2D365A;
 }
-.modal .modal-body {
+#dayModal .modal-body {
   max-height: 70vh;
   overflow-y: auto;
   padding: 10px;
   margin: 0 -10px;
 }
-.modal .close-btn {
+#dayModal .close-btn {
   position: absolute;
   top: 10px;
   right: 15px;
@@ -879,22 +997,22 @@ h2 {
   cursor: pointer;
   color: #6c757d;
 }
-.modal .modal-input-group {
+#dayModal .modal-input-group {
   margin-bottom: 15px;
   position: relative;
 }
-.modal .modal-input-group label {
+#dayModal .modal-input-group label {
   display: block;
   margin-bottom: 5px;
   font-weight: 500;
 }
-.modal .modal-input-group input, .modal .modal-input-group select {
+#dayModal .modal-input-group input, #dayModal .modal-input-group select {
   width: 100%;
   padding: 10px;
   border: 1px solid #e9ecef;
   border-radius: 5px;
 }
-.modal .autocomplete-list {
+#dayModal .autocomplete-list {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -908,17 +1026,17 @@ h2 {
   z-index: 1001;
   box-sizing: border-box;
 }
-.modal .autocomplete-list:empty {
+#dayModal .autocomplete-list:empty {
   display: none;
 }
-.modal .autocomplete-list li {
+#dayModal .autocomplete-list li {
   padding: 10px;
   cursor: pointer;
 }
-.modal .autocomplete-list li:hover, .modal .autocomplete-list li.active-item {
+#dayModal .autocomplete-list li:hover, #dayModal .autocomplete-list li.active-item {
   background-color: #f8f9fa;
 }
-.modal .modal-footer {
+#dayModal .modal-footer {
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -927,26 +1045,21 @@ h2 {
   padding-top: 20px;
   border-top: 1px solid #e9ecef;
 }
-.modal .modal-footer .footer-actions {
+#dayModal .modal-footer .footer-actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 @media (min-width: 576px) {
-  .modal .modal-footer {
+  #dayModal .modal-footer {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
   }
-  .modal .modal-footer .footer-actions {
+  #dayModal .modal-footer .footer-actions {
     flex-direction: row;
     gap: 10px;
   }
-}
-
-#dayModal {
-  /* --- New Activities UI --- */
-  /* --- New Activities UI --- */
 }
 #dayModal .day-type-control {
   display: flex;
@@ -1055,65 +1168,124 @@ h2 {
 #dayModal .activities-container .delete-activity-btn:hover i {
   color: #c82333;
 }
-#dayModal #travelModeInput {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.7em top 50%, 0 0;
-  background-size: 0.65em auto, 100%;
-}
-#dayModal .activities-container {
-  padding-top: 10px;
-}
-#dayModal .activities-container .activity-group {
-  margin-bottom: 15px;
-}
-#dayModal .activities-container .activity-group:last-child {
-  margin-bottom: 0;
-}
-#dayModal .activities-container .activity-header {
-  display: flex;
-  justify-content: space-between;
+
+#tripModal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  justify-content: center;
   align-items: center;
-  margin-bottom: 10px;
+  padding: 10px;
 }
-#dayModal .activities-container .activity-header h5 {
-  margin: 0;
-  color: #2D365A;
-  font-size: 1em;
-  font-weight: 600;
-}
-#dayModal .activities-container .add-activity-form {
+#tripModal .modal-content {
+  background-color: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+  max-height: 98vh;
   display: flex;
-  gap: 5px;
-  margin-bottom: 10px;
+  flex-direction: column;
 }
-#dayModal .activities-container .add-activity-form input {
-  flex-grow: 1;
+@media (min-width: 768px) {
+  #tripModal .modal-content {
+    padding: 30px;
+    max-width: 800px;
+  }
 }
-#dayModal .activities-container .activity-list {
+#tripModal .modal-content h3 {
+  font-weight: 300;
+  font-size: 1.5em;
+  margin-top: 0;
+}
+#tripModal .modal-content h3 > .date {
+  font-weight: 800;
+  color: #2D365A;
+}
+#tripModal .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 10px;
+  margin: 0 -10px;
+}
+#tripModal .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #6c757d;
+}
+#tripModal .modal-input-group {
+  margin-bottom: 15px;
+  position: relative;
+}
+#tripModal .modal-input-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+#tripModal .modal-input-group input, #tripModal .modal-input-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #e9ecef;
+  border-radius: 5px;
+}
+#tripModal .autocomplete-list {
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 150px;
+  border: 1px solid #e9ecef;
+  border-top: none;
+  background: #ffffff;
+  max-height: 200px;
   overflow-y: auto;
+  position: absolute;
+  width: 100%;
+  z-index: 1001;
+  box-sizing: border-box;
 }
-#dayModal .activities-container .activity-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px;
+#tripModal .autocomplete-list:empty {
+  display: none;
+}
+#tripModal .autocomplete-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+#tripModal .autocomplete-list li:hover, #tripModal .autocomplete-list li.active-item {
   background-color: #f8f9fa;
-  border-radius: 4px;
-  margin-bottom: 5px;
 }
-#dayModal .activities-container .delete-activity-btn i {
-  color: #dc3545;
+#tripModal .modal-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
 }
-#dayModal .activities-container .delete-activity-btn:hover i {
-  color: #c82333;
+#tripModal .modal-footer .footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+@media (min-width: 576px) {
+  #tripModal .modal-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  #tripModal .modal-footer .footer-actions {
+    flex-direction: row;
+    gap: 10px;
+  }
 }
 
 .dashboard-header {

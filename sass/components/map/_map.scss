@@ -1,5 +1,7 @@
 // Styles for the map modal
 #mapModal {
+    @include modal-base;
+
     .map-modal-content {
         display: flex;
         width: 100%;
