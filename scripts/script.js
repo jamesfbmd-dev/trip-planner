@@ -466,7 +466,8 @@ const clearDayData = (dateString) => {
 const mapModalEl = document.getElementById('mapModal');
 const mapSidebarEl = document.getElementById('mapSidebar');
 const mapTripNameEl = document.getElementById('mapTripName');
-const mapLocationListEl = document.getElementById('mapLocationList');
+const overviewDestinationsListEl = document.getElementById('overviewDestinationsList');
+const overviewTravelModesListEl = document.getElementById('overviewTravelModesList');
 const timelineListEl = document.getElementById('timelineList');
 const sidebarCollapseBtnEl = document.getElementById('sidebarCollapseBtn');
 const closeMapBtnEl = document.querySelector('.close-map-btn');
@@ -516,6 +517,7 @@ const generateMap = () => {
     const itinerary = dates.map(date => ({ date, ...currentTrip.days[date] }));
     const locations = [];
     const locationSet = new Set();
+    const travelModes = new Set();
 
     itinerary.forEach(day => {
         if (day.type === 'travel') {
@@ -527,6 +529,9 @@ const generateMap = () => {
                 locations.push(day.to);
                 locationSet.add(day.to.name);
             }
+            if (day.travelMode) {
+                travelModes.add(day.travelMode);
+            }
         } else {
             if (!locationSet.has(day.city.name)) {
                 locations.push(day.city);
@@ -535,8 +540,9 @@ const generateMap = () => {
         }
     });
 
-    // Populate sidebar
-    mapLocationListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
+    // Populate Overview
+    overviewDestinationsListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
+    overviewTravelModesListEl.innerHTML = [...travelModes].map(mode => `<li>${mode}</li>`).join('');
     
     const formatTimelineDate = (date) => {
         const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
@@ -550,7 +556,9 @@ const generateMap = () => {
         return `<div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div>`;
     };
 
-    timelineListEl.innerHTML = itinerary.map(day => {
+    // --- NEW TIMELINE RENDERING ---
+    timelineListEl.innerHTML = ''; // Clear the list first
+    itinerary.forEach(day => {
         const date = new Date(day.date);
         const dateText = formatTimelineDate(date);
         let locationText = '';
@@ -564,19 +572,50 @@ const generateMap = () => {
                     <i class="fas ${iconClass}"></i>
                     <span>${travelMode}</span>
                 </div>
-                <div class="timeline-travel-details">${day.from.name} → ${day.to.name}</div>
+                <div class="timeline-travel-details">
+                    <span class="timeline-badge">${day.from.name}</span> → <span class="timeline-badge">${day.to.name}</span>
+                </div>
             `;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
-            locationText = day.city.name;
+            locationText = `<div class="timeline-location-stay"><span class="timeline-badge">${day.city.name}</span></div>`;
             markerIndex = locations.findIndex(l => l.name === day.city.name);
         }
 
-        return `<li data-marker-index="${markerIndex}">
-                    <div class="timeline-date">${dateText}</div>
-                    <div class="timeline-location">${locationText}</div>
-                </li>`;
-    }).join('');
+        let activitiesHtml = '<p>No activities planned.</p>';
+        if (day.activities && (day.activities.morning.length > 0 || day.activities.afternoon.length > 0 || day.activities.evening.length > 0)) {
+            activitiesHtml = '<ul>';
+            if (day.activities.morning.length > 0) {
+                day.activities.morning.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            if (day.activities.afternoon.length > 0) {
+                day.activities.afternoon.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            if (day.activities.evening.length > 0) {
+                day.activities.evening.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            }
+            activitiesHtml += '</ul>';
+        }
+
+        const li = document.createElement('li');
+        li.className = 'timeline-item';
+        li.dataset.markerIndex = markerIndex;
+        li.innerHTML = `
+            <div class="timeline-item-header">
+                <div class="timeline-date">${dateText}</div>
+                <div class="timeline-location">${locationText}</div>
+                <div class="timeline-controls">
+                    <button class="btn btn-icon btn-sm zoom-to-marker-btn" title="Zoom to location"><i class="fas fa-crosshairs"></i></button>
+                    <span class="arrow">▼</span>
+                </div>
+            </div>
+            <div class="timeline-item-content" style="display: none;">
+                ${activitiesHtml}
+            </div>
+        `;
+        timelineListEl.appendChild(li);
+    });
+    // --- END NEW TIMELINE RENDERING ---
 
     // Show modal
     mapModalEl.style.display = 'flex';
@@ -674,6 +713,37 @@ const generateMap = () => {
     setTimeout(() => {
         map.invalidateSize();
     }, 100);
+
+    // --- NEW CLICK LISTENER ---
+    timelineListEl.addEventListener('click', (e) => {
+        const zoomBtn = e.target.closest('.zoom-to-marker-btn');
+        const header = e.target.closest('.timeline-item-header');
+
+        if (zoomBtn) {
+            e.stopPropagation(); // prevent the header click from firing
+            const item = zoomBtn.closest('.timeline-item');
+            const markerIndex = parseInt(item.dataset.markerIndex, 10);
+            if (markerIndex >= 0 && markers[markerIndex]) {
+                const marker = markers[markerIndex];
+                map.flyTo(marker.getLatLng(), 12, { duration: 0.5 });
+            }
+            return;
+        }
+
+        if (header) {
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('.arrow');
+
+            // Toggle display
+            const isVisible = content.style.display === 'block';
+            content.style.display = isVisible ? 'none' : 'block';
+
+            // Change arrow direction
+            if (arrow) {
+                arrow.innerHTML = isVisible ? '▼' : '▲';
+            }
+        }
+    });
 
     // Add event listeners for timeline hover
     document.querySelectorAll('#timelineList li').forEach(item => {

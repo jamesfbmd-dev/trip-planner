@@ -1,5 +1,3 @@
-@use '../abstracts' as *;
-
 .map-sidebar {
     position: absolute;
     left: 0;
@@ -16,7 +14,7 @@
     z-index: 1005;
 
     @include respond-to('md') {
-        width: 350px; // Wider on tablet and up
+        width: 450px; // Wider on tablet and up
         padding: 20px;
     }
 }
@@ -25,7 +23,7 @@
     left: -280px;
 
     @include respond-to('md') {
-        left: -350px;
+        left: -450px;
     }
 }
 
@@ -43,6 +41,17 @@
 .sidebar-content h4 {
     margin-top: 0;
     margin-bottom: 10px;
+}
+
+.sidebar-content h5 {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-size: 1em;
+    font-weight: 600;
+    color: $primary-color;
+    &.mt-3 {
+        margin-top: 20px;
+    }
 }
 
 .expandable-section {
@@ -69,11 +78,6 @@
 
 .arrow {
     font-size: 1.2em;
-    transition: transform 0.3s ease;
-}
-
-.arrow.expanded {
-    transform: rotate(180deg);
 }
 
 .expandable-content {
@@ -87,19 +91,7 @@
 }
 
 .sidebar-content li {
-    padding: 8px 0;
-    border-bottom: 1px solid #eee;
-}
-
-#timelineList li {
-    cursor: pointer;
-    padding: 10px 5px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-#timelineList li:hover {
-    background-color: $background-color;
+    padding: 4px 0;
 }
 
 #timelineList .timeline-date {
@@ -111,6 +103,69 @@
 #timelineList .timeline-location {
     font-size: 0.9em;
     padding-left: 10px;
+}
+
+.timeline-item {
+    border-bottom: 1px solid $border-color;
+    padding: 10px 0;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.timeline-item-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: $background-color;
+    }
+
+    .timeline-date {
+        flex: 0 0 110px;
+    }
+
+    .timeline-location {
+        flex-grow: 1;
+        padding-left: 0;
+    }
+
+    .timeline-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-shrink: 0;
+    }
+}
+
+.timeline-item-content {
+    padding: 10px 5px 0 15px;
+    font-size: 0.9em;
+
+    ul {
+        list-style: disc;
+        padding-left: 20px;
+    }
+}
+
+.timeline-location-stay {
+    font-weight: 600;
+}
+
+.timeline-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 0.85em;
+    font-weight: 500;
+    color: $text-on-primary;
+    background-color: $primary-color;
+    border-radius: 4px;
 }
 
 .timeline-weekday {
@@ -158,7 +213,7 @@
     z-index: 1010;
 
     @include respond-to('md') {
-        left: 350px;
+        left: 450px;
     }
 }
 
