@@ -1,3 +1,5 @@
+import { getImageUrl } from './pixabay-api.js';
+
 // --- DATA & STATE MANAGEMENT ---
 const EUROPEAN_CITIES = [
     { name: "London", lat: 51.5074, lng: -0.1278 },
@@ -797,6 +799,7 @@ const dayModalCloseBtn = document.getElementById('dayModalCloseBtn');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
+const generateImageUrlBtn = document.getElementById('generateImageUrlBtn');
 
 function openDayModal(dateString) {
     selectedDate = dateString;
@@ -1028,6 +1031,38 @@ toCityInput.addEventListener('input', () => handleAutocomplete(toCityInput, toCi
 setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
+
+generateImageUrlBtn.addEventListener('click', async () => {
+    const isTravelDay = travelBtn.classList.contains('active');
+    let query = '';
+
+    if (isTravelDay) {
+        query = toCityInput.value.trim();
+    } else {
+        query = cityInput.value.trim();
+    }
+
+    if (!query) {
+        alert('Please enter a city name first.');
+        return;
+    }
+
+    // Disable button to prevent multiple clicks
+    generateImageUrlBtn.disabled = true;
+    generateImageUrlBtn.textContent = 'Generating...';
+
+    const imageUrl = await getImageUrl(query);
+
+    if (imageUrl) {
+        imageUrlInput.value = imageUrl;
+    } else {
+        alert(`Could not find an image for "${query}". Please try a different city or add a URL manually.`);
+    }
+
+    // Re-enable button
+    generateImageUrlBtn.disabled = false;
+    generateImageUrlBtn.textContent = 'Generate Image URL';
+});
 
 // --- Sidebar Expand/Collapse ---
 document.querySelectorAll('.expandable-header').forEach(header => {
