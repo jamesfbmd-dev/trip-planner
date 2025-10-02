@@ -732,28 +732,38 @@ const updateMultiNightUI = () => {
     const numNights = parseInt(nightsInput.value, 10);
 
     if (isNaN(numNights) || numNights < 1) {
-        checkoutDateDisplay.textContent = '';
+        checkoutDateDisplay.innerHTML = '';
+        overwriteWarning.innerHTML = '';
         overwriteWarning.style.display = 'none';
         return;
     }
 
+    // Update checkout date display (without the "Check-out:" prefix)
     const checkOutDate = new Date(selectedDate);
     checkOutDate.setDate(checkOutDate.getDate() + numNights);
-    checkoutDateDisplay.innerHTML = `Check-out: <span class="date">${formatDateAsText(formatDate(checkOutDate))}</span>`;
+    checkoutDateDisplay.innerHTML = `<span class="date">${formatDateAsText(formatDate(checkOutDate))}</span>`;
 
-    let conflictFound = false;
+    // Check for conflicts and list the affected dates
+    const conflictingDates = [];
     if (numNights > 0) {
         for (let i = 1; i < numNights; i++) {
             const date = new Date(selectedDate);
             date.setDate(date.getDate() + i);
             const dateString = formatDate(date);
             if (currentTrip.days[dateString]) {
-                conflictFound = true;
-                break;
+                conflictingDates.push(dateString);
             }
         }
     }
-    overwriteWarning.style.display = conflictFound ? 'block' : 'none';
+
+    if (conflictingDates.length > 0) {
+        const warningMessage = `This will overwrite existing plans on:<br/>${conflictingDates.map(d => formatDateAsText(d)).join('<br/>')}`;
+        overwriteWarning.innerHTML = warningMessage;
+        overwriteWarning.style.display = 'block';
+    } else {
+        overwriteWarning.innerHTML = '';
+        overwriteWarning.style.display = 'none';
+    }
 };
 
 function openDayModal(dateString) {
@@ -905,6 +915,46 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
         return;
     }
 
+    // Handle the prompted travel day creation
+    if (!isTravel && numNights === 1) {
+        const nextDate = new Date(selectedDate);
+        nextDate.setDate(nextDate.getDate() + 1);
+        const nextDateString = formatDate(nextDate);
+        const nextDayData = currentTrip.days[nextDateString];
+
+        if (nextDayData && nextDayData.type === 'stay' && nextDayData.city.name !== stayCity.name) {
+            const confirmTravel = confirm(
+                `You have a stay in ${nextDayData.city.name} planned for tomorrow. Would you like to change it to a travel day from ${stayCity.name} to ${nextDayData.city.name}?`
+            );
+
+            if (confirmTravel) {
+                // Save the current day as a stay
+                const currentDayData = {
+                    type: 'stay',
+                    city: { name: stayCity.name, lat: stayCity.lat, lng: stayCity.lng },
+                    activities: { ...modalActivities },
+                    imageUrl: imageUrlInput.value.trim()
+                };
+                saveDayData(selectedDate, currentDayData);
+
+                // Update the next day to be a travel day
+                const newNextDayData = {
+                    type: 'travel',
+                    from: { name: stayCity.name, lat: stayCity.lat, lng: stayCity.lng },
+                    to: { name: nextDayData.city.name, lat: nextDayData.city.lat, lng: nextDayData.city.lng },
+                    travelMode: 'Train', // Default travel mode
+                    activities: nextDayData.activities || { morning: [], afternoon: [], evening: [] },
+                    imageUrl: nextDayData.imageUrl || ''
+                };
+                saveDayData(nextDateString, newNextDayData);
+
+                closeDayModal();
+                return; // Exit after handling this special case
+            }
+        }
+    }
+
+    // Proceed with the original multi-night save logic
     const firstDayActivities = { ...modalActivities };
     const firstDayImageUrl = imageUrlInput.value.trim();
 
