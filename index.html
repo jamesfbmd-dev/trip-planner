@@ -146,58 +146,79 @@
                 </div>
 
                 <div class="inputs-container">
-                <div id="cityInputs" class="city-inputs-group">
-                    <div class="input-width-limiter">
-                        <div class="modal-input-group">
-                            <label for="cityInput">City:</label>
-                            <input type="text" id="cityInput" placeholder="e.g., Paris" autocomplete="off">
-                            <ul id="cityAutocompleteList" class="autocomplete-list"></ul>
+                    <div id="cityInputs" class="city-inputs-group">
+                        <div class="input-width-limiter">
+                            <div class="modal-input-group">
+                                <label for="cityInput">City:</label>
+                                <input type="text" id="cityInput" placeholder="e.g., Paris" autocomplete="off">
+                                <ul id="cityAutocompleteList" class="autocomplete-list"></ul>
+                            </div>
                         </div>
-                        <div class="modal-input-group">
-                            <label for="nightsInput">Number of nights:</label>
-                            <div class="number-spinner">
-                                <button id="decreaseNightsBtn" class="spinner-btn">-</button>
-                                <input type="number" id="nightsInput" value="1" min="1">
-                                <button id="increaseNightsBtn" class="spinner-btn">+</button>
+                        <div class="multi-night-controls">
+                            <div class="input-width-limiter">
+                                <div class="modal-input-group">
+                                    <label for="nightsInputStay">Number of nights:</label>
+                                    <div class="number-spinner">
+                                        <button id="decreaseNightsBtnStay" class="spinner-btn">-</button>
+                                        <input type="number" id="nightsInputStay" value="1" min="1">
+                                        <button id="increaseNightsBtnStay" class="spinner-btn">+</button>
+                                    </div>
+                                </div>
+                                <div class="modal-input-group">
+                                    <label>Check-out Date:</label>
+                                    <span id="checkoutDateDisplayStay" class="read-only-display"></span>
+                                </div>
+                                <p id="overwriteWarningStay" class="overwrite-warning" style="display: none;">This will overwrite existing plans on subsequent days.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="travelInputs" class="travel-inputs-group">
+                        <div class="input-width-limiter">
+                            <div class="modal-input-group">
+                                <label for="fromCityInput">From:</label>
+                                <input type="text" id="fromCityInput" placeholder="e.g., London" autocomplete="off">
+                                <ul id="fromCityAutocompleteList" class="autocomplete-list"></ul>
+                            </div>
+                        </div>
+                        <div class="input-width-limiter">
+                            <div class="modal-input-group">
+                                <label for="toCityInput">To:</label>
+                                <input type="text" id="toCityInput" placeholder="e.g., Paris" autocomplete="off">
+                                <ul id="toCityAutocompleteList" class="autocomplete-list"></ul>
                             </div>
                         </div>
                         <div class="modal-input-group">
-                            <label>Check-out Date:</label>
-                            <span id="checkoutDateDisplay" class="read-only-display"></span>
+                            <label for="travelModeInput">Travel Mode:</label>
+                            <select id="travelModeInput">
+                                <option value="Car">Car</option>
+                                <option value="Train">Train</option>
+                                <option value="Flight">Flight</option>
+                                <option value="Bus">Bus</option>
+                                <option value="Coach">Coach</option>
+                                <option value="Ferry">Ferry</option>
+                                <option value="Taxi">Taxi</option>
+                            </select>
                         </div>
-                        <p id="overwriteWarning" class="inline-warning"></p>
+                        <div class="multi-night-controls">
+                            <div class="input-width-limiter">
+                                <div class="modal-input-group">
+                                    <label for="nightsInputTravel">Number of nights:</label>
+                                    <div class="number-spinner">
+                                        <button id="decreaseNightsBtnTravel" class="spinner-btn">-</button>
+                                        <input type="number" id="nightsInputTravel" value="1" min="1">
+                                        <button id="increaseNightsBtnTravel" class="spinner-btn">+</button>
+                                    </div>
+                                </div>
+                                 <div class="modal-input-group">
+                                    <label>Check-out Date:</label>
+                                    <span id="checkoutDateDisplayTravel" class="read-only-display"></span>
+                                </div>
+                               <p id="overwriteWarningTravel" class="overwrite-warning" style="display: none;">This will overwrite existing plans on subsequent days.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div id="travelInputs" class="travel-inputs-group">
-                    <div class="input-width-limiter">
-                        <div class="modal-input-group">
-                            <label for="fromCityInput">From:</label>
-                            <input type="text" id="fromCityInput" placeholder="e.g., London" autocomplete="off">
-                            <ul id="fromCityAutocompleteList" class="autocomplete-list"></ul>
-                        </div>
-                    </div>
-                    <div class="input-width-limiter">
-                        <div class="modal-input-group">
-                            <label for="toCityInput">To:</label>
-                            <input type="text" id="toCityInput" placeholder="e.g., Paris" autocomplete="off">
-                            <ul id="toCityAutocompleteList" class="autocomplete-list"></ul>
-                        </div>
-                    </div>
-                    <div class="modal-input-group">
-                        <label for="travelModeInput">Travel Mode:</label>
-                        <select id="travelModeInput">
-                            <option value="Car">Car</option>
-                            <option value="Train">Train</option>
-                            <option value="Flight">Flight</option>
-                            <option value="Bus">Bus</option>
-                            <option value="Coach">Coach</option>
-                            <option value="Ferry">Ferry</option>
-                            <option value="Taxi">Taxi</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
 
             <div class="expandable-section modal-expandable">
                 <div class="expandable-header">

@@ -142,4 +142,68 @@
             }
         }
     }
+
+    .multi-night-controls {
+        padding-top: 15px;
+        margin-top: 15px;
+        border-top: 1px solid $border-color;
+
+        .modal-input-group {
+            max-width: 350px;
+        }
+    }
+
+    .number-spinner {
+        display: flex;
+        align-items: center;
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            border: 1px solid $border-color;
+            border-radius: $btn-border-radius;
+            text-align: center;
+            width: 60px;
+            margin: 0 5px;
+            padding: 8px;
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        }
+
+        .spinner-btn {
+            background-color: $primary-color;
+            color: $text-on-primary;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: $btn-primary-hover-bg;
+            }
+
+            &:active {
+                background-color: $btn-primary-active-bg;
+            }
+        }
+    }
+
+    .read-only-display {
+        padding: 8px 0;
+        font-weight: 500;
+        color: $text-color;
+    }
+
+    .overwrite-warning {
+        color: $btn-danger-bg;
+        font-size: 14px;
+        margin-top: 10px;
+        min-height: 20px; // Reserve space to prevent layout shift
+    }
 }

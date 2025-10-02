@@ -1248,6 +1248,59 @@ h2 {
 #dayModal .activities-container .delete-activity-btn:hover i {
   color: #c82333;
 }
+#dayModal .multi-night-controls {
+  padding-top: 15px;
+  margin-top: 15px;
+  border-top: 1px solid #e9ecef;
+}
+#dayModal .multi-night-controls .modal-input-group {
+  max-width: 350px;
+}
+#dayModal .number-spinner {
+  display: flex;
+  align-items: center;
+}
+#dayModal .number-spinner input[type=number] {
+  -moz-appearance: textfield;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  text-align: center;
+  width: 60px;
+  margin: 0 5px;
+  padding: 8px;
+}
+#dayModal .number-spinner input[type=number]::-webkit-outer-spin-button, #dayModal .number-spinner input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#dayModal .number-spinner .spinner-btn {
+  background-color: #2D365A;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+#dayModal .number-spinner .spinner-btn:hover {
+  background-color: #222a46;
+}
+#dayModal .number-spinner .spinner-btn:active {
+  background-color: #1a2035;
+}
+#dayModal .read-only-display {
+  padding: 8px 0;
+  font-weight: 500;
+  color: #343a40;
+}
+#dayModal .overwrite-warning {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 10px;
+  min-height: 20px;
+}
 
 #tripModal {
   display: none;
@@ -1372,48 +1425,6 @@ h2 {
     flex-direction: row;
     gap: 10px;
   }
-}
-
-.number-spinner {
-  display: flex;
-  align-items: center;
-}
-.number-spinner input[type=number] {
-  -moz-appearance: textfield;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  text-align: center;
-  width: 60px;
-  margin: 0 5px;
-  padding: 8px;
-}
-.number-spinner input[type=number]::-webkit-outer-spin-button, .number-spinner input[type=number]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.number-spinner .spinner-btn {
-  background-color: #2D365A;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-.number-spinner .spinner-btn:hover {
-  background-color: #222a46;
-}
-.number-spinner .spinner-btn:active {
-  background-color: #1a2035;
-}
-
-.inline-warning {
-  color: #dc3545;
-  font-size: 14px;
-  margin-top: 10px;
-  min-height: 20px;
 }
 
 .dashboard-header {

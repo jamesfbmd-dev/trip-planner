@@ -148,6 +148,7 @@ const formatDate = (date) => {
 };
 
 const formatDateAsText = (dateString) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
     const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
     const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
@@ -345,19 +346,16 @@ const renderCalendar = () => {
     const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
     
-    // Set display for month and year
     monthYearDisplay.textContent = currentDate.toLocaleString('default', { month: 'long', year: 'numeric' });
     
-    const startDayOfWeek = firstDayOfMonth.getDay(); // 0 for Sunday, 1 for Monday, etc.
+    const startDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; // Monday is 0
     
-    // Add blank cells for days from previous month
     for(let i = 0; i < startDayOfWeek; i++) {
         const blankCell = document.createElement('div');
         blankCell.classList.add('day-cell', 'inactive');
         calendarGridEl.appendChild(blankCell);
     }
 
-    // Add cells for each day of the current month
     for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
         const dayDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
         const dateString = formatDate(dayDate);
@@ -456,7 +454,6 @@ const renderDayByDayView = () => {
         dayCardsContainer.appendChild(card);
     }
 
-    // Handle navigation button states
     prevDayCardBtn.disabled = dayCardStartIndex === 0;
     nextDayCardBtn.disabled = dayCardStartIndex >= tripDays.length - cardsPerPage;
 };
@@ -478,7 +475,7 @@ const saveDayData = (dateString, data) => {
     const trips = getTrips();
     trips[currentTripId].days[dateString] = data;
     saveTrips(trips);
-    currentTrip = trips[currentTripId]; // Update the currentTrip state
+    currentTrip = trips[currentTripId];
     renderTripView();
 };
 
@@ -487,7 +484,7 @@ const clearDayData = (dateString) => {
     if (trips[currentTripId] && trips[currentTripId].days[dateString]) {
         delete trips[currentTripId].days[dateString];
         saveTrips(trips);
-        currentTrip = trips[currentTripId]; // Update the currentTrip state
+        currentTrip = trips[currentTripId];
         renderTripView();
     }
 };
@@ -510,22 +507,18 @@ let animatedPolylines = [];
 function getCurvedPoints(latlng1, latlng2) {
     const p1 = { x: latlng1.lat, y: latlng1.lng };
     const p2 = { x: latlng2.lat, y: latlng2.lng };
-
     const offsetX = p2.x - p1.x;
     const offsetY = p2.y - p1.y;
-
     const angle = Math.atan2(offsetY, offsetX);
     const distance = Math.sqrt(Math.pow(offsetX, 2) + Math.pow(offsetY, 2));
     const curveAmount = 0.15;
-
     const mid = { x: p1.x + offsetX / 2, y: p1.y + offsetY / 2 };
     const controlPoint = {
         x: mid.x + (distance * curveAmount) * Math.cos(angle - Math.PI / 2),
         y: mid.y + (distance * curveAmount) * Math.sin(angle - Math.PI / 2)
     };
-
     const points = [];
-    const numPoints = 30; // Number of points to define the curve
+    const numPoints = 30;
     for (let i = 0; i <= numPoints; i++) {
         const t = i / numPoints;
         const lat = (1 - t) * (1 - t) * p1.x + 2 * (1 - t) * t * controlPoint.x + t * t * p2.x;
@@ -537,96 +530,62 @@ function getCurvedPoints(latlng1, latlng2) {
 
 const generateMap = () => {
     mapTripNameEl.textContent = currentTrip.name;
-
     const dates = Object.keys(currentTrip.days).sort();
     if (dates.length === 0) {
         alert("No itinerary data to generate a map.");
         return;
     }
-
     const itinerary = dates.map(date => ({ date, ...currentTrip.days[date] }));
     const locations = [];
     const locationSet = new Set();
     const travelModes = new Set();
-
     itinerary.forEach(day => {
         if (day.type === 'travel') {
-            if (!locationSet.has(day.from.name)) {
-                locations.push(day.from);
-                locationSet.add(day.from.name);
-            }
-            if (!locationSet.has(day.to.name)) {
-                locations.push(day.to);
-                locationSet.add(day.to.name);
-            }
-            if (day.travelMode) {
-                travelModes.add(day.travelMode);
-            }
+            if (!locationSet.has(day.from.name)) locations.push(day.from);
+            locationSet.add(day.from.name);
+            if (!locationSet.has(day.to.name)) locations.push(day.to);
+            locationSet.add(day.to.name);
+            if (day.travelMode) travelModes.add(day.travelMode);
         } else {
-            if (!locationSet.has(day.city.name)) {
-                locations.push(day.city);
-                locationSet.add(day.city.name);
-            }
+            if (!locationSet.has(day.city.name)) locations.push(day.city);
+            locationSet.add(day.city.name);
         }
     });
-
-    // Populate Overview
     overviewDestinationsListEl.innerHTML = locations.map(loc => `<li>${loc.name}</li>`).join('');
     overviewTravelModesListEl.innerHTML = [...travelModes].map(mode => `<li>${mode}</li>`).join('');
-    
     const formatTimelineDate = (date) => {
         const weekday = new Intl.DateTimeFormat("en-GB", { weekday: "long" }).format(date);
         const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
         const day = date.getDate();
         const year = date.getFullYear().toString().slice(-2);
-        const suffix = (d => {
-            if (d > 3 && d < 21) return "th";
-            return ["th","st","nd","rd"][Math.min(d % 10, 4)];
-        })(day);
+        const suffix = (d => (d > 3 && d < 21) ? "th" : ["th", "st", "nd", "rd"][Math.min(d % 10, 4)])(day);
         return `<div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div>`;
     };
-
-    // --- NEW TIMELINE RENDERING ---
-    timelineListEl.innerHTML = ''; // Clear the list first
+    timelineListEl.innerHTML = '';
     itinerary.forEach(day => {
         const date = new Date(day.date);
         const dateText = formatTimelineDate(date);
         let locationText = '';
         let markerIndex = -1;
-
         if (day.type === 'travel') {
             const travelMode = day.travelMode || 'Car';
             const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
             locationText = `
-                <div class="timeline-travel-mode">
-                    <i class="fas ${iconClass}"></i>
-                    <span>${travelMode}</span>
-                </div>
-                <div class="timeline-travel-details">
-                    <span class="timeline-badge">${day.from.name}</span> → <span class="timeline-badge">${day.to.name}</span>
-                </div>
-            `;
+                <div class="timeline-travel-mode"><i class="fas ${iconClass}"></i><span>${travelMode}</span></div>
+                <div class="timeline-travel-details"><span class="timeline-badge">${day.from.name}</span> → <span class="timeline-badge">${day.to.name}</span></div>`;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
             locationText = `<div class="timeline-location-stay"><span class="timeline-badge">${day.city.name}</span></div>`;
             markerIndex = locations.findIndex(l => l.name === day.city.name);
         }
-
         let activitiesHtml = '<p>No activities planned.</p>';
         if (day.activities && (day.activities.morning.length > 0 || day.activities.afternoon.length > 0 || day.activities.evening.length > 0)) {
             activitiesHtml = '<ul>';
-            if (day.activities.morning.length > 0) {
-                day.activities.morning.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
-            }
-            if (day.activities.afternoon.length > 0) {
-                day.activities.afternoon.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
-            }
-            if (day.activities.evening.length > 0) {
-                day.activities.evening.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
-            }
+            if (day.activities.morning.length > 0) day.activities.morning.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            if (day.activities.afternoon.length > 0) day.activities.afternoon.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
+            if (day.activities.evening.length > 0) day.activities.evening.forEach(act => { activitiesHtml += `<li>${act}</li>`; });
             activitiesHtml += '</ul>';
         }
-
         const li = document.createElement('li');
         li.className = 'timeline-item';
         li.dataset.markerIndex = markerIndex;
@@ -639,159 +598,79 @@ const generateMap = () => {
                     <span class="arrow">▼</span>
                 </div>
             </div>
-            <div class="timeline-item-content" style="display: none;">
-                ${activitiesHtml}
-            </div>
-        `;
+            <div class="timeline-item-content" style="display: none;">${activitiesHtml}</div>`;
         timelineListEl.appendChild(li);
     });
-    // --- END NEW TIMELINE RENDERING ---
-
-    // Show modal
     mapModalEl.style.display = 'flex';
-
-    if (map) {
-        map.remove();
-    }
+    if (map) map.remove();
     map = L.map('fullScreenMap').setView([50, 10], 4);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // Clear previous markers and polylines
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(map);
     markers.forEach(marker => marker.remove());
     polylines.forEach(polyline => polyline.remove());
     markers = [];
     polylines = [];
-
     locations.forEach((loc, index) => {
-        const iconHtml = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" width="36" height="46">
-                <path d="M14,0 C21.732,0 28,5.641 28,12.6 C28,23.963 14,36 14,36 C14,36 0,24.064 0,12.6 C0,5.641 6.268,0 14,0 Z" fill="var(--primary-color)"/>
-                <text x="14" y="14" dominant-baseline="middle" font-size="11" font-weight="bold" text-anchor="middle" fill="white">${index + 1}</text>
-            </svg>`;
-
-        const customIcon = L.divIcon({
-            className: 'day-marker',
-            html: iconHtml,
-            iconSize: [36, 46],
-            iconAnchor: [18, 46]
-        });
-        const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
-            .addTo(map)
-            .bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
-
+        const iconHtml = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" width="36" height="46"><path d="M14,0 C21.732,0 28,5.641 28,12.6 C28,23.963 14,36 14,36 C14,36 0,24.064 0,12.6 C0,5.641 6.268,0 14,0 Z" fill="var(--primary-color)"/><text x="14" y="14" dominant-baseline="middle" font-size="11" font-weight="bold" text-anchor="middle" fill="white">${index + 1}</text></svg>`;
+        const customIcon = L.divIcon({ className: 'day-marker', html: iconHtml, iconSize: [36, 46], iconAnchor: [18, 46] });
+        const marker = L.marker([loc.lat, loc.lng], { icon: customIcon }).addTo(map).bindPopup(`<b>${index + 1}. ${loc.name}</b>`);
         marker.on('mouseover', () => {
             if (marker._icon) marker._icon.classList.add('marker-hover');
             const markerIndex = markers.indexOf(marker);
-
             animatedPolylines.forEach(p => p.remove());
             animatedPolylines = [];
-
             if (markerIndex > 0) {
-                const incomingLine = polylines[markerIndex - 1];
-                const antPath = L.polyline.antPath(incomingLine.getLatLngs(), {
-                    color: 'red',
-                    pulseColor: 'white',
-                    weight: 5,
-                    dashArray: [10, 20],
-                    reversed: true,
-                }).addTo(map);
+                const antPath = L.polyline.antPath(polylines[markerIndex - 1].getLatLngs(), { color: 'red', pulseColor: 'white', weight: 5, dashArray: [10, 20], reversed: true }).addTo(map);
                 animatedPolylines.push(antPath);
             }
-
             if (markerIndex < polylines.length) {
-                const outgoingLine = polylines[markerIndex];
-                const antPath = L.polyline.antPath(outgoingLine.getLatLngs(), {
-                    color: 'green',
-                    pulseColor: 'white',
-                    weight: 5,
-                    dashArray: [10, 20],
-                    reversed: false,
-                }).addTo(map);
+                const antPath = L.polyline.antPath(polylines[markerIndex].getLatLngs(), { color: 'green', pulseColor: 'white', weight: 5, dashArray: [10, 20], reversed: false }).addTo(map);
                 animatedPolylines.push(antPath);
             }
         });
-
         marker.on('mouseout', () => {
             if (marker._icon) marker._icon.classList.remove('marker-hover');
             animatedPolylines.forEach(p => p.remove());
             animatedPolylines = [];
         });
-
         markers.push(marker);
-
         if (index > 0) {
             const prevLoc = locations[index - 1];
-
-            const curvedPoints = getCurvedPoints(
-                { lat: prevLoc.lat, lng: prevLoc.lng },
-                { lat: loc.lat, lng: loc.lng }
-            );
-
+            const curvedPoints = getCurvedPoints({ lat: prevLoc.lat, lng: prevLoc.lng }, { lat: loc.lat, lng: loc.lng });
             const polyline = L.polyline(curvedPoints, { color: '#fe7700', weight: 3 }).addTo(map);
             polylines.push(polyline);
         }
     });
-
-    if (polylines.length > 0) {
-        const bounds = L.featureGroup(markers).getBounds();
-        map.fitBounds(bounds);
-    }
-
-    setTimeout(() => {
-        map.invalidateSize();
-    }, 100);
-
-    // --- NEW CLICK LISTENER ---
+    if (polylines.length > 0) map.fitBounds(L.featureGroup(markers).getBounds());
+    setTimeout(() => map.invalidateSize(), 100);
     timelineListEl.addEventListener('click', (e) => {
         const zoomBtn = e.target.closest('.zoom-to-marker-btn');
         const header = e.target.closest('.timeline-item-header');
-
         if (zoomBtn) {
-            e.stopPropagation(); // prevent the header click from firing
+            e.stopPropagation();
             const item = zoomBtn.closest('.timeline-item');
             const markerIndex = parseInt(item.dataset.markerIndex, 10);
-            if (markerIndex >= 0 && markers[markerIndex]) {
-                const marker = markers[markerIndex];
-                map.flyTo(marker.getLatLng(), 11, { duration: 0.5 });
-            }
+            if (markerIndex >= 0 && markers[markerIndex]) map.flyTo(markers[markerIndex].getLatLng(), 11, { duration: 0.5 });
             return;
         }
-
         if (header) {
             const content = header.nextElementSibling;
             const arrow = header.querySelector('.arrow');
-
-            // Toggle display
             const isVisible = content.style.display === 'block';
             content.style.display = isVisible ? 'none' : 'block';
-
-            // Change arrow direction
-            if (arrow) {
-                arrow.innerHTML = isVisible ? '▼' : '▲';
-            }
+            if (arrow) arrow.innerHTML = isVisible ? '▼' : '▲';
         }
     });
-
-    // Add event listeners for timeline hover
     document.querySelectorAll('#timelineList li').forEach(item => {
         item.addEventListener('mouseover', () => {
             const markerIndex = parseInt(item.dataset.markerIndex, 10);
-            if (markerIndex >= 0 && markers[markerIndex]) {
-                markers[markerIndex].fire('mouseover');
-            }
+            if (markerIndex >= 0 && markers[markerIndex]) markers[markerIndex].fire('mouseover');
         });
         item.addEventListener('mouseout', () => {
             const markerIndex = parseInt(item.dataset.markerIndex, 10);
-            if (markerIndex >= 0 && markers[markerIndex]) {
-                markers[markerIndex].fire('mouseout');
-            }
+            if (markerIndex >= 0 && markers[markerIndex]) markers[markerIndex].fire('mouseout');
         });
     });
 };
-
 const closeMapModal = () => {
     mapModalEl.style.display = 'none';
     if (map) {
@@ -799,18 +678,12 @@ const closeMapModal = () => {
         map = null;
     }
 };
-
-sidebarCollapseBtnEl.addEventListener('click', () => {
-    mapSidebarEl.classList.toggle('collapsed');
-});
-
+sidebarCollapseBtnEl.addEventListener('click', () => mapSidebarEl.classList.toggle('collapsed'));
 closeMapBtnEl.addEventListener('click', closeMapModal);
 closeMapSidebarBtnEl.addEventListener('click', closeMapModal);
 
-
 // --- DAY MODAL & AUTOCOMPLETE ---
 const dayModal = document.getElementById('dayModal');
-const modalContent = dayModal.querySelector('.modal-content');
 const modalDayTitle = document.getElementById('modalDayTitle');
 const cityInput = document.getElementById('cityInput');
 const fromCityInput = document.getElementById('fromCityInput');
@@ -822,11 +695,6 @@ const stayBtn = document.getElementById('stayBtn');
 const travelBtn = document.getElementById('travelBtn');
 const cityInputsGroup = document.getElementById('cityInputs');
 const travelInputsGroup = document.getElementById('travelInputs');
-const nightsInput = document.getElementById('nightsInput');
-const decreaseNightsBtn = document.getElementById('decreaseNightsBtn');
-const increaseNightsBtn = document.getElementById('increaseNightsBtn');
-const checkoutDateDisplay = document.getElementById('checkoutDateDisplay');
-const overwriteWarning = document.getElementById('overwriteWarning');
 const travelModeInput = document.getElementById('travelModeInput');
 const dayModalCloseBtn = document.getElementById('dayModalCloseBtn');
 const cancelDayBtn = document.getElementById('cancelDayBtn');
@@ -834,107 +702,100 @@ const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
 const generateImageUrlBtn = document.getElementById('generateImageURL');
 
-const updateCheckoutDate = () => {
-    const nights = parseInt(nightsInput.value, 10);
-    if (!selectedDate || isNaN(nights) || nights < 1) {
-        checkoutDateDisplay.textContent = '';
-        return;
-    }
+// --- Stay Controls ---
+const nightsInputStay = document.getElementById('nightsInputStay');
+const decreaseNightsBtnStay = document.getElementById('decreaseNightsBtnStay');
+const increaseNightsBtnStay = document.getElementById('increaseNightsBtnStay');
+const checkoutDateDisplayStay = document.getElementById('checkoutDateDisplayStay');
+const overwriteWarningStay = document.getElementById('overwriteWarningStay');
 
-    const checkout = new Date(selectedDate);
-    checkout.setDate(checkout.getDate() + nights);
-    checkoutDateDisplay.textContent = formatDateAsText(formatDate(checkout));
+// --- Travel Controls ---
+const nightsInputTravel = document.getElementById('nightsInputTravel');
+const decreaseNightsBtnTravel = document.getElementById('decreaseNightsBtnTravel');
+const increaseNightsBtnTravel = document.getElementById('increaseNightsBtnTravel');
+const checkoutDateDisplayTravel = document.getElementById('checkoutDateDisplayTravel');
+const overwriteWarningTravel = document.getElementById('overwriteWarningTravel');
+
+const getActiveMultiNightControls = () => {
+    const isTravel = travelBtn.classList.contains('active');
+    return {
+        isTravel,
+        nightsInput: isTravel ? nightsInputTravel : nightsInputStay,
+        checkoutDateDisplay: isTravel ? checkoutDateDisplayTravel : checkoutDateDisplayStay,
+        overwriteWarning: isTravel ? overwriteWarningTravel : overwriteWarningStay
+    };
 };
 
-const checkForConflictsAndUpdateUI = () => {
-    const nights = parseInt(nightsInput.value, 10);
-    const saveButton = document.getElementById('saveDayBtn');
+const updateMultiNightUI = () => {
+    if (!selectedDate) return;
+    const { nightsInput, checkoutDateDisplay, overwriteWarning } = getActiveMultiNightControls();
+    const numNights = parseInt(nightsInput.value, 10);
 
-    if (isNaN(nights) || nights <= 1) {
-        overwriteWarning.textContent = '';
-        saveButton.textContent = 'Save';
-        updateCheckoutDate();
+    if (isNaN(numNights) || numNights < 1) {
+        checkoutDateDisplay.textContent = '';
+        overwriteWarning.style.display = 'none';
         return;
     }
 
-    const conflictingDates = [];
-    for (let i = 1; i < nights; i++) {
-        const date = new Date(selectedDate);
-        date.setDate(date.getDate() + i);
-        const dateString = formatDate(date);
-        if (currentTrip.days[dateString]) {
-            conflictingDates.push(date);
+    const checkOutDate = new Date(selectedDate);
+    checkOutDate.setDate(checkOutDate.getDate() + numNights);
+    checkoutDateDisplay.innerHTML = `Check-out: <span class="date">${formatDateAsText(formatDate(checkOutDate))}</span>`;
+
+    let conflictFound = false;
+    if (numNights > 0) {
+        for (let i = 1; i < numNights; i++) {
+            const date = new Date(selectedDate);
+            date.setDate(date.getDate() + i);
+            const dateString = formatDate(date);
+            if (currentTrip.days[dateString]) {
+                conflictFound = true;
+                break;
+            }
         }
     }
-
-    if (conflictingDates.length > 0) {
-        const formattedDates = conflictingDates.map(d => formatDateAsText(formatDate(d))).join(', ');
-        overwriteWarning.textContent = `This will overwrite existing plans on: ${formattedDates}.`;
-        saveButton.textContent = 'Overwrite & Save';
-    } else {
-        overwriteWarning.textContent = '';
-        saveButton.textContent = 'Save';
-    }
-
-    updateCheckoutDate();
+    overwriteWarning.style.display = conflictFound ? 'block' : 'none';
 };
 
 function openDayModal(dateString) {
     selectedDate = dateString;
-    let formattedDateString = formatDateAsText(dateString);
-    modalDayTitle.innerHTML = `Planning for<br/><span class="date">${formattedDateString}</span>`;
+    modalDayTitle.innerHTML = `Planning for<br/><span class="date">${formatDateAsText(dateString)}</span>`;
+
+    nightsInputStay.value = '1';
+    nightsInputTravel.value = '1';
+
     dayModal.style.display = 'flex';
     
-    nightsInput.value = '1';
-    checkForConflictsAndUpdateUI(); // This also calls updateCheckoutDate
-
     const prevDay = new Date(selectedDate);
     prevDay.setDate(prevDay.getDate() - 1);
-    const prevDayString = formatDate(prevDay);
-    const prevDayData = currentTrip.days[prevDayString];
-
-    let lastCity = '';
-    if (prevDayData) {
-        lastCity = prevDayData.type === 'travel' ? prevDayData.to.name : prevDayData.city.name;
-    }
+    const prevDayData = currentTrip.days[formatDate(prevDay)];
+    const lastCity = prevDayData ? (prevDayData.type === 'travel' ? prevDayData.to.name : prevDayData.city.name) : '';
     
     cityInput.value = lastCity;
     fromCityInput.value = lastCity;
     toCityInput.value = '';
 
     const dayData = currentTrip.days[dateString];
-
-    if (dayData && dayData.activities) {
-        modalActivities = {
-            morning: [...dayData.activities.morning],
-            afternoon: [...dayData.activities.afternoon],
-            evening: [...dayData.activities.evening]
-        };
-    } else {
-        modalActivities = { morning: [], afternoon: [], evening: [] };
-    }
+    modalActivities = (dayData && dayData.activities) ? { ...dayData.activities } : { morning: [], afternoon: [], evening: [] };
     renderActivityLists();
     ['morning', 'afternoon', 'evening'].forEach(hideActivityForm);
 
     imageUrlInput.value = (dayData && dayData.imageUrl) ? dayData.imageUrl : '';
 
-    // Close expandable sections by default
-    dayModal.querySelectorAll('.modal-expandable .expandable-content').forEach(content => content.style.display = 'none');
-    dayModal.querySelectorAll('.modal-expandable .arrow').forEach(arrow => arrow.classList.remove('expanded'));
+    dayModal.querySelectorAll('.modal-expandable .expandable-content').forEach(c => c.style.display = 'none');
+    dayModal.querySelectorAll('.modal-expandable .arrow').forEach(a => a.classList.remove('expanded'));
 
     if (dayData && dayData.type === 'travel') {
-        travelBtn.click(); // Use the button's click handler to set the correct state
+        travelBtn.click();
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
         travelModeInput.value = dayData.travelMode || 'Car';
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
-        stayBtn.click(); // Use the button's click handler to set the correct state
-        if (dayData) {
-            cityInput.value = dayData.city.name;
-        }
+        stayBtn.click();
+        if (dayData) cityInput.value = dayData.city.name;
         setTimeout(() => cityInput.focus(), 100);
     }
+    updateMultiNightUI();
 };
 
 function closeDayModal() {
@@ -945,19 +806,13 @@ const handleAutocomplete = (inputEl, listEl) => {
     const query = inputEl.value.toLowerCase();
     listEl.innerHTML = '';
     if (query.length < 2) return;
-
-    const filteredCities = EUROPEAN_CITIES.filter(city => 
-        city.name.toLowerCase().includes(query)
-    );
-
+    const filteredCities = EUROPEAN_CITIES.filter(c => c.name.toLowerCase().includes(query));
     filteredCities.forEach((city, index) => {
         const li = document.createElement('li');
         li.textContent = city.name;
         if (index === 0) li.classList.add('active-item');
         li.addEventListener('click', () => {
             inputEl.value = city.name;
-            inputEl.dataset.lat = city.lat;
-            inputEl.dataset.lng = city.lng;
             listEl.innerHTML = '';
         });
         listEl.appendChild(li);
@@ -968,31 +823,18 @@ const setupAutocompleteNavigation = (inputEl, listEl) => {
     inputEl.addEventListener('keydown', (e) => {
         const items = listEl.querySelectorAll('li');
         if (items.length === 0) return;
-
         const activeItem = listEl.querySelector('.active-item');
-        let newActiveItem = null;
-
+        let newActiveItem;
         if (e.key === 'ArrowDown') {
             e.preventDefault();
-            if (activeItem && activeItem.nextElementSibling) {
-                newActiveItem = activeItem.nextElementSibling;
-            } else {
-                newActiveItem = items[0];
-            }
+            newActiveItem = activeItem ? activeItem.nextElementSibling : items[0];
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            if (activeItem && activeItem.previousElementSibling) {
-                newActiveItem = activeItem.previousElementSibling;
-            } else {
-                newActiveItem = items[items.length - 1];
-            }
+            newActiveItem = activeItem ? activeItem.previousElementSibling : items[items.length - 1];
         } else if (e.key === 'Enter') {
             e.preventDefault();
-            if (activeItem) {
-                activeItem.click();
-            }
+            if (activeItem) activeItem.click();
         }
-
         if (newActiveItem) {
             if (activeItem) activeItem.classList.remove('active-item');
             newActiveItem.classList.add('active-item');
@@ -1003,41 +845,23 @@ const setupAutocompleteNavigation = (inputEl, listEl) => {
 // --- EVENT LISTENERS ---
 tripCalendarEl.addEventListener('click', (e) => {
     const dayCell = e.target.closest('.day-cell:not(.inactive)');
-    if (dayCell) {
-        openDayModal(dayCell.dataset.date);
-        return;
-    }
-
-    const editBtn = e.target.closest('.edit-day-card-btn');
-    if (editBtn) {
-        openDayModal(editBtn.dataset.date);
-        return;
-    }
+    if (dayCell) openDayModal(dayCell.dataset.date);
 });
 
-// Auto fill Image URL field
 generateImageUrlBtn.addEventListener('click', async () => {
-
-    if(stayBtn.classList.contains('active')){
-
-        let city = document.getElementById('cityInput').value;
+    const { isTravel } = getActiveMultiNightControls();
+    const cityValue = isTravel ? toCityInput.value : cityInput.value;
+    if (cityValue) {
         const oldPlaceholder = imageUrlInput.placeholder;
-        if (!imageUrlInput.value) imageUrlInput.placeholder = "Fetching image...";
-        const imageUrl = await getImageUrl(city);
-        // Restore placeholder
-        imageUrlInput.placeholder = oldPlaceholder;
-        imageUrlInput.value = imageUrl;
-
-    } else if (travelBtn.classList.contains('active')) {
-
-        let city = document.getElementById('toCityInput').value;
-        const oldPlaceholder = imageUrlInput.placeholder;
-        if (!imageUrlInput.value) imageUrlInput.placeholder = "Fetching image...";
-        const imageUrl = await getImageUrl(city);
-        // Restore placeholder
-        imageUrlInput.placeholder = oldPlaceholder;
-        imageUrlInput.value = imageUrl;
-
+        imageUrlInput.placeholder = "Fetching image...";
+        try {
+            imageUrlInput.value = await getImageUrl(cityValue);
+        } catch (error) {
+            console.error("Failed to get image URL", error);
+            alert("Could not fetch an image for this city.");
+        } finally {
+            imageUrlInput.placeholder = oldPlaceholder;
+        }
     }
 });
 
@@ -1060,60 +884,60 @@ document.getElementById('nextMonthBtn').addEventListener('click', () => {
 });
 
 document.getElementById('saveDayBtn').addEventListener('click', () => {
-    const isTravelDay = travelBtn.classList.contains('active');
-    let data = {};
+    const { isTravel, nightsInput } = getActiveMultiNightControls();
+    const numNights = parseInt(nightsInput.value, 10);
 
-    // Common data gathering
-    data.activities = {
-        morning: [...modalActivities.morning],
-        afternoon: [...modalActivities.afternoon],
-        evening: [...modalActivities.evening]
-    };
-    data.imageUrl = imageUrlInput.value.trim();
-
-    if (isTravelDay) {
-        const fromCity = EUROPEAN_CITIES.find(c => c.name === fromCityInput.value);
-        const toCity = EUROPEAN_CITIES.find(c => c.name === toCityInput.value);
-        if (!fromCity || !toCity) {
-            alert('Please select valid From and To cities.');
-            return;
-        }
-        data.type = 'travel';
-        data.from = { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng };
-        data.to = { name: toCity.name, lat: toCity.lat, lng: toCity.lng };
-        data.travelMode = travelModeInput.value;
-
-        saveDayData(selectedDate, data);
-
-    } else { // It's a 'Stay' day
-        const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
-        if (!city) {
-            alert('Please select a valid city.');
-            return;
-        }
-        data.type = 'stay';
-        data.city = { name: city.name, lat: city.lat, lng: city.lng };
-
-        const numNights = parseInt(nightsInput.value, 10);
-        if (isNaN(numNights) || numNights < 1) {
-            alert('Please enter a valid number of nights.'); // Safeguard
-            return;
-        }
-
-        for (let i = 0; i < numNights; i++) {
-            const date = new Date(selectedDate);
-            date.setDate(date.getDate() + i);
-            const dateString = formatDate(date);
-
-            let currentDayData = { ...data };
-            if (i > 0) {
-                currentDayData.activities = { morning: [], afternoon: [], evening: [] };
-                currentDayData.imageUrl = '';
-            }
-            saveDayData(dateString, currentDayData);
-        }
+    if (isNaN(numNights) || numNights < 1) {
+        alert('Please enter a valid number of nights.');
+        return;
     }
 
+    const fromCity = EUROPEAN_CITIES.find(c => c.name === fromCityInput.value);
+    const toCity = EUROPEAN_CITIES.find(c => c.name === toCityInput.value);
+    const stayCity = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
+
+    if (isTravel && (!fromCity || !toCity)) {
+        alert('Please select valid From and To cities.');
+        return;
+    }
+    if (!isTravel && !stayCity) {
+        alert('Please select a valid city.');
+        return;
+    }
+
+    const firstDayActivities = { ...modalActivities };
+    const firstDayImageUrl = imageUrlInput.value.trim();
+
+    for (let i = 0; i < numNights; i++) {
+        const date = new Date(selectedDate);
+        date.setDate(date.getDate() + i);
+        const dateString = formatDate(date);
+        let dayData = {};
+
+        if (i === 0) { // First day
+            if (isTravel) {
+                dayData = {
+                    type: 'travel',
+                    from: { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng },
+                    to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
+                    travelMode: travelModeInput.value,
+                };
+            } else {
+                dayData = { type: 'stay', city: { name: stayCity.name, lat: stayCity.lat, lng: stayCity.lng } };
+            }
+            dayData.activities = firstDayActivities;
+            dayData.imageUrl = firstDayImageUrl;
+        } else { // Subsequent days
+            const cityForStay = isTravel ? toCity : stayCity;
+            dayData = {
+                type: 'stay',
+                city: { name: cityForStay.name, lat: cityForStay.lat, lng: cityForStay.lng },
+                activities: { morning: [], afternoon: [], evening: [] },
+                imageUrl: ''
+            };
+        }
+        saveDayData(dateString, dayData);
+    }
     closeDayModal();
 });
 
@@ -1122,6 +946,7 @@ stayBtn.addEventListener('click', () => {
     travelBtn.classList.remove('active');
     cityInputsGroup.style.display = 'block';
     travelInputsGroup.style.display = 'none';
+    updateMultiNightUI();
 });
 
 travelBtn.addEventListener('click', () => {
@@ -1129,13 +954,11 @@ travelBtn.addEventListener('click', () => {
     stayBtn.classList.remove('active');
     cityInputsGroup.style.display = 'none';
     travelInputsGroup.style.display = 'block';
+    updateMultiNightUI();
 });
 
-document.querySelector('.close-btn').addEventListener('click', closeDayModal);
-
-cancelDayBtn.addEventListener('click', closeDayModal);
 dayModalCloseBtn.addEventListener('click', closeDayModal);
-
+cancelDayBtn.addEventListener('click', closeDayModal);
 clearDayBtn.addEventListener('click', () => {
     if (confirm('Are you sure you want to clear all data for this day?')) {
         clearDayData(selectedDate);
@@ -1144,9 +967,7 @@ clearDayBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('click', (event) => {
-    if (event.target === dayModal) {
-        closeDayModal();
-    }
+    if (event.target === dayModal) closeDayModal();
 });
 
 cityInput.addEventListener('input', () => handleAutocomplete(cityInput, cityAutocompleteList));
@@ -1157,43 +978,37 @@ setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 
-increaseNightsBtn.addEventListener('click', () => {
-    nightsInput.value = parseInt(nightsInput.value, 10) + 1;
-    checkForConflictsAndUpdateUI();
-});
-
-decreaseNightsBtn.addEventListener('click', () => {
-    const currentValue = parseInt(nightsInput.value, 10);
-    if (currentValue > 1) {
-        nightsInput.value = currentValue - 1;
-        checkForConflictsAndUpdateUI();
+[decreaseNightsBtnStay, increaseNightsBtnStay, nightsInputStay, decreaseNightsBtnTravel, increaseNightsBtnTravel, nightsInputTravel].forEach(el => {
+    const isStay = el.id.includes('Stay');
+    const nightsInput = isStay ? nightsInputStay : nightsInputTravel;
+    if (el.tagName === 'BUTTON') {
+        el.addEventListener('click', (e) => {
+            const isIncrease = e.currentTarget.id.includes('increase');
+            let currentVal = parseInt(nightsInput.value, 10);
+            nightsInput.value = isIncrease ? currentVal + 1 : Math.max(1, currentVal - 1);
+            updateMultiNightUI();
+        });
+    } else {
+        el.addEventListener('input', updateMultiNightUI);
+        el.addEventListener('change', () => {
+            if (parseInt(el.value, 10) < 1 || isNaN(parseInt(el.value, 10))) el.value = '1';
+            updateMultiNightUI();
+        });
     }
 });
 
-nightsInput.addEventListener('input', () => {
-    if (parseInt(nightsInput.value, 10) < 1) {
-        nightsInput.value = '1';
-    }
-    checkForConflictsAndUpdateUI();
-});
-
-// --- Sidebar Expand/Collapse ---
 document.querySelectorAll('.expandable-header').forEach(header => {
     header.addEventListener('click', () => {
         const content = header.nextElementSibling;
+        const arrow = header.querySelector('.arrow');
         if (content) {
             const isVisible = content.style.display === 'block';
             content.style.display = isVisible ? 'none' : 'block';
-
-            const arrow = header.querySelector('.arrow');
-            if (arrow) {
-                arrow.classList.toggle('expanded', !isVisible);
-            }
+            if (arrow) arrow.classList.toggle('expanded', !isVisible);
         }
     });
 });
 
-// --- View Toggles & Day Card Navigation ---
 calendarViewBtn.addEventListener('click', () => {
     if (currentView === 'calendar') return;
     currentView = 'calendar';
@@ -1205,7 +1020,7 @@ calendarViewBtn.addEventListener('click', () => {
 dayByDayViewBtn.addEventListener('click', () => {
     if (currentView === 'day-by-day') return;
     currentView = 'day-by-day';
-    dayCardStartIndex = 0; // Reset to the start
+    dayCardStartIndex = 0;
     dayByDayViewBtn.classList.add('active');
     calendarViewBtn.classList.remove('active');
     renderTripView();
@@ -1224,97 +1039,64 @@ nextDayCardBtn.addEventListener('click', () => {
     }
 });
 
-
-// --- ACTIVITY MODAL LOGIC ---
 const activitiesContainer = document.querySelector('.activities-container');
-
 const renderActivityLists = () => {
     ['morning', 'afternoon', 'evening'].forEach(period => {
         const listEl = document.getElementById(`${period}-activity-list`);
         listEl.innerHTML = '';
         modalActivities[period].forEach((activity, index) => {
             const li = document.createElement('li');
-            li.innerHTML = `
-                <span>${activity}</span>
-                <button class="btn btn-sm btn-icon delete-activity-btn" data-period="${period}" data-index="${index}"><i class="fas fa-trash-alt"></i></button>
-            `;
+            li.innerHTML = `<span>${activity}</span><button class="btn btn-sm btn-icon delete-activity-btn" data-period="${period}" data-index="${index}"><i class="fas fa-trash-alt"></i></button>`;
             listEl.appendChild(li);
         });
     });
 };
-
 const showActivityForm = (period) => {
     document.getElementById(`add-${period}-form`).style.display = 'flex';
     document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'none';
 };
-
 const hideActivityForm = (period) => {
     document.getElementById(`add-${period}-form`).style.display = 'none';
     document.getElementById(`${period}-activity-input`).value = '';
     document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
 };
-
 activitiesContainer.addEventListener('click', (e) => {
     const addBtn = e.target.closest('.add-activity-btn');
     const confirmBtn = e.target.closest('.confirm-add-btn');
     const cancelBtn = e.target.closest('.cancel-add-btn');
     const deleteBtn = e.target.closest('.delete-activity-btn');
-
-    if (addBtn) {
-        showActivityForm(addBtn.dataset.period);
-        return;
-    }
-
+    if (addBtn) showActivityForm(addBtn.dataset.period);
     if (confirmBtn) {
         const period = confirmBtn.dataset.period;
         const inputEl = document.getElementById(`${period}-activity-input`);
-        const activityText = inputEl.value.trim();
-        if (activityText) {
-            modalActivities[period].push(activityText);
+        if (inputEl.value.trim()) {
+            modalActivities[period].push(inputEl.value.trim());
             renderActivityLists();
         }
         hideActivityForm(period);
-        return;
     }
-
-    if (cancelBtn) {
-        hideActivityForm(cancelBtn.dataset.period);
-        return;
-    }
-
+    if (cancelBtn) hideActivityForm(cancelBtn.dataset.period);
     if (deleteBtn) {
         const { period, index } = deleteBtn.dataset;
         modalActivities[period].splice(index, 1);
         renderActivityLists();
-        return;
     }
 });
 
-// --- RESPONSIVE LOGIC ---
 const mediaQueryLg = window.matchMedia('(min-width: 992px)');
 const mediaQueryMd = window.matchMedia('(min-width: 768px)');
-
 function updateCardsPerPage() {
     const oldCardsPerPage = cardsPerPage;
-    if (mediaQueryLg.matches) {
-        cardsPerPage = 3;
-    } else if (mediaQueryMd.matches) {
-        cardsPerPage = 2;
-    } else {
-        cardsPerPage = 1;
-    }
-
+    if (mediaQueryLg.matches) cardsPerPage = 3;
+    else if (mediaQueryMd.matches) cardsPerPage = 2;
+    else cardsPerPage = 1;
     if (oldCardsPerPage !== cardsPerPage) {
-        dayCardStartIndex = 0; // Reset index on breakpoint change
-        if (currentView === 'day-by-day') {
-            renderDayByDayView();
-        }
+        dayCardStartIndex = 0;
+        if (currentView === 'day-by-day') renderDayByDayView();
     }
 }
-
 mediaQueryLg.addEventListener('change', updateCardsPerPage);
 mediaQueryMd.addEventListener('change', updateCardsPerPage);
 
-// Initial render
 updateCardsPerPage();
 renderDashboard();
