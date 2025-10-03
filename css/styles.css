@@ -1248,6 +1248,34 @@ h2 {
 #dayModal .activities-container .delete-activity-btn:hover i {
   color: #c82333;
 }
+#dayModal .warning-text {
+  color: #d9534f;
+  font-size: 0.85rem;
+  margin-top: -8px;
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+#dayModal .modal-prompt {
+  background-color: #fef7e0;
+  border: 1px solid #fce8b2;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+#dayModal .modal-prompt p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #715a1d;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+#dayModal .modal-prompt .btn {
+  flex-shrink: 0;
+}
 
 #tripModal {
   display: none;

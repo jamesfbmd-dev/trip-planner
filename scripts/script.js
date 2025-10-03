@@ -843,7 +843,7 @@ function checkTravelConflict() {
     const currentCity = cityInput.value.trim();
 
     if (prevDayData && prevDayData.type === 'stay' && currentCity && prevDayData.city.name !== currentCity) {
-        modalTravelPromptText.textContent = `You were in ${prevDayData.city.name} the day before. Change this to a travel day?`;
+        modalTravelPromptText.textContent = `Travel from ${prevDayData.city.name}? Click the button to set this as a travel day.`;
         modalTravelPrompt.style.display = 'block';
     } else {
         modalTravelPrompt.style.display = 'none';
@@ -857,7 +857,7 @@ function checkOverwrite() {
         return;
     }
 
-    let overwrittenDays = 0;
+    const overwrittenDates = [];
     const startDate = new Date(selectedDate);
 
     for (let i = 1; i < duration; i++) {
@@ -865,12 +865,17 @@ function checkOverwrite() {
         nextDate.setDate(startDate.getDate() + i);
         const nextDateString = formatDate(nextDate);
         if (currentTrip.days[nextDateString]) {
-            overwrittenDays++;
+            const formattedDate = new Intl.DateTimeFormat("en-GB", {
+                month: 'short',
+                day: 'numeric'
+            }).format(nextDate);
+            overwrittenDates.push(formattedDate);
         }
     }
 
-    if (overwrittenDays > 0) {
-        overwriteWarning.textContent = `Warning: This will overwrite plans for ${overwrittenDays} day(s).`;
+    if (overwrittenDates.length > 0) {
+        const dateText = overwrittenDates.join(', ');
+        overwriteWarning.textContent = `Warning: This will overwrite plans for ${dateText}.`;
         overwriteWarning.style.display = 'block';
     } else {
         overwriteWarning.style.display = 'none';
