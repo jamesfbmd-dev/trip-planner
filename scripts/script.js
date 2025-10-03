@@ -843,10 +843,12 @@ function checkTravelConflict() {
     const currentCity = cityInput.value.trim();
 
     if (prevDayData && prevDayData.type === 'stay' && currentCity && prevDayData.city.name !== currentCity) {
-        modalTravelPromptText.textContent = `Travel from ${prevDayData.city.name}? Click the button to set this as a travel day.`;
+        modalTravelPromptText.textContent = `Make the previous day a travel day from ${prevDayData.city.name} to here?`;
+        convertToTravelDayBtn.textContent = 'Update Previous Day';
         modalTravelPrompt.style.display = 'block';
     } else {
         modalTravelPrompt.style.display = 'none';
+        convertToTravelDayBtn.textContent = 'Make Travel Day'; // Reset text
     }
 }
 
@@ -1084,6 +1086,7 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             imageUrl: imageUrlInput.value.trim()
         };
         saveDayData(selectedDate, data);
+        closeDayModal(); // No forward conflict check after saving a travel day
 
     } else { // 'Stay' day logic
         const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
@@ -1123,9 +1126,27 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             const currentDateString = formatDate(currentDate);
             saveDayData(currentDateString, subsequentDayData);
         }
-    }
 
-    closeDayModal();
+        // --- FORWARD CONFLICT DETECTION ---
+        const lastSavedDate = new Date(startDate);
+        lastSavedDate.setDate(startDate.getDate() + duration - 1);
+
+        const nextDay = new Date(lastSavedDate);
+        nextDay.setDate(lastSavedDate.getDate() + 1);
+        const nextDayString = formatDate(nextDay);
+        const nextDayData = currentTrip.days[nextDayString];
+
+        // The city we just saved
+        const savedCityName = city.name;
+
+        if (nextDayData && nextDayData.type === 'stay' && savedCityName !== nextDayData.city.name) {
+            // Conflict exists. Open the next day's modal to prompt for resolution.
+            openDayModal(nextDayString);
+        } else {
+            // No conflict, so just close the modal.
+            closeDayModal();
+        }
+    }
 });
 
 stayBtn.addEventListener('click', () => {
@@ -1174,20 +1195,40 @@ setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 stayDurationInput.addEventListener('input', checkOverwrite);
 
 convertToTravelDayBtn.addEventListener('click', () => {
-    const prevDay = new Date(selectedDate);
-    prevDay.setDate(prevDay.getDate() - 1);
+    const currentModalDate = new Date(selectedDate);
+    const prevDay = new Date(currentModalDate);
+    prevDay.setDate(currentModalDate.getDate() - 1);
     const prevDayString = formatDate(prevDay);
     const prevDayData = currentTrip.days[prevDayString];
 
-    if (prevDayData && prevDayData.city) {
-        travelBtn.click();
-        fromCityInput.value = prevDayData.city.name;
-        // If the user had started typing a new city, preserve it.
-        const dayData = currentTrip.days[selectedDate];
-        toCityInput.value = dayData ? dayData.city.name : cityInput.value;
-        toCityInput.focus();
+    const fromCity = prevDayData.city;
+    const toCityName = cityInput.value.trim();
+    const toCity = EUROPEAN_CITIES.find(c => c.name === toCityName);
+
+    if (!fromCity || !toCity) {
+        alert("Could not determine valid cities for travel day.");
+        return;
     }
-    modalTravelPrompt.style.display = 'none';
+
+    // Create travel data for the PREVIOUS day
+    const travelDataForPrevDay = {
+        type: 'travel',
+        from: { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng },
+        to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
+        travelMode: 'Car',
+        activities: { morning: [], afternoon: [], evening: [] },
+        imageUrl: ''
+    };
+
+    // Save the new travel data to the PREVIOUS day
+    const trips = getTrips();
+    trips[currentTripId].days[prevDayString] = travelDataForPrevDay;
+    saveTrips(trips);
+    currentTrip = trips[currentTripId]; // Update state
+
+    // Now, trigger the save for the CURRENT day, which the user is editing.
+    // This preserves their original intent for the current day.
+    document.getElementById('saveDayBtn').click();
 });
 
 // --- Sidebar Expand/Collapse ---
