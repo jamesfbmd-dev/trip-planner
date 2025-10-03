@@ -828,12 +828,65 @@ const cancelDayBtn = document.getElementById('cancelDayBtn');
 const clearDayBtn = document.getElementById('clearDayBtn');
 const imageUrlInput = document.getElementById('imageUrlInput');
 const generateImageUrlBtn = document.getElementById('generateImageURL');
+const stayDurationInput = document.getElementById('stayDurationInput');
+const overwriteWarning = document.getElementById('overwriteWarning');
+const modalTravelPrompt = document.getElementById('modalTravelPrompt');
+const modalTravelPromptText = document.getElementById('modalTravelPromptText');
+const convertToTravelDayBtn = document.getElementById('convertToTravelDayBtn');
+
+function checkTravelConflict() {
+    const prevDay = new Date(selectedDate);
+    prevDay.setDate(prevDay.getDate() - 1);
+    const prevDayString = formatDate(prevDay);
+    const prevDayData = currentTrip.days[prevDayString];
+
+    const currentCity = cityInput.value.trim();
+
+    if (prevDayData && prevDayData.type === 'stay' && currentCity && prevDayData.city.name !== currentCity) {
+        modalTravelPromptText.textContent = `You were in ${prevDayData.city.name} the day before. Change this to a travel day?`;
+        modalTravelPrompt.style.display = 'block';
+    } else {
+        modalTravelPrompt.style.display = 'none';
+    }
+}
+
+function checkOverwrite() {
+    const duration = parseInt(stayDurationInput.value, 10);
+    if (isNaN(duration) || duration <= 1) {
+        overwriteWarning.style.display = 'none';
+        return;
+    }
+
+    let overwrittenDays = 0;
+    const startDate = new Date(selectedDate);
+
+    for (let i = 1; i < duration; i++) {
+        const nextDate = new Date(startDate);
+        nextDate.setDate(startDate.getDate() + i);
+        const nextDateString = formatDate(nextDate);
+        if (currentTrip.days[nextDateString]) {
+            overwrittenDays++;
+        }
+    }
+
+    if (overwrittenDays > 0) {
+        overwriteWarning.textContent = `Warning: This will overwrite plans for ${overwrittenDays} day(s).`;
+        overwriteWarning.style.display = 'block';
+    } else {
+        overwriteWarning.style.display = 'none';
+    }
+}
 
 function openDayModal(dateString) {
     selectedDate = dateString;
     let formattedDateString = formatDateAsText(dateString);
     modalDayTitle.innerHTML = `Planning for<br/><span class="date">${formattedDateString}</span>`;
     dayModal.style.display = 'flex';
+
+    // Reset multi-day input and prompts
+    stayDurationInput.value = 1;
+    overwriteWarning.style.display = 'none';
+    modalTravelPrompt.style.display = 'none';
     
     const prevDay = new Date(selectedDate);
     prevDay.setDate(prevDay.getDate() - 1);
@@ -882,6 +935,7 @@ function openDayModal(dateString) {
         }
         setTimeout(() => cityInput.focus(), 100);
     }
+    checkTravelConflict();
 };
 
 function closeDayModal() {
@@ -1008,7 +1062,6 @@ document.getElementById('nextMonthBtn').addEventListener('click', () => {
 
 document.getElementById('saveDayBtn').addEventListener('click', () => {
     const isTravelDay = travelBtn.classList.contains('active');
-    let data = {};
 
     if (isTravelDay) {
         const fromCity = EUROPEAN_CITIES.find(c => c.name === fromCityInput.value);
@@ -1017,32 +1070,56 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             alert('Please select valid From and To cities.');
             return;
         }
-        data = {
+        const data = {
             type: 'travel',
             from: { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng },
             to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
-            travelMode: travelModeInput.value
+            travelMode: travelModeInput.value,
+            activities: { ...modalActivities },
+            imageUrl: imageUrlInput.value.trim()
         };
-    } else {
+        saveDayData(selectedDate, data);
+
+    } else { // 'Stay' day logic
         const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
         if (!city) {
             alert('Please select a valid city.');
             return;
         }
-        data = {
+
+        const duration = parseInt(stayDurationInput.value, 10);
+        if (isNaN(duration) || duration < 1) {
+            alert('Please enter a valid stay duration.');
+            return;
+        }
+
+        const startDate = new Date(selectedDate);
+
+        // Prepare data for the first day, which has all the details
+        const firstDayData = {
             type: 'stay',
-            city: { name: city.name, lat: city.lat, lng: city.lng }
+            city: { name: city.name, lat: city.lat, lng: city.lng },
+            activities: { ...modalActivities },
+            imageUrl: imageUrlInput.value.trim()
         };
+        saveDayData(selectedDate, firstDayData);
+
+        // Prepare data for subsequent days (same city, but no activities/image)
+        const subsequentDayData = {
+            type: 'stay',
+            city: { name: city.name, lat: city.lat, lng: city.lng },
+            activities: { morning: [], afternoon: [], evening: [] },
+            imageUrl: ''
+        };
+
+        for (let i = 1; i < duration; i++) {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + i);
+            const currentDateString = formatDate(currentDate);
+            saveDayData(currentDateString, subsequentDayData);
+        }
     }
 
-    data.activities = {
-        morning: [...modalActivities.morning],
-        afternoon: [...modalActivities.afternoon],
-        evening: [...modalActivities.evening]
-    };
-    data.imageUrl = imageUrlInput.value.trim();
-
-    saveDayData(selectedDate, data);
     closeDayModal();
 });
 
@@ -1078,13 +1155,35 @@ window.addEventListener('click', (event) => {
     }
 });
 
-cityInput.addEventListener('input', () => handleAutocomplete(cityInput, cityAutocompleteList));
+cityInput.addEventListener('input', () => {
+    handleAutocomplete(cityInput, cityAutocompleteList);
+    checkTravelConflict();
+});
 fromCityInput.addEventListener('input', () => handleAutocomplete(fromCityInput, fromCityAutocompleteList));
 toCityInput.addEventListener('input', () => handleAutocomplete(toCityInput, toCityAutocompleteList));
 
 setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
+
+stayDurationInput.addEventListener('input', checkOverwrite);
+
+convertToTravelDayBtn.addEventListener('click', () => {
+    const prevDay = new Date(selectedDate);
+    prevDay.setDate(prevDay.getDate() - 1);
+    const prevDayString = formatDate(prevDay);
+    const prevDayData = currentTrip.days[prevDayString];
+
+    if (prevDayData && prevDayData.city) {
+        travelBtn.click();
+        fromCityInput.value = prevDayData.city.name;
+        // If the user had started typing a new city, preserve it.
+        const dayData = currentTrip.days[selectedDate];
+        toCityInput.value = dayData ? dayData.city.name : cityInput.value;
+        toCityInput.focus();
+    }
+    modalTravelPrompt.style.display = 'none';
+});
 
 // --- Sidebar Expand/Collapse ---
 document.querySelectorAll('.expandable-header').forEach(header => {

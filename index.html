@@ -138,6 +138,10 @@
                 <h3 id="modalDayTitle"></h3>
             </div>
             <div class="modal-body">
+                <div id="modalTravelPrompt" class="modal-prompt" style="display: none;">
+                    <p id="modalTravelPromptText"></p>
+                    <button id="convertToTravelDayBtn" class="btn btn-sm btn-secondary">Make Travel Day</button>
+                </div>
                 <div class="day-type-control">
                     <div class="pill-selector">
                         <button id="stayBtn" class="pill-btn active">Stay</button>
@@ -153,6 +157,13 @@
                             <input type="text" id="cityInput" placeholder="e.g., Paris" autocomplete="off">
                             <ul id="cityAutocompleteList" class="autocomplete-list"></ul>
                         </div>
+                    </div>
+                    <div class="input-width-limiter">
+                        <div class="modal-input-group">
+                            <label for="stayDurationInput">Stay duration (days):</label>
+                            <input type="number" id="stayDurationInput" value="1" min="1" class="number-input-spinner">
+                        </div>
+                        <div id="overwriteWarning" class="warning-text" style="display: none;"></div>
                     </div>
                 </div>
 
