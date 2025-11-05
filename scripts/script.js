@@ -97,7 +97,19 @@ const EUROPEAN_CITIES = [
   { name: "Angers", lat: 47.4784, lng: -0.5632 },             // France
   { name: "Nuremberg", lat: 49.4521, lng: 11.0767 },         // Germany
   { name: "Wroclaw", lat: 51.1079, lng: 17.0385 },           // Poland
-  { name: "Arcachon", lat: 44.6583, lng: -1.1700 }           // France
+  { name: "Arcachon", lat: 44.6583, lng: -1.1700 },           // France
+
+  // Thai
+  { name: "Bangkok", lat: 13.7563, lng: 100.5018 },
+  { name: "Chiang Mai", lat: 18.7883, lng: 98.9853 },
+  { name: "Chiang Rai", lat: 19.9105, lng: 99.8406 },
+  { name: "Phuket", lat: 7.8804, lng: 98.3923 },
+  { name: "Krabi", lat: 8.0863, lng: 98.9063 },
+  { name: "Koh Samui", lat: 9.5120, lng: 100.0130 },
+  { name: "Koh Phangan", lat: 9.7297, lng: 100.0136 },
+  { name: "Koh Tao", lat: 10.0956, lng: 99.8275 },
+  { name: "Khao Sok", lat: 8.9040, lng: 98.5190 }
+
 ];
 
 let currentTripId = null;
