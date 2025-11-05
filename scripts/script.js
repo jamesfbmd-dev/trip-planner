@@ -595,7 +595,7 @@ const generateMap = () => {
             if (d > 3 && d < 21) return "th";
             return ["th","st","nd","rd"][Math.min(d % 10, 4)];
         })(day);
-        return `<div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div>`;
+        return `<div class="timeline-date"><div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div></div>`;
     };
 
     // --- NEW TIMELINE RENDERING ---
@@ -644,7 +644,7 @@ const generateMap = () => {
         li.dataset.markerIndex = markerIndex;
         li.innerHTML = `
             <div class="timeline-item-header">
-                <div class="timeline-date">${dateText}</div>
+                ${dateText}
                 <div class="timeline-location">${locationText}</div>
                 <div class="timeline-controls">
                     <button class="btn btn-icon btn-sm zoom-to-marker-btn" title="Zoom to location"><i class="fas fa-crosshairs"></i></button>
