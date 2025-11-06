@@ -428,12 +428,17 @@ const renderDayByDayView = () => {
             if (dayData.type === 'travel') {
                 const travelMode = dayData.travelMode || 'Car';
                 const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
+                const timeInfo = dayData.departureTime && dayData.arrivalTime
+                    ? `<div class="day-card-time">${dayData.departureTime} – ${dayData.arrivalTime}</div>`
+                    : '';
+
                 content = `
                     <div class="travel-mode-header">
                         <i class="fas ${iconClass}"></i>
                         <span>${travelMode}</span>
                     </div>
                     <div class="travel-details">${dayData.from.name} → ${dayData.to.name}</div>
+                    ${timeInfo}
                 `;
             } else {
                 content = dayData.city.name;
@@ -620,6 +625,10 @@ const generateMap = () => {
         if (day.type === 'travel') {
             const travelMode = day.travelMode || 'Car';
             const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
+            const timeInfo = day.departureTime && day.arrivalTime
+                ? `<div class="timeline-time">${day.departureTime} – ${day.arrivalTime}</div>`
+                : '';
+
             locationText = `
                 <div class="timeline-travel-mode">
                     <i class="fas ${iconClass}"></i>
@@ -628,6 +637,7 @@ const generateMap = () => {
                 <div class="timeline-travel-details">
                     <span class="timeline-badge">${day.from.name}</span> → <span class="timeline-badge">${day.to.name}</span>
                 </div>
+                ${timeInfo}
             `;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
@@ -897,6 +907,8 @@ function openDayModal(dateString) {
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
         travelModeInput.value = dayData.travelMode || 'Car';
+        document.getElementById('departureTimeInput').value = dayData.departureTime || '';
+        document.getElementById('arrivalTimeInput').value = dayData.arrivalTime || '';
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
         stayBtn.click(); // Use the button's click handler to set the correct state
@@ -1044,7 +1056,9 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             type: 'travel',
             from: { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng },
             to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
-            travelMode: travelModeInput.value
+            travelMode: travelModeInput.value,
+            departureTime: document.getElementById('departureTimeInput').value,
+            arrivalTime: document.getElementById('arrivalTimeInput').value
         };
     } else {
         const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);

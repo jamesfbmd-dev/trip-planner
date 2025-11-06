@@ -1185,6 +1185,21 @@ h2 {
 #dayModal .travel-inputs-group {
   display: none;
 }
+#dayModal .time-inputs-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  max-width: 350px;
+}
+#dayModal .time-inputs-container .modal-input-group {
+  flex: 1;
+}
+#dayModal .time-inputs-container input[type=time] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 #dayModal .input-width-limiter {
   max-width: 350px;
 }

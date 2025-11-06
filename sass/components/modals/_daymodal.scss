@@ -63,6 +63,24 @@
         display: none;
     }
 
+    .time-inputs-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        max-width: 350px;
+
+        .modal-input-group {
+            flex: 1;
+        }
+
+        input[type="time"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    }
+
     .input-width-limiter {
         max-width: 350px;
     }
