@@ -136,6 +136,16 @@ const TRAVEL_MODE_ICONS = {
     'Taxi': 'fa-taxi'
 };
 
+const getDaySuffix = (day) => {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+        case 1: return "st";
+        case 2: return "nd";
+        case 3: return "rd";
+        default: return "th";
+    }
+};
+
 const getTrips = () => {
     const trips = localStorage.getItem('trips');
     return trips ? JSON.parse(trips) : {};
@@ -165,10 +175,7 @@ const formatDateAsText = (dateString) => {
     const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
     const day = date.getDate();
     const year = date.getFullYear();
-    const suffix = (d => {
-        if (d > 3 && d < 21) return "th";
-        return ["th","st","nd","rd"][Math.min(d % 10, 4)];
-    })(day);
+    const suffix = getDaySuffix(day);
     return `${weekday} ${day}${suffix} ${month} ${year}`;
 };
 
@@ -591,10 +598,7 @@ const generateMap = () => {
         const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
         const day = date.getDate();
         const year = date.getFullYear().toString().slice(-2);
-        const suffix = (d => {
-            if (d > 3 && d < 21) return "th";
-            return ["th","st","nd","rd"][Math.min(d % 10, 4)];
-        })(day);
+        const suffix = getDaySuffix(day);
         return `<div class="timeline-date"><div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div></div>`;
     };
 
