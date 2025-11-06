@@ -324,7 +324,14 @@ const openTrip = (id) => {
     currentTripId = id;
     currentTrip = getTrips()[id];
     tripTitleEl.textContent = currentTrip.name;
-    currentDate = new Date(); // Reset to current month on open
+
+    const tripDays = Object.keys(currentTrip.days).sort();
+    if (tripDays.length > 0) {
+        // Use T00:00:00 to avoid timezone issues where new Date() might interpret YYYY-MM-DD as UTC midnight
+        currentDate = new Date(tripDays[0] + 'T00:00:00');
+    } else {
+        currentDate = new Date();
+    }
 
     if (!isDayCardListenerAttached) {
         dayCardsContainer.addEventListener('click', (e) => {
