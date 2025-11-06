@@ -136,6 +136,16 @@ const TRAVEL_MODE_ICONS = {
     'Taxi': 'fa-taxi'
 };
 
+const getDaySuffix = (day) => {
+    if (day > 3 && day < 21) return 'th';
+    switch (day % 10) {
+        case 1: return "st";
+        case 2: return "nd";
+        case 3: return "rd";
+        default: return "th";
+    }
+};
+
 const getTrips = () => {
     const trips = localStorage.getItem('trips');
     return trips ? JSON.parse(trips) : {};
@@ -165,10 +175,7 @@ const formatDateAsText = (dateString) => {
     const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
     const day = date.getDate();
     const year = date.getFullYear();
-    const suffix = (d => {
-        if (d > 3 && d < 21) return "th";
-        return ["th","st","nd","rd"][Math.min(d % 10, 4)];
-    })(day);
+    const suffix = getDaySuffix(day);
     return `${weekday} ${day}${suffix} ${month} ${year}`;
 };
 
@@ -317,7 +324,14 @@ const openTrip = (id) => {
     currentTripId = id;
     currentTrip = getTrips()[id];
     tripTitleEl.textContent = currentTrip.name;
-    currentDate = new Date(); // Reset to current month on open
+
+    const tripDays = Object.keys(currentTrip.days).sort();
+    if (tripDays.length > 0) {
+        // Use T00:00:00 to avoid timezone issues where new Date() might interpret YYYY-MM-DD as UTC midnight
+        currentDate = new Date(tripDays[0] + 'T00:00:00');
+    } else {
+        currentDate = new Date();
+    }
 
     if (!isDayCardListenerAttached) {
         dayCardsContainer.addEventListener('click', (e) => {
@@ -591,11 +605,8 @@ const generateMap = () => {
         const month = new Intl.DateTimeFormat("en-GB", { month: "long" }).format(date);
         const day = date.getDate();
         const year = date.getFullYear().toString().slice(-2);
-        const suffix = (d => {
-            if (d > 3 && d < 21) return "th";
-            return ["th","st","nd","rd"][Math.min(d % 10, 4)];
-        })(day);
-        return `<div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div>`;
+        const suffix = getDaySuffix(day);
+        return `<div class="timeline-date"><div class="timeline-weekday">${weekday}</div><div class="timeline-date-formatted">${day}${suffix} ${month} ${year}</div></div>`;
     };
 
     // --- NEW TIMELINE RENDERING ---
@@ -644,7 +655,7 @@ const generateMap = () => {
         li.dataset.markerIndex = markerIndex;
         li.innerHTML = `
             <div class="timeline-item-header">
-                <div class="timeline-date">${dateText}</div>
+                ${dateText}
                 <div class="timeline-location">${locationText}</div>
                 <div class="timeline-controls">
                     <button class="btn btn-icon btn-sm zoom-to-marker-btn" title="Zoom to location"><i class="fas fa-crosshairs"></i></button>
