@@ -1131,6 +1131,37 @@ document.getElementById('arrivalTimeInput').addEventListener('click', function (
     this.showPicker();
 });
 
+const roundToFiveMinutes = (timeString) => {
+    if (!timeString) return '';
+    const [hours, minutes] = timeString.split(':').map(Number);
+
+    const roundedMinutes = Math.round(minutes / 5) * 5;
+    let newHours = hours;
+    let newMinutes = roundedMinutes;
+
+    if (roundedMinutes === 60) {
+        newMinutes = 0;
+        newHours += 1;
+    }
+
+    if (newHours === 24) {
+        newHours = 0;
+    }
+
+    const formattedHours = String(newHours).padStart(2, '0');
+    const formattedMinutes = String(newMinutes).padStart(2, '0');
+
+    return `${formattedHours}:${formattedMinutes}`;
+};
+
+document.getElementById('departureTimeInput').addEventListener('change', function (e) {
+    e.target.value = roundToFiveMinutes(e.target.value);
+});
+
+document.getElementById('arrivalTimeInput').addEventListener('change', function (e) {
+    e.target.value = roundToFiveMinutes(e.target.value);
+});
+
 // --- Sidebar Expand/Collapse ---
 document.querySelectorAll('.expandable-header').forEach(header => {
     header.addEventListener('click', () => {
