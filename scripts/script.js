@@ -1123,6 +1123,14 @@ setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 
+document.getElementById('departureTimeInput').addEventListener('click', function () {
+    this.showPicker();
+});
+
+document.getElementById('arrivalTimeInput').addEventListener('click', function () {
+    this.showPicker();
+});
+
 // --- Sidebar Expand/Collapse ---
 document.querySelectorAll('.expandable-header').forEach(header => {
     header.addEventListener('click', () => {
