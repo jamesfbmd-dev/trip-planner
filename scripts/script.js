@@ -907,8 +907,19 @@ function openDayModal(dateString) {
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
         travelModeInput.value = dayData.travelMode || 'Car';
-        document.getElementById('departureTimeInput').value = dayData.departureTime || '';
-        document.getElementById('arrivalTimeInput').value = dayData.arrivalTime || '';
+
+        if (dayData.departureTime) {
+            const [hour, minute] = dayData.departureTime.split(':');
+            document.getElementById('departureHourInput').value = hour;
+            document.getElementById('departureMinuteInput').value = minute;
+        }
+
+        if (dayData.arrivalTime) {
+            const [hour, minute] = dayData.arrivalTime.split(':');
+            document.getElementById('arrivalHourInput').value = hour;
+            document.getElementById('arrivalMinuteInput').value = minute;
+        }
+
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
         stayBtn.click(); // Use the button's click handler to set the correct state
@@ -1052,13 +1063,18 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             alert('Please select valid From and To cities.');
             return;
         }
+        const departureHour = document.getElementById('departureHourInput').value;
+        const departureMinute = document.getElementById('departureMinuteInput').value;
+        const arrivalHour = document.getElementById('arrivalHourInput').value;
+        const arrivalMinute = document.getElementById('arrivalMinuteInput').value;
+
         data = {
             type: 'travel',
             from: { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng },
             to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
             travelMode: travelModeInput.value,
-            departureTime: document.getElementById('departureTimeInput').value,
-            arrivalTime: document.getElementById('arrivalTimeInput').value
+            departureTime: `${departureHour}:${departureMinute}`,
+            arrivalTime: `${arrivalHour}:${arrivalMinute}`
         };
     } else {
         const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
@@ -1123,44 +1139,6 @@ setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 
-document.getElementById('departureTimeInput').addEventListener('click', function () {
-    this.showPicker();
-});
-
-document.getElementById('arrivalTimeInput').addEventListener('click', function () {
-    this.showPicker();
-});
-
-const roundToFiveMinutes = (timeString) => {
-    if (!timeString) return '';
-    const [hours, minutes] = timeString.split(':').map(Number);
-
-    const roundedMinutes = Math.round(minutes / 5) * 5;
-    let newHours = hours;
-    let newMinutes = roundedMinutes;
-
-    if (roundedMinutes === 60) {
-        newMinutes = 0;
-        newHours += 1;
-    }
-
-    if (newHours === 24) {
-        newHours = 0;
-    }
-
-    const formattedHours = String(newHours).padStart(2, '0');
-    const formattedMinutes = String(newMinutes).padStart(2, '0');
-
-    return `${formattedHours}:${formattedMinutes}`;
-};
-
-document.getElementById('departureTimeInput').addEventListener('change', function (e) {
-    e.target.value = roundToFiveMinutes(e.target.value);
-});
-
-document.getElementById('arrivalTimeInput').addEventListener('change', function (e) {
-    e.target.value = roundToFiveMinutes(e.target.value);
-});
 
 // --- Sidebar Expand/Collapse ---
 document.querySelectorAll('.expandable-header').forEach(header => {
@@ -1303,3 +1281,28 @@ mediaQueryMd.addEventListener('change', updateCardsPerPage);
 // Initial render
 updateCardsPerPage();
 renderDashboard();
+
+const populateTimePickers = () => {
+    const hourSelectors = ['departureHourInput', 'arrivalHourInput'];
+    const minuteSelectors = ['departureMinuteInput', 'arrivalMinuteInput'];
+
+    hourSelectors.forEach(selectorId => {
+        const selector = document.getElementById(selectorId);
+        for (let i = 0; i < 24; i++) {
+            const hour = String(i).padStart(2, '0');
+            const option = new Option(hour, hour);
+            selector.add(option);
+        }
+    });
+
+    minuteSelectors.forEach(selectorId => {
+        const selector = document.getElementById(selectorId);
+        for (let i = 0; i < 60; i += 5) {
+            const minute = String(i).padStart(2, '0');
+            const option = new Option(minute, minute);
+            selector.add(option);
+        }
+    });
+};
+
+populateTimePickers();

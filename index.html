@@ -173,12 +173,16 @@
                     </div>
                     <div class="time-inputs-container">
                         <div class="modal-input-group">
-                            <label for="departureTimeInput">Departing:</label>
-                            <input type="time" id="departureTimeInput" step="300">
+                            <label>Departing:</label>
+                            <div class="time-picker-group">
+                                <select id="departureHourInput"></select> : <select id="departureMinuteInput"></select>
+                            </div>
                         </div>
                         <div class="modal-input-group">
-                            <label for="arrivalTimeInput">Arriving:</label>
-                            <input type="time" id="arrivalTimeInput" step="300">
+                            <label>Arriving:</label>
+                            <div class="time-picker-group">
+                                <select id="arrivalHourInput"></select> : <select id="arrivalMinuteInput"></select>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-input-group">
