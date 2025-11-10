@@ -428,12 +428,17 @@ const renderDayByDayView = () => {
             if (dayData.type === 'travel') {
                 const travelMode = dayData.travelMode || 'Car';
                 const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
+                const timeInfo = dayData.departureTime && dayData.arrivalTime
+                    ? `<div class="day-card-time">${dayData.departureTime} – ${dayData.arrivalTime}</div>`
+                    : '';
+
                 content = `
                     <div class="travel-mode-header">
                         <i class="fas ${iconClass}"></i>
                         <span>${travelMode}</span>
                     </div>
                     <div class="travel-details">${dayData.from.name} → ${dayData.to.name}</div>
+                    ${timeInfo}
                 `;
             } else {
                 content = dayData.city.name;
@@ -620,6 +625,10 @@ const generateMap = () => {
         if (day.type === 'travel') {
             const travelMode = day.travelMode || 'Car';
             const iconClass = TRAVEL_MODE_ICONS[travelMode] || 'fa-road';
+            const timeInfo = day.departureTime && day.arrivalTime
+                ? `<div class="timeline-time">${day.departureTime} – ${day.arrivalTime}</div>`
+                : '';
+
             locationText = `
                 <div class="timeline-travel-mode">
                     <i class="fas ${iconClass}"></i>
@@ -628,6 +637,7 @@ const generateMap = () => {
                 <div class="timeline-travel-details">
                     <span class="timeline-badge">${day.from.name}</span> → <span class="timeline-badge">${day.to.name}</span>
                 </div>
+                ${timeInfo}
             `;
             markerIndex = locations.findIndex(l => l.name === day.to.name);
         } else {
@@ -897,6 +907,19 @@ function openDayModal(dateString) {
         fromCityInput.value = dayData.from.name;
         toCityInput.value = dayData.to.name;
         travelModeInput.value = dayData.travelMode || 'Car';
+
+        if (dayData.departureTime) {
+            const [hour, minute] = dayData.departureTime.split(':');
+            document.getElementById('departureHourInput').value = hour;
+            document.getElementById('departureMinuteInput').value = minute;
+        }
+
+        if (dayData.arrivalTime) {
+            const [hour, minute] = dayData.arrivalTime.split(':');
+            document.getElementById('arrivalHourInput').value = hour;
+            document.getElementById('arrivalMinuteInput').value = minute;
+        }
+
         setTimeout(() => fromCityInput.focus(), 100);
     } else {
         stayBtn.click(); // Use the button's click handler to set the correct state
@@ -1040,11 +1063,18 @@ document.getElementById('saveDayBtn').addEventListener('click', () => {
             alert('Please select valid From and To cities.');
             return;
         }
+        const departureHour = document.getElementById('departureHourInput').value;
+        const departureMinute = document.getElementById('departureMinuteInput').value;
+        const arrivalHour = document.getElementById('arrivalHourInput').value;
+        const arrivalMinute = document.getElementById('arrivalMinuteInput').value;
+
         data = {
             type: 'travel',
             from: { name: fromCity.name, lat: fromCity.lat, lng: fromCity.lng },
             to: { name: toCity.name, lat: toCity.lat, lng: toCity.lng },
-            travelMode: travelModeInput.value
+            travelMode: travelModeInput.value,
+            departureTime: `${departureHour}:${departureMinute}`,
+            arrivalTime: `${arrivalHour}:${arrivalMinute}`
         };
     } else {
         const city = EUROPEAN_CITIES.find(c => c.name === cityInput.value);
@@ -1108,6 +1138,7 @@ toCityInput.addEventListener('input', () => handleAutocomplete(toCityInput, toCi
 setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
+
 
 // --- Sidebar Expand/Collapse ---
 document.querySelectorAll('.expandable-header').forEach(header => {
@@ -1250,3 +1281,28 @@ mediaQueryMd.addEventListener('change', updateCardsPerPage);
 // Initial render
 updateCardsPerPage();
 renderDashboard();
+
+const populateTimePickers = () => {
+    const hourSelectors = ['departureHourInput', 'arrivalHourInput'];
+    const minuteSelectors = ['departureMinuteInput', 'arrivalMinuteInput'];
+
+    hourSelectors.forEach(selectorId => {
+        const selector = document.getElementById(selectorId);
+        for (let i = 0; i < 24; i++) {
+            const hour = String(i).padStart(2, '0');
+            const option = new Option(hour, hour);
+            selector.add(option);
+        }
+    });
+
+    minuteSelectors.forEach(selectorId => {
+        const selector = document.getElementById(selectorId);
+        for (let i = 0; i < 60; i += 5) {
+            const minute = String(i).padStart(2, '0');
+            const option = new Option(minute, minute);
+            selector.add(option);
+        }
+    });
+};
+
+populateTimePickers();

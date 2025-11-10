@@ -1,6 +1,4 @@
-# Dependencies
-/node_modules
-
-# Config
-firebase-config.js
 pixabay-api-key.js
+node_modules
+server.log
+gulp_output.log
