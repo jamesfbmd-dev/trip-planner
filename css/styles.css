@@ -807,13 +807,9 @@ h2 {
   transform: rotate(180deg);
 }
 .map-sidebar .expandable-section.expanded .expandable-content {
-  max-height: 500px;
+  max-height: 2000px;
+  /* Increased max-height */
   padding-top: 10px;
-}
-.map-sidebar .expandable-section.expanded .timeline-item-content {
-  max-height: 500px;
-  padding-top: 10px;
-  padding-bottom: 10px;
 }
 .map-sidebar .expandable-header {
   display: flex;

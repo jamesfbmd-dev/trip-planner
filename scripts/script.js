@@ -677,7 +677,7 @@ const generateMap = () => {
                     <span class="arrow">▼</span>
                 </div>
             </div>
-            <div class="timeline-item-content">
+            <div class="timeline-item-content expandable-content">
                 ${activitiesHtml}
             </div>
         `;
