@@ -5,14 +5,24 @@
 
     .modal-content {
         .modal-body {
-            .modal-expandable {
+            .expandable-section.modal-expandable {
 
                 border: 3px solid $primary-color;
                 border-radius: 5px;
                 margin-bottom: 10px;
+                overflow: hidden;
 
                 &:last-of-type {
                     border-bottom: none;
+                }
+
+                &.expanded .arrow {
+                    transform: rotate(180deg);
+                }
+
+                &.expanded .expandable-content {
+                    max-height: 1000px; // Large enough to not clip content
+                    padding: 0.5rem;
                 }
 
                 .expandable-header {
@@ -21,7 +31,6 @@
                     align-items: center;
                     cursor: pointer;
                     padding: 0.5rem;
-                    // border-radius: 5px;
                     background-color: $primary-color;
                 }
 
@@ -32,19 +41,16 @@
                 }
 
                 .expandable-content {
-                    padding: 0.5rem;
+                    padding: 0 0.5rem;
+                    max-height: 0;
+                    overflow: hidden;
+                    transition: max-height 0.2s ease-in-out, padding 0.2s ease-in-out;
                 }
 
                 .arrow {
                     color: white;
-                    transition: 0.2 ease-out;
+                    transition: transform 0.2s ease-in-out;
                 }
-
-                .arrow.expanded {
-                    transform: rotate(180deg);
-                    transition: 0.2 ease-out;
-                }
-
             }
         }
     }

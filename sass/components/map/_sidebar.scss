@@ -22,6 +22,21 @@
         border-bottom: 1px solid $border-color;
         padding-bottom: 10px;
         margin-bottom: 10px;
+
+        &.expanded .arrow {
+            transform: rotate(180deg);
+        }
+
+        &.expanded .expandable-content {
+            max-height: 500px;
+            padding-top: 10px;
+        }
+
+        &.expanded .timeline-item-content {
+            max-height: 500px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
     }
 
     .expandable-header {
@@ -42,10 +57,14 @@
 
     .arrow {
         font-size: 1.2em;
+        transition: transform 0.2s ease-in-out;
     }
 
     .expandable-content {
-        padding-top: 10px;
+        overflow: hidden;
+        max-height: 0;
+        padding-top: 0;
+        transition: max-height 0.2s ease-in-out, padding-top 0.2s ease-in-out;
     }
 }
 
@@ -145,8 +164,11 @@
 }
 
 .timeline-item-content {
-    padding: 10px 5px 0 15px;
     font-size: 0.9em;
+    padding: 0 5px 0 15px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.2s ease-in-out, padding 0.2s ease-in-out;
 
     ul {
         list-style: disc;

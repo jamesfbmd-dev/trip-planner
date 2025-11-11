@@ -651,10 +651,10 @@ const generateMap = () => {
         }
 
         const li = document.createElement('li');
-        li.className = 'timeline-item';
+        li.className = 'timeline-item expandable-section';
         li.dataset.markerIndex = markerIndex;
         li.innerHTML = `
-            <div class="timeline-item-header">
+            <div class="timeline-item-header expandable-header">
                 ${dateText}
                 <div class="timeline-location">${locationText}</div>
                 <div class="timeline-controls">
@@ -662,7 +662,7 @@ const generateMap = () => {
                     <span class="arrow">▼</span>
                 </div>
             </div>
-            <div class="timeline-item-content" style="display: none;">
+            <div class="timeline-item-content">
                 ${activitiesHtml}
             </div>
         `;
@@ -770,30 +770,12 @@ const generateMap = () => {
     // --- NEW CLICK LISTENER ---
     timelineListEl.addEventListener('click', (e) => {
         const zoomBtn = e.target.closest('.zoom-to-marker-btn');
-        const header = e.target.closest('.timeline-item-header');
-
         if (zoomBtn) {
-            e.stopPropagation(); // prevent the header click from firing
             const item = zoomBtn.closest('.timeline-item');
             const markerIndex = parseInt(item.dataset.markerIndex, 10);
             if (markerIndex >= 0 && markers[markerIndex]) {
                 const marker = markers[markerIndex];
                 map.flyTo(marker.getLatLng(), 11, { duration: 0.5 });
-            }
-            return;
-        }
-
-        if (header) {
-            const content = header.nextElementSibling;
-            const arrow = header.querySelector('.arrow');
-
-            // Toggle display
-            const isVisible = content.style.display === 'block';
-            content.style.display = isVisible ? 'none' : 'block';
-
-            // Change arrow direction
-            if (arrow) {
-                arrow.innerHTML = isVisible ? '▼' : '▲';
             }
         }
     });
@@ -889,8 +871,7 @@ function openDayModal(dateString) {
     imageUrlInput.value = (dayData && dayData.imageUrl) ? dayData.imageUrl : '';
 
     // Close expandable sections by default
-    dayModal.querySelectorAll('.modal-expandable .expandable-content').forEach(content => content.style.display = 'none');
-    dayModal.querySelectorAll('.modal-expandable .arrow').forEach(arrow => arrow.classList.remove('expanded'));
+    dayModal.querySelectorAll('.modal-expandable').forEach(section => section.classList.remove('expanded'));
 
     if (dayData && dayData.type === 'travel') {
         travelBtn.click(); // Use the button's click handler to set the correct state
@@ -1109,20 +1090,19 @@ setupAutocompleteNavigation(cityInput, cityAutocompleteList);
 setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 
-// --- Sidebar Expand/Collapse ---
-document.querySelectorAll('.expandable-header').forEach(header => {
-    header.addEventListener('click', () => {
-        const content = header.nextElementSibling;
-        if (content) {
-            const isVisible = content.style.display === 'block';
-            content.style.display = isVisible ? 'none' : 'block';
-
-            const arrow = header.querySelector('.arrow');
-            if (arrow) {
-                arrow.classList.toggle('expanded', !isVisible);
-            }
+// --- Expand/Collapse functionality ---
+document.addEventListener('click', function(e) {
+    const header = e.target.closest('.expandable-header');
+    if (header) {
+        // Prevent buttons inside header from triggering expansion
+        if (e.target.closest('button')) {
+            return;
         }
-    });
+        const section = header.closest('.expandable-section');
+        if (section) {
+            section.classList.toggle('expanded');
+        }
+    }
 });
 
 // --- View Toggles & Day Card Navigation ---
