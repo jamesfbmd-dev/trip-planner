@@ -798,6 +798,30 @@ h2 {
     padding: 20px;
   }
 }
+.map-sidebar .expandable-section {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+.map-sidebar .expandable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+.map-sidebar .expandable-header:hover {
+  color: #2D365A;
+}
+.map-sidebar .expandable-title {
+  margin: 0;
+  font-size: 1.1em;
+}
+.map-sidebar .arrow {
+  font-size: 1.2em;
+}
+.map-sidebar .expandable-content {
+  padding-top: 10px;
+}
 
 .map-sidebar.collapsed {
   left: -280px;
@@ -833,36 +857,6 @@ h2 {
 }
 .sidebar-content h5.mt-3 {
   margin-top: 20px;
-}
-
-.expandable-section {
-  border-bottom: 1px solid #e9ecef;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-}
-
-.expandable-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-}
-
-.expandable-header:hover {
-  color: #2D365A;
-}
-
-.expandable-title {
-  margin: 0;
-  font-size: 1.1em;
-}
-
-.arrow {
-  font-size: 1.2em;
-}
-
-.expandable-content {
-  padding-top: 10px;
 }
 
 .sidebar-content ul {
@@ -1138,8 +1132,37 @@ h2 {
     gap: 10px;
   }
 }
+#dayModal .modal-content .modal-body .modal-expandable {
+  border: 3px solid #2D365A;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
 #dayModal .modal-content .modal-body .modal-expandable:last-of-type {
   border-bottom: none;
+}
+#dayModal .modal-content .modal-body .modal-expandable .expandable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem;
+  background-color: #2D365A;
+}
+#dayModal .modal-content .modal-body .modal-expandable .expandable-title {
+  margin: 0;
+  font-size: 1.1em;
+  color: white;
+}
+#dayModal .modal-content .modal-body .modal-expandable .expandable-content {
+  padding: 0.5rem;
+}
+#dayModal .modal-content .modal-body .modal-expandable .arrow {
+  color: white;
+  transition: 0.2 ease-out;
+}
+#dayModal .modal-content .modal-body .modal-expandable .arrow.expanded {
+  transform: rotate(180deg);
+  transition: 0.2 ease-out;
 }
 #dayModal .day-type-control {
   display: flex;

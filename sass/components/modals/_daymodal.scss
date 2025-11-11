@@ -6,9 +6,45 @@
     .modal-content {
         .modal-body {
             .modal-expandable {
+
+                border: 3px solid $primary-color;
+                border-radius: 5px;
+                margin-bottom: 10px;
+
                 &:last-of-type {
                     border-bottom: none;
                 }
+
+                .expandable-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    cursor: pointer;
+                    padding: 0.5rem;
+                    // border-radius: 5px;
+                    background-color: $primary-color;
+                }
+
+                .expandable-title {
+                    margin: 0;
+                    font-size: 1.1em;
+                    color: white;
+                }
+
+                .expandable-content {
+                    padding: 0.5rem;
+                }
+
+                .arrow {
+                    color: white;
+                    transition: 0.2 ease-out;
+                }
+
+                .arrow.expanded {
+                    transform: rotate(180deg);
+                    transition: 0.2 ease-out;
+                }
+
             }
         }
     }
