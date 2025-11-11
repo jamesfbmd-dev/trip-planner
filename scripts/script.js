@@ -403,9 +403,6 @@ const renderCalendar = () => {
         
         const dayCell = document.createElement('div');
         dayCell.className = 'day-cell';
-        if (!dayData) {
-            dayCell.classList.add('no-data');
-        }
         dayCell.dataset.date = dateString;
         dayCell.innerHTML = `
             <div class="day-number">${i}</div>
@@ -668,6 +665,7 @@ const generateMap = () => {
         const li = document.createElement('li');
         li.className = 'timeline-item expandable-section';
         li.dataset.markerIndex = markerIndex;
+        li.dataset.expanded = 'false';
         li.innerHTML = `
             <div class="timeline-item-header expandable-header">
                 ${dateText}
@@ -881,17 +879,12 @@ function openDayModal(dateString) {
         modalActivities = { morning: [], afternoon: [], evening: [] };
     }
     renderActivityLists();
-    ['morning', 'afternoon', 'evening'].forEach(period => {
-        const form = document.getElementById(`add-${period}-form`);
-        if (form) {
-            form.classList.remove('expanded');
-        }
-    });
+    ['morning', 'afternoon', 'evening'].forEach(hideActivityForm);
 
     imageUrlInput.value = (dayData && dayData.imageUrl) ? dayData.imageUrl : '';
 
     // Close expandable sections by default
-    dayModal.querySelectorAll('.modal-expandable').forEach(section => section.classList.remove('expanded'));
+    dayModal.querySelectorAll('.modal-expandable').forEach(section => section.dataset.expanded = 'false');
 
     if (dayData && dayData.type === 'travel') {
         travelBtn.click(); // Use the button's click handler to set the correct state
@@ -1111,22 +1104,34 @@ setupAutocompleteNavigation(fromCityInput, fromCityAutocompleteList);
 setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 
 // --- Expand/Collapse functionality ---
-document.addEventListener('click', function(e) {
+const toggleExpandableSection = (e) => {
     const header = e.target.closest('.expandable-header');
 
-    if (header) {
-        // Prevent buttons inside header from triggering expansion
-        if (e.target.closest('button')) {
-            return;
-        }
-
-        const section = header.parentElement; // Use parentElement for direct parent
-        if (section && section.classList.contains('expandable-section')) {
-            e.stopPropagation(); // Stop the event from bubbling up
-            section.classList.toggle('expanded');
-        }
+    // If no header was clicked, do nothing.
+    if (!header) {
+        return;
     }
-});
+
+    // Stop the event from bubbling up to parent expandable sections.
+    e.stopPropagation();
+
+    // Prevent buttons inside the header from toggling the section.
+    if (e.target.closest('button')) {
+        return;
+    }
+
+    const section = header.closest('.expandable-section');
+
+    // If the header isn't part of a section, do nothing.
+    if (!section) {
+        return;
+    }
+
+    const isExpanded = section.dataset.expanded === 'true';
+    section.dataset.expanded = !isExpanded;
+};
+
+document.addEventListener('click', toggleExpandableSection);
 
 // --- View Toggles & Day Card Navigation ---
 calendarViewBtn.addEventListener('click', () => {
@@ -1178,6 +1183,17 @@ const renderActivityLists = () => {
     });
 };
 
+const showActivityForm = (period) => {
+    document.getElementById(`add-${period}-form`).style.display = 'flex';
+    document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'none';
+};
+
+const hideActivityForm = (period) => {
+    document.getElementById(`add-${period}-form`).style.display = 'none';
+    document.getElementById(`${period}-activity-input`).value = '';
+    document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
+};
+
 activitiesContainer.addEventListener('click', (e) => {
     const addBtn = e.target.closest('.add-activity-btn');
     const confirmBtn = e.target.closest('.confirm-add-btn');
@@ -1185,12 +1201,7 @@ activitiesContainer.addEventListener('click', (e) => {
     const deleteBtn = e.target.closest('.delete-activity-btn');
 
     if (addBtn) {
-        const period = addBtn.dataset.period;
-        const form = document.getElementById(`add-${period}-form`);
-        if (form) {
-            form.classList.add('expanded');
-            document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'none';
-        }
+        showActivityForm(addBtn.dataset.period);
         return;
     }
 
@@ -1202,21 +1213,12 @@ activitiesContainer.addEventListener('click', (e) => {
             modalActivities[period].push(activityText);
             renderActivityLists();
         }
-        const form = document.getElementById(`add-${period}-form`);
-        if (form) {
-            form.classList.remove('expanded');
-            document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
-        }
+        hideActivityForm(period);
         return;
     }
 
     if (cancelBtn) {
-        const period = cancelBtn.dataset.period;
-        const form = document.getElementById(`add-${period}-form`);
-        if (form) {
-            form.classList.remove('expanded');
-            document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
-        }
+        hideActivityForm(cancelBtn.dataset.period);
         return;
     }
 

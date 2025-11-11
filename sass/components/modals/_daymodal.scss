@@ -16,11 +16,11 @@
                     border-bottom: none;
                 }
 
-                &.expanded .arrow {
+                &[data-expanded="true"] .arrow {
                     transform: rotate(180deg);
                 }
 
-                &.expanded .expandable-content {
+                &[data-expanded="true"] .expandable-content {
                     max-height: 1000px; // Large enough to not clip content
                     padding: 0.5rem;
                 }

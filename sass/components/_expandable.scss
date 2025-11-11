@@ -1,0 +1,25 @@
+.expandable-section {
+    .expandable-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+        padding: 0 1rem;
+        border-top: none;
+    }
+
+    .arrow {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    &[data-expanded="true"] {
+        .expandable-content {
+            max-height: 500px;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .arrow {
+            transform: rotate(180deg);
+        }
+    }
+}
