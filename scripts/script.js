@@ -866,7 +866,12 @@ function openDayModal(dateString) {
         modalActivities = { morning: [], afternoon: [], evening: [] };
     }
     renderActivityLists();
-    ['morning', 'afternoon', 'evening'].forEach(hideActivityForm);
+    ['morning', 'afternoon', 'evening'].forEach(period => {
+        const form = document.getElementById(`add-${period}-form`);
+        if (form) {
+            form.classList.remove('expanded');
+        }
+    });
 
     imageUrlInput.value = (dayData && dayData.imageUrl) ? dayData.imageUrl : '';
 
@@ -1093,14 +1098,26 @@ setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 // --- Expand/Collapse functionality ---
 document.addEventListener('click', function(e) {
     const header = e.target.closest('.expandable-header');
+    const addActivityBtn = e.target.closest('.add-activity-btn');
+
     if (header) {
         // Prevent buttons inside header from triggering expansion
         if (e.target.closest('button')) {
             return;
         }
-        const section = header.closest('.expandable-section');
-        if (section) {
+
+        const section = header.parentElement; // Use parentElement for direct parent
+        if (section && section.classList.contains('expandable-section')) {
+            e.stopPropagation(); // Stop the event from bubbling up
             section.classList.toggle('expanded');
+        }
+    }
+
+    if (addActivityBtn) {
+        const period = addActivityBtn.dataset.period;
+        const form = document.getElementById(`add-${period}-form`);
+        if (form) {
+            form.classList.toggle('expanded');
         }
     }
 });
@@ -1155,17 +1172,6 @@ const renderActivityLists = () => {
     });
 };
 
-const showActivityForm = (period) => {
-    document.getElementById(`add-${period}-form`).style.display = 'flex';
-    document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'none';
-};
-
-const hideActivityForm = (period) => {
-    document.getElementById(`add-${period}-form`).style.display = 'none';
-    document.getElementById(`${period}-activity-input`).value = '';
-    document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
-};
-
 activitiesContainer.addEventListener('click', (e) => {
     const addBtn = e.target.closest('.add-activity-btn');
     const confirmBtn = e.target.closest('.confirm-add-btn');
@@ -1173,7 +1179,12 @@ activitiesContainer.addEventListener('click', (e) => {
     const deleteBtn = e.target.closest('.delete-activity-btn');
 
     if (addBtn) {
-        showActivityForm(addBtn.dataset.period);
+        const period = addBtn.dataset.period;
+        const form = document.getElementById(`add-${period}-form`);
+        if (form) {
+            form.classList.add('expanded');
+            document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'none';
+        }
         return;
     }
 
@@ -1185,12 +1196,21 @@ activitiesContainer.addEventListener('click', (e) => {
             modalActivities[period].push(activityText);
             renderActivityLists();
         }
-        hideActivityForm(period);
+        const form = document.getElementById(`add-${period}-form`);
+        if (form) {
+            form.classList.remove('expanded');
+            document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
+        }
         return;
     }
 
     if (cancelBtn) {
-        hideActivityForm(cancelBtn.dataset.period);
+        const period = cancelBtn.dataset.period;
+        const form = document.getElementById(`add-${period}-form`);
+        if (form) {
+            form.classList.remove('expanded');
+            document.querySelector(`.add-activity-btn[data-period=${period}]`).style.display = 'inline-block';
+        }
         return;
     }
 

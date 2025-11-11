@@ -146,9 +146,13 @@
         }
 
         .add-activity-form {
-            display: flex;
+            display: none;
             gap: 5px;
             margin-bottom: 10px;
+
+            &.expanded {
+                display: flex;
+            }
 
             input {
                 flex-grow: 1;
