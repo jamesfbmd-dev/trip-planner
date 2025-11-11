@@ -322,15 +322,27 @@ const saveTrip = () => {
 // --- TRIP CALENDAR FUNCTIONS ---
 const openTrip = (id) => {
     currentTripId = id;
-    currentTrip = getTrips()[id];
+    let trips = getTrips();
+    currentTrip = trips[id];
     tripTitleEl.textContent = currentTrip.name;
 
     const tripDays = Object.keys(currentTrip.days).sort();
     if (tripDays.length > 0) {
-        // Use T00:00:00 to avoid timezone issues where new Date() might interpret YYYY-MM-DD as UTC midnight
         currentDate = new Date(tripDays[0] + 'T00:00:00');
     } else {
-        currentDate = new Date();
+        // If there are no days, create one to ensure the calendar is populated
+        const today = new Date();
+        const dateString = formatDate(today);
+        const paris = EUROPEAN_CITIES.find(c => c.name === "Paris");
+        currentTrip.days[dateString] = {
+            type: 'stay',
+            city: { name: paris.name, lat: paris.lat, lng: paris.lng },
+            activities: { morning: [], afternoon: [], evening: [] },
+            imageUrl: ''
+        };
+        trips[id] = currentTrip;
+        saveTrips(trips);
+        currentDate = today;
     }
 
     if (!isDayCardListenerAttached) {
@@ -391,6 +403,9 @@ const renderCalendar = () => {
         
         const dayCell = document.createElement('div');
         dayCell.className = 'day-cell';
+        if (!dayData) {
+            dayCell.classList.add('no-data');
+        }
         dayCell.dataset.date = dateString;
         dayCell.innerHTML = `
             <div class="day-number">${i}</div>
@@ -1098,7 +1113,6 @@ setupAutocompleteNavigation(toCityInput, toCityAutocompleteList);
 // --- Expand/Collapse functionality ---
 document.addEventListener('click', function(e) {
     const header = e.target.closest('.expandable-header');
-    const addActivityBtn = e.target.closest('.add-activity-btn');
 
     if (header) {
         // Prevent buttons inside header from triggering expansion
@@ -1110,14 +1124,6 @@ document.addEventListener('click', function(e) {
         if (section && section.classList.contains('expandable-section')) {
             e.stopPropagation(); // Stop the event from bubbling up
             section.classList.toggle('expanded');
-        }
-    }
-
-    if (addActivityBtn) {
-        const period = addActivityBtn.dataset.period;
-        const form = document.getElementById(`add-${period}-form`);
-        if (form) {
-            form.classList.toggle('expanded');
         }
     }
 });

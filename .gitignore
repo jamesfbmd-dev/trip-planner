@@ -4,3 +4,7 @@
 # Config
 firebase-config.js
 pixabay-api-key.js
+
+# Logs
+server.log
+gulp_output.log
