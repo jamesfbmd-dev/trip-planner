@@ -69,46 +69,102 @@ const EUROPEAN_CITIES = [
     { name: "Bristol", lat: 51.4545, lng: -2.5879 },
     { name: "Leeds", lat: 53.8008, lng: -1.5491 },
     // Major APAC cities
-  { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
-  { name: "Seoul", lat: 37.5665, lng: 126.9780 },
-  { name: "Shanghai", lat: 31.2304, lng: 121.4737 },
-  { name: "Beijing", lat: 39.9042, lng: 116.4074 },
-  { name: "Bangkok", lat: 13.7563, lng: 100.5018 },
-  { name: "Singapore", lat: 1.3521, lng: 103.8198 },
-  { name: "Hong Kong", lat: 22.3193, lng: 114.1694 },
-  { name: "Sydney", lat: -33.8688, lng: 151.2093 },
-  { name: "Melbourne", lat: -37.8136, lng: 144.9631 },
-  { name: "Jakarta", lat: -6.2088, lng: 106.8456 },
+    { name: "Seoul", lat: 37.5665, lng: 126.9780 },
+    { name: "Shanghai", lat: 31.2304, lng: 121.4737 },
+    { name: "Beijing", lat: 39.9042, lng: 116.4074 },
+    { name: "Bangkok", lat: 13.7563, lng: 100.5018 },
+    { name: "Singapore", lat: 1.3521, lng: 103.8198 },
+    { name: "Hong Kong", lat: 22.3193, lng: 114.1694 },
+    { name: "Sydney", lat: -33.8688, lng: 151.2093 },
+    { name: "Melbourne", lat: -37.8136, lng: 144.9631 },
+    { name: "Jakarta", lat: -6.2088, lng: 106.8456 },
 
-  // Additional European / global locations
-  { name: "Blenheim", lat: -41.5292, lng: 173.9626 },        // NZ
-  { name: "Como", lat: 45.8081, lng: 9.0852 },               // Italy
-  { name: "Crawley", lat: 51.1096, lng: -0.1870 },           // UK
-  { name: "Cranleigh", lat: 51.1252, lng: -0.4821 },         // UK
-  { name: "Wellington", lat: -41.2865, lng: 174.7762 },      // NZ
-  { name: "Hakone", lat: 35.2325, lng: 139.1063 },           // Japan
-  { name: "Konstanz", lat: 47.6779, lng: 9.1737 },           // Germany
-  { name: "Salzburg", lat: 47.8095, lng: 13.0550 },          // Austria
-  { name: "Pompeii", lat: 40.7460, lng: 14.4989 },           // Italy
-  { name: "Interlaken", lat: 46.6863, lng: 7.8632 },         // Switzerland
-  { name: "Lucerne", lat: 47.0502, lng: 8.3093 },            // Switzerland
-  { name: "Andorra la Vella", lat: 42.5078, lng: 1.5211 },   // Andorra
-  { name: "Nantes", lat: 47.2184, lng: -1.5536 },            // France
-  { name: "Angers", lat: 47.4784, lng: -0.5632 },             // France
-  { name: "Nuremberg", lat: 49.4521, lng: 11.0767 },         // Germany
-  { name: "Wroclaw", lat: 51.1079, lng: 17.0385 },           // Poland
-  { name: "Arcachon", lat: 44.6583, lng: -1.1700 },           // France
+    // Additional European / global locations
+    { name: "Blenheim", lat: -41.5292, lng: 173.9626 },        // NZ
+    { name: "Como", lat: 45.8081, lng: 9.0852 },               // Italy
+    { name: "Crawley", lat: 51.1096, lng: -0.1870 },           // UK
+    { name: "Cranleigh", lat: 51.1252, lng: -0.4821 },         // UK
+    { name: "Wellington", lat: -41.2865, lng: 174.7762 },      // NZ
+    { name: "Hakone", lat: 35.2325, lng: 139.1063 },           // Japan
+    { name: "Konstanz", lat: 47.6779, lng: 9.1737 },           // Germany
+    { name: "Salzburg", lat: 47.8095, lng: 13.0550 },          // Austria
+    { name: "Pompeii", lat: 40.7460, lng: 14.4989 },           // Italy
+    { name: "Interlaken", lat: 46.6863, lng: 7.8632 },         // Switzerland
+    { name: "Lucerne", lat: 47.0502, lng: 8.3093 },            // Switzerland
+    { name: "Andorra la Vella", lat: 42.5078, lng: 1.5211 },   // Andorra
+    { name: "Nantes", lat: 47.2184, lng: -1.5536 },            // France
+    { name: "Angers", lat: 47.4784, lng: -0.5632 },             // France
+    { name: "Nuremberg", lat: 49.4521, lng: 11.0767 },         // Germany
+    { name: "Wroclaw", lat: 51.1079, lng: 17.0385 },           // Poland
+    { name: "Arcachon", lat: 44.6583, lng: -1.1700 },           // France
 
-  // Thai
-  { name: "Bangkok", lat: 13.7563, lng: 100.5018 },
-  { name: "Chiang Mai", lat: 18.7883, lng: 98.9853 },
-  { name: "Chiang Rai", lat: 19.9105, lng: 99.8406 },
-  { name: "Phuket", lat: 7.8804, lng: 98.3923 },
-  { name: "Krabi", lat: 8.0863, lng: 98.9063 },
-  { name: "Koh Samui", lat: 9.5120, lng: 100.0130 },
-  { name: "Koh Phangan", lat: 9.7297, lng: 100.0136 },
-  { name: "Koh Tao", lat: 10.0956, lng: 99.8275 },
-  { name: "Khao Sok", lat: 8.9040, lng: 98.5190 }
+    // Thai
+    { name: "Bangkok", lat: 13.7563, lng: 100.5018 },
+    { name: "Chiang Mai", lat: 18.7883, lng: 98.9853 },
+    { name: "Chiang Rai", lat: 19.9105, lng: 99.8406 },
+    { name: "Phuket", lat: 7.8804, lng: 98.3923 },
+    { name: "Krabi", lat: 8.0863, lng: 98.9063 },
+    { name: "Koh Samui", lat: 9.5120, lng: 100.0130 },
+    { name: "Koh Phangan", lat: 9.7297, lng: 100.0136 },
+    { name: "Koh Tao", lat: 10.0956, lng: 99.8275 },
+    { name: "Khao Sok", lat: 8.9040, lng: 98.5190 },
+
+    // Japan
+    { name: "Tokyo", lat: 35.6762, lng: 139.6503 },
+    { name: "Kyoto", lat: 35.0116, lng: 135.7681 },
+    { name: "Osaka", lat: 34.6937, lng: 135.5023 },
+    { name: "Nara", lat: 34.6851, lng: 135.8048 },
+    { name: "Hiroshima", lat: 34.3853, lng: 132.4553 },
+    { name: "Miyajima", lat: 34.2959, lng: 132.3198 },
+    { name: "Hakone", lat: 35.2323, lng: 139.1069 },
+    { name: "Kamakura", lat: 35.3192, lng: 139.5467 },
+    { name: "Nikko", lat: 36.7198, lng: 139.6982 },
+    { name: "Kanazawa", lat: 36.5613, lng: 136.6562 },
+    { name: "Takayama", lat: 36.1461, lng: 137.2522 },
+    { name: "Shirakawa-go", lat: 36.2606, lng: 136.8990 },
+    { name: "Nagoya", lat: 35.1815, lng: 136.9066 },
+    { name: "Matsumoto", lat: 36.2381, lng: 137.9720 },
+    { name: "Kawaguchiko", lat: 35.4977, lng: 138.7552 },
+    { name: "Mount Fuji", lat: 35.3606, lng: 138.7274 },
+    { name: "Yokohama", lat: 35.4437, lng: 139.6380 },
+    { name: "Kobe", lat: 34.6901, lng: 135.1955 },
+    { name: "Himeji", lat: 34.8151, lng: 134.6853 },
+    { name: "Fukuoka", lat: 33.5904, lng: 130.4017 },
+    { name: "Nagasaki", lat: 32.7503, lng: 129.8777 },
+    { name: "Beppu", lat: 33.2795, lng: 131.4979 },
+    { name: "Yufuin", lat: 33.2634, lng: 131.3544 },
+    { name: "Kumamoto", lat: 32.8031, lng: 130.7079 },
+    { name: "Kagoshima", lat: 31.5966, lng: 130.5571 },
+    { name: "Yakushima", lat: 30.3580, lng: 130.5280 },
+    { name: "Sapporo", lat: 43.0618, lng: 141.3545 },
+    { name: "Otaru", lat: 43.1907, lng: 140.9947 },
+    { name: "Hakodate", lat: 41.7688, lng: 140.7288 },
+    { name: "Furano", lat: 43.3420, lng: 142.3832 },
+    { name: "Biei", lat: 43.5883, lng: 142.4630 },
+    { name: "Asahikawa", lat: 43.7706, lng: 142.3650 },
+    { name: "Noboribetsu", lat: 42.4522, lng: 141.1791 },
+    { name: "Sendai", lat: 38.2682, lng: 140.8694 },
+    { name: "Matsushima", lat: 38.3736, lng: 141.0611 },
+    { name: "Aomori", lat: 40.8222, lng: 140.7474 },
+    { name: "Akita", lat: 39.7199, lng: 140.1035 },
+    { name: "Yamagata", lat: 38.2554, lng: 140.3396 },
+    { name: "Zao Onsen", lat: 38.1660, lng: 140.3998 },
+    { name: "Karuizawa", lat: 36.3486, lng: 138.5969 },
+    { name: "Kusatsu Onsen", lat: 36.6200, lng: 138.5969 },
+    { name: "Ise", lat: 34.4875, lng: 136.7091 },
+    { name: "Koyasan", lat: 34.2131, lng: 135.5842 },
+    { name: "Okayama", lat: 34.6551, lng: 133.9195 },
+    { name: "Kurashiki", lat: 34.5850, lng: 133.7721 },
+    { name: "Naoshima", lat: 34.4594, lng: 133.9958 },
+    { name: "Takamatsu", lat: 34.3428, lng: 134.0466 },
+    { name: "Matsuyama", lat: 33.8392, lng: 132.7657 },
+    { name: "Okinawa", lat: 26.2124, lng: 127.6809 },
+    { name: "Ishigaki", lat: 24.3448, lng: 124.1572 },
+    { name: "Jigokudani Monkey Park", lat: 36.7320, lng: 138.4621 },
+    { name: "Nozawa Onsen", lat: 36.9227, lng: 138.4419 },
+    { name: "Shiga Kogen", lat: 36.7170, lng: 138.5170 },
+    { name: "Kamikochi", lat: 36.2481, lng: 137.6360 },
+    { name: "Nagano", lat: 36.6486, lng: 138.1948 }
 
 ];
 
